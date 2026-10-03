@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lập Phiếu Chi Tiền & Thanh Toán VietQR B2B - ABC Backoffice</title>
+  <link rel="stylesheet" href="../tokens.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-family);
+      font-size: var(--font-base);
+      color: var(--color-text);
+      background-color: var(--color-bg);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Topbar */
+    .top-header {
+      height: 56px;
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--space-4);
+      flex-shrink: 0;
+    }
+    .breadcrumb-title {
+      font-size: 15px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .breadcrumb-link {
+      color: var(--color-text-muted);
+      text-decoration: none;
+    }
+    .breadcrumb-link:hover { color: var(--color-primary); }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 500;
+      border-radius: var(--radius);
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text);
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .btn-primary {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: #fff;
+    }
+
+    /* Content Area */
+    .content-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--space-4);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .form-sheet {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-card);
+      width: 100%;
+      max-width: 950px;
+      padding: var(--space-5);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    .doc-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 1px solid var(--color-border);
+      padding-bottom: var(--space-3);
+    }
+    .doc-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--color-text);
+      margin-bottom: 4px;
+    }
+    .doc-meta {
+      font-size: 12px;
+      color: var(--color-text-muted);
+    }
+
+    /* Main Grid: Form Left, QR Right */
+    .payment-grid {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: var(--space-5);
+    }
+
+    .form-section {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .field-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-text);
+    }
+    .field-input, .field-select, .field-textarea {
+      padding: 8px 12px;
+      font-size: 13px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      background: var(--color-surface);
+      outline: none;
+      font-family: inherit;
+    }
+    .field-textarea {
+      resize: vertical;
+      min-height: 60px;
+    }
+
+    /* Partner quick select */
+    .partner-card {
+      background: #f8fafc;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+    }
+
+    /* QR Card */
+    .qr-card {
+      background: #f8fafc;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-4);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: var(--space-3);
+    }
+    .qr-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--color-text);
+    }
+    .qr-box {
+      width: 180px;
+      height: 180px;
+      background: #fff;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    .qr-amount-tag {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--color-primary);
+    }
+    .qr-bank-details {
+      font-size: 12px;
+      color: var(--color-text-muted);
+      line-height: 1.5;
+    }
+
+    /* AI Cashflow Guard Box */
+    .ai-guard-box {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 13px;
+      color: #1e40af;
+    }
+    .ai-guard-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 600;
+    }
+
+    /* Footer */
+    .footer-bar {
+      height: 60px;
+      background: var(--color-surface);
+      border-top: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--space-4);
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+  <!-- Topbar -->
+  <header class="top-header">
+    <div class="breadcrumb-title">
+      <a href="bo-chi-phi.html" class="breadcrumb-link">Sổ Thu Chi</a>
+      <span style="color: var(--color-text-muted);">/</span>
+      <span>Lập Phiếu Chi Tiền (#PC-202610-09)</span>
+    </div>
+    <div class="header-actions">
+      <a href="bo-chi-phi.html" class="btn">Đóng</a>
+    </div>
+  </header>
+
+  <main class="content-area">
+    <div class="form-sheet">
+      <!-- Doc Header -->
+      <div class="doc-header">
+        <div>
+          <div class="doc-title">PHIẾU CHI TIỀN & LỆNH THANH TOÁN (PAYMENT VOUCHER)</div>
+          <div class="doc-meta">
+            Mã phiếu: <strong>#PC-202610-09</strong> • Ngày lập: <strong>02/10/2026</strong> • Người lập: <strong>Trần Minh Khoa (Kế toán Trưởng)</strong>
+          </div>
+        </div>
+        <div style="padding: 4px 10px; background: #fef9c3; color: var(--color-warning); font-size: 12px; font-weight: 600; border-radius: 4px;">
+          CHỜ XÁC NHẬN CHI
+        </div>
+      </div>
+
+      <!-- Main Payment Grid -->
+      <div class="payment-grid">
+        <!-- Left: Form Input Fields -->
+        <div class="form-section">
+          <!-- 1. Partner -->
+          <div class="field-group">
+            <span class="field-label">1. Đối tượng thụ hưởng / Nhà cung cấp</span>
+            <div class="partner-card">
+              <div>
+                <div style="font-weight: 600;">Công ty TNHH Phân Phối Mỹ Phẩm Klairs VN</div>
+                <div style="font-size: 12px; color: var(--color-text-muted);">Đại diện: Trần Minh Quân • Mã NCC: NCC-KLAIRS-01</div>
+              </div>
+              <button class="btn" style="padding: 2px 8px; font-size: 11px;">Thay đổi</button>
+            </div>
+          </div>
+
+          <!-- 2. Category & Amount -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3);">
+            <div class="field-group">
+              <span class="field-label">2. Hạng mục chi phí</span>
+              <select class="field-select">
+                <option selected>Thanh toán công nợ đơn hàng NCC</option>
+                <option>Chi nạp ngân sách Ads & Marketing</option>
+                <option>Chi tiền mặt bằng showroom</option>
+                <option>Chi lương & thưởng nhân viên</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <span class="field-label">Số tiền chi trả (₫)</span>
+              <input type="text" class="field-input" value="34.515.000 ₫" style="font-weight: 700; color: var(--color-danger); font-size: 15px;">
+            </div>
+          </div>
+
+          <!-- 3. Attached Document PO -->
+          <div class="field-group">
+            <span class="field-label">Chứng từ mua hàng đính kèm</span>
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: #f8fafc; border: 1px solid var(--color-border); border-radius: var(--radius); font-size: 13px;">
+              <span>Đơn Đặt Hàng <strong>#PO-202610-088</strong> (Klairs VN - Hạn nợ 13/11)</span>
+              <span style="color: var(--color-text-muted); font-size: 12px;">Dư nợ: 34.515.000 ₫</span>
+            </div>
+          </div>
+
+          <!-- 4. Payment Method -->
+          <div class="field-group">
+            <span class="field-label">Phương thức thanh toán</span>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn btn-primary" style="flex: 1; justify-content: center; font-size: 12px;">VietQR B2B (Ưu tiên)</button>
+              <button class="btn" style="flex: 1; justify-content: center; font-size: 12px;">Chuyển khoản thường</button>
+              <button class="btn" style="flex: 1; justify-content: center; font-size: 12px;">Tiền mặt két quầy</button>
+            </div>
+          </div>
+
+          <!-- 5. Notes -->
+          <div class="field-group">
+            <span class="field-label">Nội dung diễn giải chi tiền</span>
+            <textarea class="field-textarea">Maison de Bloom thanh toán đợt 1 công nợ đơn hàng PO-202610-088 cho Klairs VN</textarea>
+          </div>
+
+          <!-- Automation Options -->
+          <div style="display: flex; flex-direction: column; gap: 6px; padding-top: 6px; font-size: 13px;">
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" checked>
+              <span>Tự động ghi giảm công nợ NCC Klairs VN trên sổ phụ kế toán</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" checked>
+              <span>Đính kèm hóa đơn VAT điện tử & sinh giấy Ủy nhiệm chi (UNC)</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Right: VietQR Code & AI Cashflow Guard -->
+        <div style="display: flex; flex-direction: column; gap: var(--space-4);">
+          <!-- QR Card -->
+          <div class="qr-card">
+            <div class="qr-title">Mã QR Lệnh Chi Tự Động (VietQR B2B)</div>
+            <div class="qr-box">
+              <!-- Visual Mock of VietQR -->
+              <svg width="150" height="150" viewBox="0 0 100 100" fill="none">
+                <rect x="0" y="0" width="100" height="100" fill="white"/>
+                <!-- Corner 1 -->
+                <rect x="5" y="5" width="26" height="26" fill="black"/>
+                <rect x="9" y="9" width="18" height="18" fill="white"/>
+                <rect x="13" y="13" width="10" height="10" fill="black"/>
+                <!-- Corner 2 -->
+                <rect x="69" y="5" width="26" height="26" fill="black"/>
+                <rect x="73" y="9" width="18" height="18" fill="white"/>
+                <rect x="77" y="13" width="10" height="10" fill="black"/>
+                <!-- Corner 3 -->
+                <rect x="5" y="69" width="26" height="26" fill="black"/>
+                <rect x="9" y="73" width="18" height="18" fill="white"/>
+                <rect x="13" y="77" width="10" height="10" fill="black"/>
+                <!-- Mock QR Bits -->
+                <rect x="36" y="10" width="6" height="6" fill="black"/>
+                <rect x="46" y="16" width="6" height="6" fill="black"/>
+                <rect x="56" y="8" width="6" height="6" fill="black"/>
+                <rect x="36" y="24" width="6" height="6" fill="black"/>
+                <rect x="10" y="36" width="6" height="6" fill="black"/>
+                <rect x="20" y="44" width="6" height="6" fill="black"/>
+                <rect x="38" y="38" width="24" height="24" fill="#2b59c3" rx="4"/>
+                <text x="50" y="54" fill="white" font-size="10" font-weight="bold" text-anchor="middle">MDB</text>
+                <rect x="68" y="36" width="6" height="6" fill="black"/>
+                <rect x="80" y="44" width="6" height="6" fill="black"/>
+                <rect x="36" y="68" width="6" height="6" fill="black"/>
+                <rect x="46" y="76" width="6" height="6" fill="black"/>
+                <rect x="56" y="68" width="6" height="6" fill="black"/>
+                <rect x="68" y="78" width="6" height="6" fill="black"/>
+                <rect x="78" y="68" width="6" height="6" fill="black"/>
+              </svg>
+            </div>
+            <div class="qr-amount-tag">34.515.000 ₫</div>
+            <div class="qr-bank-details">
+              <strong>Vietcombank - CN Tân Bình</strong><br>
+              STK: <code>1028392819</code><br>
+              CTY TNHH MY PHAM KLAIRS VN
+            </div>
+            <div style="display: flex; gap: 6px; width: 100%;">
+              <button class="btn" style="flex: 1; font-size: 11px; padding: 4px;">Sao chép STK</button>
+              <button class="btn" style="flex: 1; font-size: 11px; padding: 4px;">Tải mã QR</button>
+            </div>
+          </div>
+
+          <!-- AI Cashflow Guard Box -->
+          <div class="ai-guard-box">
+            <div class="ai-guard-header">
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><polyline points="6.5,10.2 9,12.8 13.8,7.5"/></svg>
+              <span>AI Cashflow Guard: An toàn</span>
+            </div>
+            <div>
+              Số dư hiện tại: <strong>96.785.000 ₫</strong><br>
+              Số dư sau lệnh chi: <strong style="color: var(--color-primary);">62.270.000 ₫</strong><br>
+              Vượt ngưỡng tối thiểu an toàn (30M) • Không rủi ro thủng tiền mặt.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer-bar">
+    <a href="bo-chi-phi.html" class="btn">Hủy bỏ</a>
+    <div style="display: flex; gap: var(--space-2);">
+      <button class="btn">Lưu nháp phiếu chi</button>
+      <button class="btn">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2.5" width="10" height="5" rx="0.5"/><rect x="3" y="7.5" width="14" height="7" rx="1"/><rect x="6" y="12" width="8" height="5.5" rx="0.5"/></svg>
+        In Ủy nhiệm chi (UNC)
+      </button>
+      <a href="bo-chi-phi.html" class="btn btn-primary">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><polyline points="6.5,10.2 9,12.8 13.8,7.5"/></svg>
+        Xác Nhận & Quét VietQR
+      </a>
+    </div>
+  </footer>
+</body>
+</html>

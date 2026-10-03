@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản lý Nhân viên & Ma trận Phân quyền (RBAC) - ABC Backoffice</title>
+  <link rel="stylesheet" href="../tokens.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-family);
+      font-size: var(--font-base);
+      color: var(--color-text);
+      background-color: var(--color-bg);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Topnav bar styles matching nav-owner */
+    .top-header {
+      height: 56px;
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--space-4);
+      flex-shrink: 0;
+      z-index: 100;
+    }
+    .top-nav-left {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+    }
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      text-decoration: none;
+      color: var(--color-text);
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .brand-icon {
+      width: 28px;
+      height: 28px;
+      background: var(--color-primary);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      font-weight: 700;
+    }
+    .top-menu {
+      display: flex;
+      list-style: none;
+      gap: var(--space-1);
+    }
+    .menu-item {
+      position: relative;
+    }
+    .menu-link {
+      display: block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--color-text);
+      text-decoration: none;
+      border-radius: var(--radius);
+    }
+    .menu-item:hover .menu-link,
+    .menu-item.active .menu-link {
+      background: #f1f5f9;
+      color: var(--color-primary);
+    }
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      min-width: 200px;
+      padding: 6px 0;
+      z-index: 1000;
+    }
+    .menu-item:hover .dropdown-menu {
+      display: block;
+    }
+    .dropdown-item {
+      display: block;
+      padding: 8px 16px;
+      font-size: 13px;
+      color: var(--color-text);
+      text-decoration: none;
+    }
+    .dropdown-item:hover, .dropdown-item.active {
+      background: #f1f5f9;
+      color: var(--color-primary);
+      font-weight: 500;
+    }
+    .top-nav-right {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .role-badge {
+      font-size: 11px;
+      background: #e0e7ff;
+      color: var(--color-primary);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* Sub-header / Breadcrumb bar */
+    .page-header {
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+      padding: 12px var(--space-4);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .page-title-box {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .page-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--color-text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .page-subtitle {
+      font-size: 12px;
+      color: var(--color-text-muted);
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 500;
+      border-radius: var(--radius);
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text);
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .btn-primary {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: #fff;
+    }
+
+    /* Tabs */
+    .nav-tabs {
+      display: flex;
+      gap: 8px;
+      border-bottom: 1px solid var(--color-border);
+      background: var(--color-surface);
+      padding: 0 var(--space-4);
+      flex-shrink: 0;
+    }
+    .tab-btn {
+      padding: 10px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--color-text-muted);
+      border: none;
+      background: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .tab-btn.active {
+      color: var(--color-primary);
+      border-bottom-color: var(--color-primary);
+      font-weight: 600;
+    }
+
+    /* Content Layout */
+    .content-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--space-4);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    /* AI Insight Strip */
+    .ai-insight-strip {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #1e40af;
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+    .ai-insight-content {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    .ai-insight-link {
+      color: var(--color-primary);
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Filter Bar */
+    .filter-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-3);
+      background: var(--color-surface);
+      padding: var(--space-3);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-card);
+    }
+    .filter-inputs {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      flex: 1;
+    }
+    .search-input-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #f8fafc;
+      border: 1px solid var(--color-border);
+      padding: 6px 12px;
+      border-radius: var(--radius);
+      width: 280px;
+    }
+    .search-input-box input {
+      border: none;
+      background: transparent;
+      outline: none;
+      font-size: 13px;
+      width: 100%;
+    }
+    .select-filter {
+      padding: 6px 10px;
+      font-size: 13px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      background: var(--color-surface);
+      outline: none;
+    }
+
+    /* Table Container */
+    .table-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 13px;
+    }
+    .data-table th {
+      background: #f8fafc;
+      padding: 10px 14px;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      border-bottom: 1px solid var(--color-border);
+      font-size: 12px;
+    }
+    .data-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--color-border);
+      vertical-align: middle;
+    }
+    .data-table tr:hover td {
+      background: #fafbfc;
+    }
+
+    /* User item */
+    .user-cell {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .avatar-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #e2e8f0;
+      color: var(--color-text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 12px;
+    }
+    .user-name { font-weight: 600; color: var(--color-text); }
+    .user-meta { font-size: 12px; color: var(--color-text-muted); }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+    .badge-success { background: #dcfce7; color: var(--color-success); }
+    .badge-warning { background: #fef9c3; color: var(--color-warning); }
+    .badge-danger { background: #fee2e2; color: var(--color-danger); }
+
+    /* Security 2FA Tag */
+    .sec-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      color: #334155;
+      background: #f1f5f9;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* Pagination */
+    .pagination-bar {
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--color-border);
+      background: #fafbfc;
+      font-size: 12px;
+      color: var(--color-text-muted);
+    }
+    .pagination-controls {
+      display: flex;
+      gap: 4px;
+    }
+    .page-btn {
+      padding: 4px 8px;
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    .page-btn.active {
+      background: var(--color-primary);
+      color: #fff;
+      border-color: var(--color-primary);
+    }
+
+    /* Matrix Table */
+    .matrix-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .matrix-table th {
+      background: #f8fafc;
+      padding: 12px 14px;
+      font-weight: 600;
+      color: var(--color-text);
+      border: 1px solid var(--color-border);
+      text-align: center;
+    }
+    .matrix-table th:first-child {
+      text-align: left;
+      width: 320px;
+    }
+    .matrix-table td {
+      padding: 12px 14px;
+      border: 1px solid var(--color-border);
+      text-align: center;
+    }
+    .matrix-table td:first-child {
+      text-align: left;
+      font-weight: 500;
+    }
+    .perm-chip {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+    .perm-full { background: #dcfce7; color: var(--color-success); }
+    .perm-limit { background: #fef9c3; color: var(--color-warning); }
+    .perm-deny { background: #fee2e2; color: var(--color-danger); }
+
+    /* Security Policies Grid */
+    .policy-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-4);
+    }
+    .policy-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-4);
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .policy-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .policy-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--color-text);
+    }
+    .policy-desc {
+      font-size: 13px;
+      color: var(--color-text-muted);
+      line-height: 1.5;
+      margin-bottom: 16px;
+    }
+    .policy-setting-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-top: 1px solid #f1f5f9;
+      font-size: 13px;
+    }
+    .switch-mock {
+      width: 36px;
+      height: 20px;
+      background: var(--color-primary);
+      border-radius: 10px;
+      position: relative;
+      cursor: pointer;
+    }
+    .switch-mock::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      width: 16px;
+      height: 16px;
+      background: #fff;
+      border-radius: 50%;
+    }
+  </style>
+</head>
+<body data-screen="bo-quan-ly-nhan-vien">
+  <!-- Top Navigation Header dynamically injected by nav-owner.js -->
+  <header id="app-topnav"></header>
+
+  <!-- Sub-header -->
+  <div class="page-header">
+    <div class="page-title-box">
+      <div class="page-title">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="6" r="3.5"/><path d="M3.5 17.5a6.5 6.5 0 0 1 13 0"/></svg>
+        <span>Quản lý Nhân viên & Ma trận Phân quyền (RBAC)</span>
+      </div>
+      <div class="page-subtitle">Quản trị danh sách nhân sự, cấu hình vai trò, ma trận quyền hạn nghiệp vụ & thiết lập an ninh bảo mật</div>
+    </div>
+    <div class="header-actions">
+      <a href="sa-audit-log.html" class="btn">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="10" y1="3" x2="10" y2="12.5"/><polyline points="6,9 10,13 14,9"/><line x1="4" y1="16.5" x2="16" y2="16.5"/></svg>
+        Xuất Nhật ký Audit (.csv)
+      </a>
+      <button class="btn" onclick="switchTab('tab-matrix')">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="4" y1="6" x2="16" y2="6"/><circle cx="12" cy="6" r="1.4" fill="currentColor" stroke="none"/><line x1="4" y1="10" x2="16" y2="10"/><circle cx="7" cy="10" r="1.4" fill="currentColor" stroke="none"/><line x1="4" y1="14" x2="16" y2="14"/><circle cx="14" cy="14" r="1.4" fill="currentColor" stroke="none"/></svg>
+        Ma trận Phân quyền
+      </button>
+      <a href="bo-modal-them-nhan-vien-rbac.html" class="btn btn-primary">
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="10" y1="4" x2="10" y2="16"/><line x1="4" y1="10" x2="16" y2="10"/></svg>
+        + Thêm Nhân viên Mới
+      </a>
+    </div>
+  </div>
+
+  <!-- Navigation Tabs -->
+  <div class="nav-tabs">
+    <button class="tab-btn active" id="btn-tab-list" onclick="switchTab('tab-list')">
+      <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><line x1="10" y1="9" x2="10" y2="14"/><circle cx="10" cy="6" r="0.9" fill="currentColor" stroke="none"/></svg>
+      Danh sách Cán bộ Nhân sự (18)
+    </button>
+    <button class="tab-btn" id="btn-tab-matrix" onclick="switchTab('tab-matrix')">
+      <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="4" y1="6" x2="16" y2="6"/><circle cx="12" cy="6" r="1.4" fill="currentColor" stroke="none"/><line x1="4" y1="10" x2="16" y2="10"/><circle cx="7" cy="10" r="1.4" fill="currentColor" stroke="none"/><line x1="4" y1="14" x2="16" y2="14"/><circle cx="14" cy="14" r="1.4" fill="currentColor" stroke="none"/></svg>
+      Ma trận Phân quyền Chi tiết (Role Matrix)
+    </button>
+    <button class="tab-btn" id="btn-tab-policy" onclick="switchTab('tab-policy')">
+      <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><polyline points="6.5,10.2 9,12.8 13.8,7.5"/></svg>
+      Chính sách Giới hạn & Ngưỡng duyệt
+    </button>
+  </div>
+
+  <main class="content-area">
+    <!-- AI Insight Strip -->
+    <div class="ai-insight-strip">
+      <div class="ai-insight-content">
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="6" width="12" height="9" rx="2"/><line x1="10" y1="6" x2="10" y2="3"/><circle cx="10" cy="2.3" r="0.8" fill="currentColor" stroke="none"/><circle cx="7.3" cy="10.5" r="1" fill="currentColor" stroke="none"/><circle cx="12.7" cy="10.5" r="1" fill="currentColor" stroke="none"/></svg>
+        <span><strong>AI Copilot:</strong> Phát hiện 2 tài khoản NV-012 (Phạm Hoàng Yến) và NV-018 (Đặng Thùy Dung) có quyền áp voucher giảm giá nhưng chưa kích hoạt 2FA. Đề xuất bật bắt buộc OTP để bảo vệ doanh thu quầy.</span>
+      </div>
+      <a href="bo-ai-canh-bao-realtime.html" class="ai-insight-link">
+        <span>Xem phân tích đầy đủ</span>
+        <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="10" x2="15" y2="10"/><polyline points="11,6 15,10 11,14"/></svg>
+      </a>
+    </div>
+
+    <!-- TAB 1: DANH SÁCH NHÂN SỰ -->
+    <div id="tab-list" class="tab-content">
+      <!-- Filter Bar -->
+      <div class="filter-bar">
+        <div class="filter-inputs">
+          <div class="search-input-box">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="8.5" cy="8.5" r="5"/><line x1="12.3" y1="12.3" x2="17" y2="17"/></svg>
+            <input type="text" placeholder="Tìm theo tên, email, mã nhân viên...">
+          </div>
+          <select class="select-filter">
+            <option value="">Tất cả Vai trò</option>
+            <option value="owner">Chủ cửa hàng (Owner)</option>
+            <option value="accountant">Kế toán & Dòng tiền</option>
+            <option value="warehouse">Quản lý Kho Logistics</option>
+            <option value="cashier">Thu ngân POS</option>
+            <option value="ecom">Vận hành TMĐT</option>
+          </select>
+          <select class="select-filter">
+            <option value="">Tất cả Trạng thái</option>
+            <option value="active">Đang hoạt động</option>
+            <option value="shift">Đang trong ca</option>
+            <option value="inactive">Đã khóa / Tạm ngưng</option>
+          </select>
+        </div>
+        <div>
+          <button class="btn">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10a6 6 0 0 1 10.3-4.2"/><polyline points="14,2.5 14.3,6 10.8,5.7"/><path d="M16 10a6 6 0 0 1-10.3 4.2"/><polyline points="6,17.5 5.7,14 9.2,14.3"/></svg>
+            Làm mới
+          </button>
+        </div>
+      </div>
+
+      <!-- Employee Table -->
+      <div class="table-card" style="margin-top: var(--space-3);">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Nhân viên</th>
+              <th>Vai trò Hệ thống</th>
+              <th>Phạm vi phụ trách</th>
+              <th>Quyền Trọng yếu & Dữ liệu Khóa</th>
+              <th>Bảo mật 2FA</th>
+              <th>Trạng thái</th>
+              <th style="text-align: right;">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div class="user-cell">
+                  <div class="avatar-circle" style="background: #e0e7ff; color: var(--color-primary);">M</div>
+                  <div>
+                    <div class="user-name">Nguyễn Thị Mai</div>
+                    <div class="user-meta">mai.nguyen@maisondebloom.vn • NV-001</div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="badge badge-success">Owner / Super Admin</span></td>
+              <td>Toàn chuỗi & Tất cả điểm bán</td>
+              <td>Root Access • Xem toàn bộ P&L • Duyệt chi không giới hạn • Giải mã dữ liệu VIP</td>
+              <td><span class="sec-tag">YubiKey 5C</span></td>
+              <td><span class="badge badge-success">Online</span></td>
+              <td style="text-align: right;">
+                <button class="btn" style="padding: 4px 8px; font-size: 12px;">Cấu hình</button>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="user-cell">
+                  <div class="avatar-circle">K</div>
+                  <div>
+                    <div class="user-name">Trần Minh Khoa</div>
+                    <div class="user-meta">khoa.tran@maisondebloom.vn • NV-004</div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="badge badge-success">Kế toán Trưởng</span></td>
+              <td>Văn phòng Tổng • Bộ phận Tài chính</td>
+              <td>Toàn quyền Sổ Thu Chi, Lập UNC VietQR B2B, Xem P&L chuỗi • Hạn mức duyệt &lt; 100M</td>
+              <td><span class="sec-tag">Authenticator</span></td>
+              <td><span class="badge badge-success">Online</span></td>
+              <td style="text-align: right;">
+                <button class="btn" style="padding: 4px 8px; font-size: 12px;">Cấu hình</button>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="user-cell">
+                  <div class="avatar-circle">T</div>
+                  <div>
+                    <div class="user-name">Lê Thu Trang</div>
+                    <div class="user-meta">trang.le@maisondebloom.vn • NV-009</div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="badge badge-warning">Trưởng Kho Logistics</span></td>
+              <td>Kho Tổng Logistics Tân Bình</td>
+              <td>Quản lý PO, Nhập kho Lô FEFO, Điều chuyển kho • <span style="color: var(--color-danger);">Khóa: Ẩn giá vốn COGS & Doanh thu</span></td>
+              <td><span class="sec-tag">SMS OTP</span></td>
+              <td><span class="badge badge-success">10 phút trước</span></td>
+              <td style="text-align: right;">
+                <button class="btn" style="padding: 4px 8px; font-size: 12px;">Cấu hình</button>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="user-cell">
+                  <div class="avatar-circle">Y</div>
+                  <div>
+                    <div class="user-name">Phạm Hoàng Yến</div>
+                    <div class="user-meta">yen.pham@maisondebloom.vn • NV-012</div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="badge badge-warning">Thu ngân Lead POS</span></td>
+              <td>Showroom Flagship • Quầy POS 01-02</td>
+              <td>Tạo đơn POS, Quét VietQR, Áp Voucher &lt; 15% • <span style="color: var(--color-danger);">Khóa: Sửa giá niêm yết, Xóa hóa đơn</span></td>
+              <td><span class="sec-tag" style="color: var(--color-danger); background: #fee2e2;">Chưa bật 2FA</span></td>
+              <td><span class="badge badge-success">Đang trong ca</span></td>
+              <td style="text-align: right;">
+                <button class="btn" style="padding: 4px 8px; font-size: 12px;">Cấu hình</button>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="user-cell">
+                  <div class="avatar-circle">L</div>
+                  <div>
+                    <div class="user-name">Vũ Đức Long</div>
+                    <div class="user-meta">long.vu@maisondebloom.vn • NV-015</div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="badge badge-warning">Vận hành TMĐT</span></td>
+              <td>Gian hàng Shopee & TikTok Shop</td>
+              <td>In vận đơn hàng loạt, Đóng gói giao hàng, Đồng bộ tồn • <span style="color: var(--color-danger);">Khóa: Số dư ví sàn, Lệnh rút tiền</span></td>
+              <td><span class="sec-tag">App Auth</span></td>
+              <td><span class="badge badge-success">Online</span></td>
+              <td style="text-align: right;">
+                <button class="btn" style="padding: 4px 8px; font-size: 12px;">Cấu hình</button>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div class="user-cell">
+                  <div class="avatar-circle">D</div>
+                  <div>
+                    <div class="user-name">Đặng Thùy Dung</div>
+                    <div class="user-meta">dung.dang@maisondebloom.vn • NV-018</div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="badge badge-warning">Bán hàng Part-time</span></td>
+              <td>Showroom Flagship (Ca tối)</td>
+              <td>Mở POS bán lẻ, Tra cứu tồn quầy • <span style="color: var(--color-danger);">Khóa: Khách sỉ B2B, Công nợ, Danh sách NCC</span></td>
+              <td><span class="sec-tag" style="color: var(--color-danger); background: #fee2e2;">Chưa bật 2FA</span></td>
+              <td><span class="badge badge-warning">2 giờ trước</span></td>
+              <td style="text-align: right;">
+                <button class="btn" style="padding: 4px 8px; font-size: 12px;">Cấu hình</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="pagination-bar">
+          <div>Hiển thị 1 - 6 trên tổng số 18 nhân sự</div>
+          <div class="pagination-controls">
+            <button class="page-btn">Trước</button>
+            <button class="page-btn active">1</button>
+            <button class="page-btn">2</button>
+            <button class="page-btn">3</button>
+            <button class="page-btn">Sau</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: MA TRẬN PHÂN QUYỀN (ROLE MATRIX) -->
+    <div id="tab-matrix" class="tab-content" style="display: none;">
+      <div class="table-card">
+        <table class="matrix-table">
+          <thead>
+            <tr>
+              <th>Phân hệ Nghiệp vụ & Dữ liệu</th>
+              <th>Chủ cửa hàng (Owner)</th>
+              <th>Kế toán & Dòng tiền</th>
+              <th>Quản lý Kho</th>
+              <th>Thu ngân POS</th>
+              <th>Vận hành TMĐT</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Báo cáo Lãi Lỗ P&L & Dòng tiền ròng</td>
+              <td><span class="perm-chip perm-full">Toàn quyền</span></td>
+              <td><span class="perm-chip perm-full">Xem & Phân tích</span></td>
+              <td><span class="perm-chip perm-deny">Khóa đỏ</span></td>
+              <td><span class="perm-chip perm-deny">Khóa đỏ</span></td>
+              <td><span class="perm-chip perm-deny">Khóa đỏ</span></td>
+            </tr>
+            <tr>
+              <td>Xem Giá Vốn Hàng Nhập (COGS)</td>
+              <td><span class="perm-chip perm-full">Toàn quyền</span></td>
+              <td><span class="perm-chip perm-full">Toàn bộ SKU</span></td>
+              <td><span class="perm-chip perm-deny">Ẩn hoàn toàn</span></td>
+              <td><span class="perm-chip perm-deny">Ẩn hoàn toàn</span></td>
+              <td><span class="perm-chip perm-deny">Ẩn hoàn toàn</span></td>
+            </tr>
+            <tr>
+              <td>Duyệt Phiếu Chi & Quét VietQR B2B</td>
+              <td><span class="perm-chip perm-full">Không giới hạn</span></td>
+              <td><span class="perm-chip perm-limit">&lt; 100M VND</span></td>
+              <td><span class="perm-chip perm-limit">Tạo nháp đề xuất</span></td>
+              <td><span class="perm-chip perm-deny">Chỉ xem thu</span></td>
+              <td><span class="perm-chip perm-deny">Khóa</span></td>
+            </tr>
+            <tr>
+              <td>Nhập kho & Khởi tạo Lô Date (PO)</td>
+              <td><span class="perm-chip perm-full">Toàn quyền</span></td>
+              <td><span class="perm-chip perm-limit">Đối soát công nợ</span></td>
+              <td><span class="perm-chip perm-full">Toàn quyền thực thi</span></td>
+              <td><span class="perm-chip perm-deny">Khóa</span></td>
+              <td><span class="perm-chip perm-deny">Khóa</span></td>
+            </tr>
+            <tr>
+              <td>POS & Bán lẻ Showroom</td>
+              <td><span class="perm-chip perm-full">Có</span></td>
+              <td><span class="perm-chip perm-limit">Xem sổ cái POS</span></td>
+              <td><span class="perm-chip perm-limit">Xem xuất nhập</span></td>
+              <td><span class="perm-chip perm-full">Toàn quyền</span></td>
+              <td><span class="perm-chip perm-limit">Xem tồn showroom</span></td>
+            </tr>
+            <tr>
+              <td>Quản lý Ví Sàn (Shopee/TikTok) & Rút Tiền</td>
+              <td><span class="perm-chip perm-full">Toàn quyền (OTP)</span></td>
+              <td><span class="perm-chip perm-limit">Đối soát & Khớp ví</span></td>
+              <td><span class="perm-chip perm-deny">Khóa</span></td>
+              <td><span class="perm-chip perm-deny">Khóa</span></td>
+              <td><span class="perm-chip perm-limit">Chỉ đóng đơn sàn</span></td>
+            </tr>
+            <tr>
+              <td>AI Copilot & Mô phỏng What-If Chiến lược</td>
+              <td><span class="perm-chip perm-full">Toàn quyền dự báo</span></td>
+              <td><span class="perm-chip perm-limit">Mô phỏng Dòng tiền</span></td>
+              <td><span class="perm-chip perm-limit">Dự báo ROP & Tồn</span></td>
+              <td><span class="perm-chip perm-deny">Khóa</span></td>
+              <td><span class="perm-chip perm-limit">Gợi ý Ads & Bán chéo</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="padding: 12px var(--space-4); background: #fafbfc; border-top: 1px solid var(--color-border); display: flex; justify-content: flex-end; gap: 8px;">
+          <button class="btn">Hủy thay đổi chưa lưu</button>
+          <button class="btn btn-primary">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><polyline points="6.5,10.2 9,12.8 13.8,7.5"/></svg>
+            Lưu Cấu Hình Phân Quyền
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: CHÍNH SÁCH GIỚI HẠN & NGƯỠNG DUYỆT -->
+    <div id="tab-policy" class="tab-content" style="display: none;">
+      <div class="policy-grid">
+        <div class="policy-card">
+          <div>
+            <div class="policy-header">
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="4" y1="6" x2="16" y2="6"/><circle cx="12" cy="6" r="1.4" fill="currentColor" stroke="none"/><line x1="4" y1="10" x2="16" y2="10"/><circle cx="7" cy="10" r="1.4" fill="currentColor" stroke="none"/><line x1="4" y1="14" x2="16" y2="14"/><circle cx="14" cy="14" r="1.4" fill="currentColor" stroke="none"/></svg>
+              <div class="policy-title">Quy tắc Ngưỡng Phê duyệt Tài chính</div>
+            </div>
+            <div class="policy-desc">Tự động kích hoạt cơ chế ký duyệt 2 cấp (Dual-approval) đối với các lệnh chi tiền vượt hạn mức kế toán.</div>
+            <div class="policy-setting-row">
+              <span>Yêu cầu Owner duyệt chi &gt; 50M</span>
+              <div class="switch-mock"></div>
+            </div>
+            <div class="policy-setting-row">
+              <span>Khóa chi tiền ngoài giờ hành chính</span>
+              <div class="switch-mock"></div>
+            </div>
+          </div>
+          <button class="btn" style="margin-top: 16px;">Tùy chỉnh hạn mức</button>
+        </div>
+
+        <div class="policy-card">
+          <div>
+            <div class="policy-header">
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><polyline points="6.5,10.2 9,12.8 13.8,7.5"/></svg>
+              <div class="policy-title">Giới hạn Địa chỉ IP & Thiết bị POS</div>
+            </div>
+            <div class="policy-desc">Chỉ cho phép tài khoản Thu ngân đăng nhập và mở ca bán hàng từ các thiết bị iPad / máy POS đã đăng ký MAC Address.</div>
+            <div class="policy-setting-row">
+              <span>Bắt buộc Wi-Fi Showroom</span>
+              <div class="switch-mock"></div>
+            </div>
+            <div class="policy-setting-row">
+              <span>Chặn đăng nhập lạ từ xa</span>
+              <div class="switch-mock"></div>
+            </div>
+          </div>
+          <button class="btn" style="margin-top: 16px;">Quản lý danh sách IP</button>
+        </div>
+
+        <div class="policy-card">
+          <div>
+            <div class="policy-header">
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><line x1="10" y1="9" x2="10" y2="14"/><circle cx="10" cy="6" r="0.9" fill="currentColor" stroke="none"/></svg>
+              <div class="policy-title">Mặt nạ Dữ liệu Khách hàng (Masking)</div>
+            </div>
+            <div class="policy-desc">Ẩn 4 số cuối số điện thoại và địa chỉ nhà của khách hàng đối với tài khoản nhân viên bán lẻ hoặc kho để chống rò rỉ dữ liệu.</div>
+            <div class="policy-setting-row">
+              <span>Ẩn SĐT khách hàng VIP</span>
+              <div class="switch-mock"></div>
+            </div>
+            <div class="policy-setting-row">
+              <span>Ẩn thông tin hóa đơn quá 90 ngày</span>
+              <div class="switch-mock"></div>
+            </div>
+          </div>
+          <button class="btn" style="margin-top: 16px;">Cấu hình mặt nạ dữ liệu</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="../_shared/nav-owner.js"></script>
+  <script>
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      
+      const targetTab = document.getElementById(tabId);
+      if (targetTab) targetTab.style.display = 'block';
+
+      if (tabId === 'tab-list') document.getElementById('btn-tab-list').classList.add('active');
+      if (tabId === 'tab-matrix') document.getElementById('btn-tab-matrix').classList.add('active');
+      if (tabId === 'tab-policy') document.getElementById('btn-tab-policy').classList.add('active');
+    }
+  </script>
+</body>
+</html>

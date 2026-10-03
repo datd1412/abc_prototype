@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thanh Toán Công Nợ Hàng Loạt VietQR B2B - ABC Backoffice</title>
+  <link rel="stylesheet" href="../tokens.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-family);
+      font-size: var(--font-base);
+      color: var(--color-text);
+      background-color: var(--color-bg);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .top-header {
+      height: 56px;
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--space-4);
+      flex-shrink: 0;
+    }
+    .breadcrumb-title {
+      font-size: 15px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .breadcrumb-link {
+      color: var(--color-text-muted);
+      text-decoration: none;
+    }
+    .breadcrumb-link:hover { color: var(--color-primary); }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      border-radius: var(--radius);
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text);
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .btn-primary {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: #fff;
+    }
+
+    .content-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--space-4);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .form-sheet {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-card);
+      width: 100%;
+      max-width: 1060px;
+      padding: var(--space-5);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    .doc-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 1px solid var(--color-border);
+      padding-bottom: var(--space-3);
+    }
+    .doc-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--color-text);
+      margin-bottom: 4px;
+    }
+    .doc-meta {
+      font-size: 12px;
+      color: var(--color-text-muted);
+    }
+
+    /* Grid Layout: Left Debt Items, Right VietQR Terminal */
+    .payment-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: var(--space-4);
+    }
+
+    .debt-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+    .debt-card {
+      background: #fafbfc;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-3);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      transition: all 0.15s ease;
+    }
+    .debt-card.selected {
+      background: #fff;
+      border-color: var(--color-primary);
+      box-shadow: 0 1px 3px rgba(43, 89, 195, 0.1);
+    }
+    .debt-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .debt-partner-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--color-text);
+    }
+    .debt-meta-line {
+      font-size: 12px;
+      color: var(--color-text-muted);
+      margin-top: 2px;
+    }
+
+    .calc-strip {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1.2fr;
+      background: #f1f5f9;
+      padding: 8px 12px;
+      border-radius: var(--radius);
+      font-size: 12px;
+      align-items: center;
+    }
+    .calc-label {
+      font-size: 11px;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .calc-val {
+      font-weight: 600;
+      color: var(--color-text);
+    }
+
+    /* Total Summary Box */
+    .total-box {
+      background: #f8fafc;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-3);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 13px;
+    }
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+    }
+    .total-row.grand {
+      border-top: 1px solid var(--color-border);
+      padding-top: 8px;
+      margin-top: 4px;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--color-primary);
+    }
+
+    /* QR Terminal (Right) */
+    .qr-terminal {
+      background: #f8fafc;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-4);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-3);
+      text-align: center;
+    }
+    .qr-toggle-group {
+      display: flex;
+      background: #e2e8f0;
+      padding: 2px;
+      border-radius: var(--radius);
+      width: 100%;
+    }
+    .qr-toggle-btn {
+      flex: 1;
+      padding: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      border: none;
+      background: transparent;
+      color: var(--color-text-muted);
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    .qr-toggle-btn.active {
+      background: #fff;
+      color: var(--color-primary);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+
+    .qr-frame {
+      width: 190px;
+      height: 190px;
+      background: #fff;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      padding: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-card);
+    }
+
+    .bank-badge {
+      font-size: 12px;
+      font-weight: 700;
+      color: #1e3a8a;
+      background: #dbeafe;
+      padding: 3px 10px;
+      border-radius: 12px;
+      display: inline-block;
+    }
+
+    .syntax-box {
+      width: 100%;
+      background: #fff;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: 10px;
+      font-size: 12px;
+      text-align: left;
+      line-height: 1.6;
+    }
+    .syntax-code {
+      font-family: monospace;
+      font-weight: 700;
+      color: var(--color-primary);
+      background: #eef2ff;
+      padding: 2px 6px;
+      border-radius: 4px;
+      display: inline-block;
+      margin-top: 4px;
+      user-select: all;
+    }
+
+    .footer-bar {
+      height: 60px;
+      background: var(--color-surface);
+      border-top: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--space-4);
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+  <!-- Topbar -->
+  <header class="top-header">
+    <div class="breadcrumb-title">
+      <a href="bo-chi-phi.html" class="breadcrumb-link">Chi Phí & Công Nợ</a>
+      <span style="color: var(--color-text-muted);">/</span>
+      <span>Thanh Toán Công Nợ Hàng Loạt VietQR B2B</span>
+    </div>
+    <div class="header-actions">
+      <a href="bo-chi-phi.html" class="btn">Đóng</a>
+    </div>
+  </header>
+
+  <main class="content-area">
+    <div class="form-sheet">
+      <!-- Doc Header -->
+      <div class="doc-header">
+        <div>
+          <div class="doc-title">THANH TOÁN CÔNG NỢ ĐỐI TÁC & LẬP LỆNH VIETQR B2B HÀNG LOẠT</div>
+          <div class="doc-meta">
+            Thanh toán gộp Smart-Batch cho nhiều nhà cung cấp, áp dụng chiết khấu thanh toán sớm và giữ cọc nghiệm thu.
+          </div>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-size: 11px; color: var(--color-text-muted); text-transform: uppercase;">Số dư quỹ MB Bank</div>
+          <div style="font-size: 15px; font-weight: 700; color: var(--color-success);">184.200.000 ₫</div>
+        </div>
+      </div>
+
+      <div class="payment-grid">
+        <!-- Left: List of Debt Items -->
+        <div class="debt-list">
+          <div style="font-size: 13px; font-weight: 700; color: var(--color-text); display: flex; justify-content: space-between; align-items: center;">
+            <span>Danh sách khoản công nợ đến hạn (3 khoản chọn)</span>
+            <span style="font-size: 11px; color: var(--color-primary); font-weight: 600;">Chọn tất cả (3)</span>
+          </div>
+
+          <!-- Item 1: Klairs -->
+          <div class="debt-card selected">
+            <div class="debt-header">
+              <div style="display: flex; gap: 8px; align-items: flex-start;">
+                <input type="checkbox" checked style="margin-top: 3px;">
+                <div>
+                  <div class="debt-partner-name">Cty TNHH Mỹ phẩm Quốc tế Klairs VN</div>
+                  <div class="debt-meta-line">Mã PO: <strong>#PO-202410-088</strong> • Serum Klairs 300 chai</div>
+                </div>
+              </div>
+              <span style="padding: 2px 8px; background: #e0f2fe; color: #0284c7; font-size: 11px; font-weight: 600; border-radius: 4px;">
+                Sẵn sàng chi
+              </span>
+            </div>
+            <div class="calc-strip">
+              <div>
+                <span class="calc-label">Nợ gốc</span>
+                <div class="calc-val">35.400.000 ₫</div>
+              </div>
+              <div>
+                <span class="calc-label" style="color: var(--color-success);">CK sớm (2.5%)</span>
+                <div class="calc-val" style="color: var(--color-success);">-885.000 ₫</div>
+              </div>
+              <div style="text-align: right;">
+                <span class="calc-label" style="color: var(--color-primary);">Thực chi</span>
+                <div class="calc-val" style="font-size: 14px; color: var(--color-primary); font-weight: 700;">34.515.000 ₫</div>
+              </div>
+            </div>
+            <div style="font-size: 11px; color: var(--color-text-muted); display: flex; justify-content: space-between;">
+              <span>MB Bank • 0912834xxx • CT TNHH MP QT KLAIRS VN</span>
+              <span style="color: var(--color-success);">Khớp hóa đơn VAT</span>
+            </div>
+          </div>
+
+          <!-- Item 2: Bloom Studio -->
+          <div class="debt-card selected">
+            <div class="debt-header">
+              <div style="display: flex; gap: 8px; align-items: flex-start;">
+                <input type="checkbox" checked style="margin-top: 3px;">
+                <div>
+                  <div class="debt-partner-name">Xưởng May Thiết Kế Bloom Studio</div>
+                  <div class="debt-meta-line">Mã PO: <strong>#PO-BLAZER-02</strong> • 40 Áo Blazer Satin Nữ</div>
+                </div>
+              </div>
+              <span style="padding: 2px 8px; background: #fef9c3; color: var(--color-warning); font-size: 11px; font-weight: 600; border-radius: 4px;">
+                Cấn trừ 30%
+              </span>
+            </div>
+            <div class="calc-strip">
+              <div>
+                <span class="calc-label">Nợ gốc</span>
+                <div class="calc-val">45.000.000 ₫</div>
+              </div>
+              <div>
+                <span class="calc-label" style="color: var(--color-warning);">Giữ cọc (30%)</span>
+                <div class="calc-val" style="color: var(--color-warning);">-13.500.000 ₫</div>
+              </div>
+              <div style="text-align: right;">
+                <span class="calc-label" style="color: var(--color-primary);">Chi đợt này</span>
+                <div class="calc-val" style="font-size: 14px; color: var(--color-primary); font-weight: 700;">31.500.000 ₫</div>
+              </div>
+            </div>
+            <div style="font-size: 11px; color: var(--color-text-muted); display: flex; justify-content: space-between;">
+              <span>Techcombank • 190334812xxx • DANG HOANG YEN</span>
+              <span>Lý do: Giữ lại 30% chờ nghiệm thu đợt 2</span>
+            </div>
+          </div>
+
+          <!-- Item 3: EcoPack -->
+          <div class="debt-card selected">
+            <div class="debt-header">
+              <div style="display: flex; gap: 8px; align-items: flex-start;">
+                <input type="checkbox" checked style="margin-top: 3px;">
+                <div>
+                  <div class="debt-partner-name">Xưởng Bao Bì EcoPack Sài Gòn</div>
+                  <div class="debt-meta-line">Mã PO: <strong>#PO-ECO-102</strong> • 2.000 Túi Giấy Kraft Ép Kim</div>
+                </div>
+              </div>
+              <span style="padding: 2px 8px; background: #fee2e2; color: var(--color-danger); font-size: 11px; font-weight: 600; border-radius: 4px;">
+                Hạn chót hôm nay
+              </span>
+            </div>
+            <div class="calc-strip">
+              <div>
+                <span class="calc-label">Nợ gốc</span>
+                <div class="calc-val">7.200.000 ₫</div>
+              </div>
+              <div>
+                <span class="calc-label">Giảm trừ</span>
+                <div class="calc-val">0 ₫</div>
+              </div>
+              <div style="text-align: right;">
+                <span class="calc-label" style="color: var(--color-primary);">Thực chi 100%</span>
+                <div class="calc-val" style="font-size: 14px; color: var(--color-primary); font-weight: 700;">7.200.000 ₫</div>
+              </div>
+            </div>
+            <div style="font-size: 11px; color: var(--color-text-muted); display: flex; justify-content: space-between;">
+              <span>Vietcombank • 007100128xxx • XUONG IN ECOPACK SG</span>
+              <span style="color: var(--color-success);">Kho đã nhận đủ số lượng</span>
+            </div>
+          </div>
+
+          <!-- Summary calculation -->
+          <div class="total-box">
+            <div class="total-row"><span>Tổng công nợ gốc (3 PO):</span><strong>87.600.000 ₫</strong></div>
+            <div class="total-row" style="color: var(--color-success);">
+              <span>Chiết khấu thanh toán sớm & cấn trừ giữ lại:</span>
+              <strong>-14.385.000 ₫</strong>
+            </div>
+            <div class="total-row grand">
+              <span>TỔNG THỰC CHI GỘP (Smart-Batch):</span>
+              <span>73.215.000 ₫</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: VietQR Terminal -->
+        <div class="qr-terminal">
+          <div class="qr-toggle-group">
+            <button class="qr-toggle-btn active">Quét 1 mã gộp Smart-Batch</button>
+            <button class="qr-toggle-btn">Từng lệnh rời rạc</button>
+          </div>
+
+          <div>
+            <span class="bank-badge">MB BANK • NAPAS 247</span>
+            <div style="font-size: 12px; color: var(--color-text-muted); margin-top: 4px;">Cổng VietQR B2B Động</div>
+          </div>
+
+          <div class="qr-frame">
+            <svg width="170" height="170" viewBox="0 0 100 100" fill="none">
+              <!-- Corner Finder 1 -->
+              <rect x="5" y="5" width="26" height="26" rx="3" stroke="#2b59c3" stroke-width="3" fill="#fff"/>
+              <rect x="10" y="10" width="16" height="16" fill="#2b59c3"/>
+              <!-- Corner Finder 2 -->
+              <rect x="69" y="5" width="26" height="26" rx="3" stroke="#2b59c3" stroke-width="3" fill="#fff"/>
+              <rect x="74" y="10" width="16" height="16" fill="#2b59c3"/>
+              <!-- Corner Finder 3 -->
+              <rect x="5" y="69" width="26" height="26" rx="3" stroke="#2b59c3" stroke-width="3" fill="#fff"/>
+              <rect x="10" y="74" width="16" height="16" fill="#2b59c3"/>
+              <!-- Matrix pattern data -->
+              <rect x="36" y="8" width="5" height="5" fill="#1f2430"/>
+              <rect x="46" y="8" width="5" height="5" fill="#1f2430"/>
+              <rect x="56" y="8" width="5" height="5" fill="#1f2430"/>
+              <rect x="36" y="18" width="5" height="5" fill="#1f2430"/>
+              <rect x="46" y="24" width="8" height="5" fill="#1f2430"/>
+              <rect x="15" y="38" width="5" height="5" fill="#1f2430"/>
+              <rect x="25" y="44" width="5" height="5" fill="#1f2430"/>
+              <rect x="38" y="38" width="6" height="6" fill="#2b59c3"/>
+              <rect x="48" y="40" width="6" height="6" fill="#1f2430"/>
+              <rect x="58" y="38" width="6" height="6" fill="#2b59c3"/>
+              <rect x="68" y="44" width="5" height="5" fill="#1f2430"/>
+              <rect x="80" y="38" width="5" height="5" fill="#1f2430"/>
+              <rect x="38" y="52" width="6" height="6" fill="#1f2430"/>
+              <rect x="48" y="52" width="6" height="6" fill="#2b59c3"/>
+              <rect x="58" y="52" width="6" height="6" fill="#1f2430"/>
+              <rect x="38" y="68" width="5" height="5" fill="#1f2430"/>
+              <rect x="48" y="74" width="8" height="5" fill="#1f2430"/>
+              <rect x="60" y="68" width="5" height="5" fill="#1f2430"/>
+              <rect x="74" y="68" width="6" height="6" fill="#1f2430"/>
+              <rect x="84" y="74" width="5" height="5" fill="#1f2430"/>
+              <rect x="74" y="84" width="6" height="6" fill="#1f2430"/>
+              <rect x="84" y="84" width="5" height="5" fill="#1f2430"/>
+            </svg>
+          </div>
+
+          <div style="font-size: 20px; font-weight: 700; color: var(--color-primary);">
+            73.215.000 ₫
+          </div>
+
+          <!-- Syntax Box -->
+          <div class="syntax-box">
+            <div><strong>Tài khoản thụ hưởng:</strong> MB Bank - 8888.666.888</div>
+            <div><strong>Người nhận:</strong> CONG TY TNHH KLAIRS VN</div>
+            <div style="margin-top: 4px;">
+              <strong>Nội dung chuyển khoản chuẩn:</strong><br>
+              <span class="syntax-code">B2B ABC 73215K PO088 BLAZER02 ECO102</span>
+            </div>
+          </div>
+
+          <!-- Quick Actions on QR -->
+          <div style="display: flex; gap: var(--space-2); width: 100%;">
+            <button class="btn" style="flex: 1; font-size: 12px; justify-content: center;">
+              <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="4" y1="6" x2="16" y2="6"/><line x1="4" y1="10" x2="16" y2="10"/><line x1="4" y1="14" x2="16" y2="14"/></svg>
+              Sao chép STK & Cú pháp
+            </button>
+            <button class="btn" style="font-size: 12px; justify-content: center;">
+              <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2.5" width="10" height="5" rx="0.5"/><rect x="3" y="7.5" width="14" height="7" rx="1"/><rect x="6" y="12" width="8" height="5.5" rx="0.5"/></svg>
+              In UNC (3 bản)
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer Actions -->
+  <footer class="footer-bar">
+    <a href="bo-chi-phi.html" class="btn">Hủy bỏ / Xem lại</a>
+    <div style="display: flex; gap: var(--space-2);">
+      <button class="btn">Lưu bản nháp</button>
+      <a href="bo-chi-phi.html" class="btn btn-primary">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><polyline points="6.5,10.2 9,12.8 13.8,7.5"/></svg>
+        Đã chuyển khoản - Xác nhận & Giảm trừ sổ nợ
+      </a>
+    </div>
+  </footer>
+</body>
+</html>

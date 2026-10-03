@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BO: Báo Cáo Kết Quả Kinh Doanh & Dòng Tiền Thực Tế — ABC Copilot</title>
+  <link rel="stylesheet" href="../tokens.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    .page-container {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: var(--space-4);
+    }
+
+    /* Top Header */
+    .report-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space-3);
+      margin-bottom: var(--space-3);
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-3) var(--space-4);
+      box-shadow: var(--shadow-card);
+      flex-wrap: wrap;
+    }
+
+    .header-info {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1);
+    }
+
+    .header-title-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+    }
+
+    .header-title-row h1 {
+      font-size: var(--font-title);
+      font-weight: 700;
+      color: var(--color-text);
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .badge-report {
+      background: #eff6ff;
+      color: var(--color-primary);
+      border: 1px solid #bfdbfe;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .header-meta {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      font-size: 13px;
+      color: var(--color-text-muted);
+      flex-wrap: wrap;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: 7px 14px;
+      border-radius: var(--radius);
+      font-size: var(--font-base);
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text);
+      transition: all 0.15s ease;
+    }
+
+    .btn:hover {
+      background: #f1f3f5;
+    }
+
+    .btn-primary {
+      background: var(--color-primary);
+      color: #ffffff;
+      border-color: var(--color-primary);
+    }
+
+    .btn-primary:hover {
+      background: #2348a0;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border-color: var(--color-border);
+      color: var(--color-text);
+    }
+
+    .btn-outline:hover {
+      background: #f8fafc;
+    }
+
+    /* KPI Summary Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-3);
+      margin-bottom: var(--space-3);
+    }
+
+    .kpi-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-3) var(--space-4);
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1);
+    }
+
+    .kpi-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--color-text-muted);
+    }
+
+    .kpi-value {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--color-text);
+      line-height: 1.2;
+      font-family: monospace;
+    }
+
+    .kpi-subtext {
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: var(--color-text-muted);
+    }
+
+    .kpi-subtext.success { color: var(--color-success); font-weight: 600; }
+    .kpi-subtext.warning { color: var(--color-warning); font-weight: 600; }
+    .kpi-subtext.danger { color: var(--color-danger); font-weight: 600; }
+
+    /* AI Insight Strip */
+    .ai-insight-strip {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: var(--radius);
+      padding: var(--space-2) var(--space-3);
+      margin-bottom: var(--space-3);
+      font-size: 13px;
+      color: #1e40af;
+    }
+
+    .ai-insight-strip svg {
+      flex-shrink: 0;
+      color: var(--color-primary);
+    }
+
+    .insight-text {
+      flex: 1;
+      line-height: 1.4;
+    }
+
+    .insight-link {
+      color: var(--color-primary);
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+    }
+
+    .insight-link:hover {
+      text-decoration: underline;
+    }
+
+    /* Filter Bar */
+    .filter-panel {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-2) var(--space-3);
+      margin-bottom: var(--space-3);
+      box-shadow: var(--shadow-card);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .period-tabs, .mode-tabs {
+      display: flex;
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: 2px;
+      gap: 2px;
+    }
+
+    .tab-btn {
+      padding: 5px 12px;
+      border: none;
+      background: transparent;
+      border-radius: 4px;
+      color: var(--color-text-muted);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+
+    .tab-btn.active {
+      background: #ffffff;
+      color: var(--color-primary);
+      font-weight: 600;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+    }
+
+    /* Main 2-Column Workspace Grid */
+    .workspace-grid {
+      display: grid;
+      grid-template-columns: 1.8fr 1fr;
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+    }
+
+    /* Table Container */
+    .table-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .table-header {
+      padding: var(--space-3) var(--space-4);
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #fcfcfd;
+    }
+
+    .table-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--color-text);
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .pnl-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .pnl-table th {
+      padding: 10px 14px;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--color-border);
+      font-size: 11px;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      letter-spacing: 0.03em;
+    }
+
+    .pnl-table td {
+      padding: 11px 14px;
+      border-bottom: 1px solid var(--color-border);
+      vertical-align: middle;
+    }
+
+    .row-group-title {
+      background: #f8fafc;
+      font-weight: 700;
+      color: var(--color-text);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .row-total {
+      background: #fafafa;
+      font-weight: 700;
+      border-top: 1px solid var(--color-border);
+    }
+
+    .row-final {
+      background: #eff6ff;
+      font-weight: 700;
+      font-size: 14px;
+      border-top: 2px solid #bfdbfe;
+    }
+
+    .val-cell {
+      text-align: right;
+      font-family: monospace;
+    }
+
+    .diff-cell {
+      text-align: right;
+      font-family: monospace;
+      font-weight: 600;
+    }
+
+    /* Right Column Panels */
+    .right-panels {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .panel-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-card);
+      padding: var(--space-3) var(--space-4);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--color-border);
+      padding-bottom: var(--space-2);
+    }
+
+    .panel-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--color-text);
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    /* Channel Margins List */
+    .channel-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      font-size: 12px;
+    }
+
+    .channel-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .channel-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .channel-track {
+      height: 6px;
+      background: var(--color-border);
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+
+    .channel-bar {
+      height: 100%;
+      border-radius: 9999px;
+    }
+
+    /* Waterfall simulation bars */
+    .waterfall-flow {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 12px;
+    }
+
+    .flow-step {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: var(--radius);
+      background: #f8fafc;
+      border: 1px solid var(--color-border);
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .badge-success {
+      background: #ecfdf5;
+      color: var(--color-success);
+      border: 1px solid #a7f3d0;
+    }
+
+    .badge-warning {
+      background: #fffbeb;
+      color: var(--color-warning);
+      border: 1px solid #fde68a;
+    }
+
+    .badge-danger {
+      background: #fef2f2;
+      color: var(--color-danger);
+      border: 1px solid #fecaca;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      background: #111827;
+      color: #ffffff;
+      padding: 12px 20px;
+      border-radius: var(--radius);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      font-size: 13px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      z-index: 999;
+      transform: translateY(-20px);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+  </style>
+</head>
+<body data-screen="bo-dong-tien-detail">
+  <div class="app-container">
+    <!-- Top Navigation Header (Injected dynamically by nav-owner.js) -->
+    <header id="app-topnav"></header>
+
+    <main class="page-container">
+      <!-- Top Header -->
+      <div class="report-header">
+        <div class="header-info">
+          <div class="header-title-row">
+            <h1>
+              <span style="color: var(--color-primary); display: inline-flex; align-items: center;">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2.5" width="12" height="15" rx="1.5"/><line x1="7" y1="6.5" x2="13" y2="6.5"/><line x1="7" y1="9.5" x2="13" y2="9.5"/><line x1="7" y1="12.5" x2="10.5" y2="12.5"/></svg>
+              </span>
+              Báo Cáo Kết Quả Kinh Doanh & Dòng Tiền Thực Tế
+            </h1>
+            <span class="badge-report">Accrual vs Cashflow P&L</span>
+          </div>
+          <div class="header-meta">
+            <span>Kỳ báo cáo: <strong>Tháng 10/2024 (01/10 - 24/10/2024)</strong></span>
+            <span>•</span>
+            <span>Chuẩn đối chiếu: <strong>Hóa đơn bán vs Sổ thu chi thực tế</strong></span>
+          </div>
+        </div>
+        <div class="header-actions">
+          <a href="bo-chi-phi.html" class="btn btn-outline">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10a6 6 0 0 1 10.3-4.2"/><polyline points="14,2.5 14.3,6 10.8,5.7"/><path d="M16 10a6 6 0 0 1-10.3 4.2"/><polyline points="6,17.5 5.7,14 9.2,14.3"/></svg>
+            Mở Sổ Thu Chi
+          </a>
+          <a href="bo-ai-mo-phong.html" class="btn btn-outline">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="4" y1="6" x2="16" y2="6"/><circle cx="12" cy="6" r="1.4" fill="currentColor" stroke="none"/><line x1="4" y1="10" x2="16" y2="10"/><circle cx="7" cy="10" r="1.4" fill="currentColor" stroke="none"/><line x1="4" y1="14" x2="16" y2="14"/><circle cx="14" cy="14" r="1.4" fill="currentColor" stroke="none"/></svg>
+            + Mô phỏng What-If P&L
+          </a>
+          <button class="btn btn-primary" onclick="showToast('Đang tạo và tải bản in PDF Báo cáo P&L & Dòng tiền có dấu số...')">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="10" y1="3" x2="10" y2="12.5"/><polyline points="6,9 10,13 14,9"/><line x1="4" y1="16.5" x2="16" y2="16.5"/></svg>
+            Xuất PDF Báo Cáo
+          </button>
+        </div>
+      </div>
+
+      <!-- KPI Summary Cards -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label">Tổng Doanh Thu Hoạt Động</div>
+          <div class="kpi-value" id="kpiRevenue">348.250.000 ₫</div>
+          <div class="kpi-subtext">
+            <span>Thực thu: <strong>284.500.000 ₫</strong> (Lệch: +63.75M công nợ)</span>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Giá Vốn Hàng Bán (COGS)</div>
+          <div class="kpi-value" id="kpiCogs">182.400.000 ₫</div>
+          <div class="kpi-subtext">
+            <span>Thực chi NCC: <strong>198.850.000 ₫</strong> (Trả trước nhập hàng)</span>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Lợi Nhuận Gộp (Gross Margin)</div>
+          <div class="kpi-value" style="color: var(--color-primary);" id="kpiGross">165.850.000 ₫</div>
+          <div class="kpi-subtext success">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><polyline points="6.5,10.2 9,12.8 13.8,7.5"/></svg>
+            Biên lãi gộp: 47.6% (Đạt chuẩn ngành)
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Lãi Ròng (Net Profit) vs Dòng Tiền</div>
+          <div class="kpi-value" style="color: var(--color-success);" id="kpiNet">+46.820.000 ₫</div>
+          <div class="kpi-subtext success">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><polyline points="6.5,10.2 9,12.8 13.8,7.5"/></svg>
+            Dòng tiền thực thu ròng: +85.650.000 ₫
+          </div>
+        </div>
+      </div>
+
+      <!-- AI Insight Strip -->
+      <div class="ai-insight-strip">
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="6" width="12" height="9" rx="2"/><line x1="10" y1="6" x2="10" y2="3"/><circle cx="10" cy="2.3" r="0.8" fill="currentColor" stroke="none"/><circle cx="7.3" cy="10.5" r="1" fill="currentColor" stroke="none"/><circle cx="12.7" cy="10.5" r="1" fill="currentColor" stroke="none"/></svg>
+        <div class="insight-text">
+          <strong>Phân tích chênh lệch tài chính:</strong> Dòng tiền thực tế thặng dư cao hơn Lãi ròng dồn tích +38.83M do đã thu dứt điểm công nợ bán sỉ tháng trước. Tuy nhiên biên lãi ròng trên sàn TMĐT chỉ đạt 8.2% do chi phí marketing cao; nên ưu tiên đẩy mạnh kênh bán lẻ POS trực tiếp.
+        </div>
+        <a href="bo-ai-phan-tich.html" class="insight-link">
+          Xem phân tích chi tiết chi phí
+          <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="10" x2="15" y2="10"/><polyline points="11,6 15,10 11,14"/></svg>
+        </a>
+      </div>
+
+      <!-- Filter Panel: Period & Mode Selector -->
+      <div class="filter-panel">
+        <div class="filter-group">
+          <span style="font-size: 12px; color: var(--color-text-muted); font-weight: 500;">Kỳ báo cáo:</span>
+          <div class="period-tabs">
+            <button class="tab-btn active" onclick="setPeriod(this, 'month')">Tháng này</button>
+            <button class="tab-btn" onclick="setPeriod(this, 'q3')">Quý 3</button>
+            <button class="tab-btn" onclick="setPeriod(this, 'year')">Năm 2024</button>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <span style="font-size: 12px; color: var(--color-text-muted); font-weight: 500;">Chế độ hiển thị:</span>
+          <div class="mode-tabs">
+            <button class="tab-btn active" onclick="setMode(this, 'compare')">Đối chiếu Song song</button>
+            <button class="tab-btn" onclick="setMode(this, 'accrual')">Kế toán Dồn tích</button>
+            <button class="tab-btn" onclick="setMode(this, 'cash')">Dòng tiền Thực tế</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Workspace 2-Column Grid -->
+      <div class="workspace-grid">
+        <!-- Left: P&L & Cashflow Comparative Table -->
+        <div class="table-card">
+          <div class="table-header">
+            <h2 class="table-title">
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2.5" width="12" height="15" rx="1.5"/><line x1="7" y1="6.5" x2="13" y2="6.5"/><line x1="7" y1="9.5" x2="13" y2="9.5"/><line x1="7" y1="12.5" x2="10.5" y2="12.5"/></svg>
+              Bảng Chi Tiết Kết Quả Hoạt Động Kinh Doanh & Dòng Tiền Thực Chi
+            </h2>
+            <button class="btn btn-outline" style="font-size: 11px; padding: 3px 8px;" onclick="showToast('Đang tải file Excel dạng PivotTable...')">
+              Xuất Excel
+            </button>
+          </div>
+
+          <table class="pnl-table">
+            <thead>
+              <tr>
+                <th>Khoản mục tài chính</th>
+                <th style="text-align: right;" class="col-accrual">Dồn tích (Accrual)</th>
+                <th style="text-align: right;" class="col-cash">Thực tế (Cashflow)</th>
+                <th style="text-align: right;" class="col-diff">Chênh lệch</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- DOANH THU -->
+              <tr class="row-group-title">
+                <td colspan="4">I. Doanh Thu Bán Hàng & Cung Cấp Dịch Vụ</td>
+              </tr>
+              <tr>
+                <td>• Doanh thu bán lẻ quầy POS Showroom</td>
+                <td class="val-cell col-accrual">185.000.000 ₫</td>
+                <td class="val-cell col-cash">185.000.000 ₫</td>
+                <td class="diff-cell col-diff" style="color: var(--color-text-muted);">0 ₫ (Tiền ngay)</td>
+              </tr>
+              <tr>
+                <td>• Doanh thu bán sỉ / Đại lý B2B</td>
+                <td class="val-cell col-accrual">95.250.000 ₫</td>
+                <td class="val-cell col-cash">55.000.000 ₫</td>
+                <td class="diff-cell col-diff" style="color: var(--color-warning);">+40.250.000 ₫ (Nợ sỉ)</td>
+              </tr>
+              <tr>
+                <td>• Doanh thu kênh Online & Ví sàn TMĐT</td>
+                <td class="val-cell col-accrual">68.000.000 ₫</td>
+                <td class="val-cell col-cash">44.500.000 ₫</td>
+                <td class="diff-cell col-diff" style="color: var(--color-warning);">+23.500.000 ₫ (Chờ sàn)</td>
+              </tr>
+              <tr class="row-total">
+                <td>TỔNG DOANH THU THUẦN</td>
+                <td class="val-cell col-accrual">348.250.000 ₫</td>
+                <td class="val-cell col-cash">284.500.000 ₫</td>
+                <td class="diff-cell col-diff" style="color: var(--color-primary);">+63.750.000 ₫</td>
+              </tr>
+
+              <!-- GIÁ VỐN -->
+              <tr class="row-group-title">
+                <td colspan="4">II. Giá Vốn & Tiền Mua Hàng Nhập Kho</td>
+              </tr>
+              <tr>
+                <td>• Giá vốn hàng xuất bán COGS (Theo FIFO lô date)</td>
+                <td class="val-cell col-accrual">182.400.000 ₫</td>
+                <td class="val-cell col-cash">198.850.000 ₫</td>
+                <td class="diff-cell col-diff" style="color: var(--color-danger);">-16.450.000 ₫ (Trả trước)</td>
+              </tr>
+              <tr class="row-total">
+                <td>LỢI NHUẬN GỘP / DÒNG TIỀN GỘP</td>
+                <td class="val-cell col-accrual" style="color: var(--color-primary);">165.850.000 ₫</td>
+                <td class="val-cell col-cash" style="color: var(--color-primary);">85.650.000 ₫</td>
+                <td class="diff-cell col-diff" style="color: var(--color-primary);">+80.200.000 ₫</td>
+              </tr>
+
+              <!-- CHI PHÍ HOẠT ĐỘNG -->
+              <tr class="row-group-title">
+                <td colspan="4">III. Chi Phí Hoạt Động & Vận Hành (OPEX)</td>
+              </tr>
+              <tr>
+                <td>• Chi phí mặt bằng & điện nước showroom</td>
+                <td class="val-cell col-accrual">35.000.000 ₫</td>
+                <td class="val-cell col-cash">35.000.000 ₫</td>
+                <td class="diff-cell col-diff" style="color: var(--color-text-muted);">0 ₫ (Đã chi)</td>
+              </tr>
+              <tr>
+                <td>• Chi phí lương nhân sự quầy & hoa hồng</td>
+                <td class="val-cell col-accrual">30.000.000 ₫</td>
+                <td class="val-cell col-cash">30.000.000 ₫</td>
+                <td class="diff-cell col-diff" style="color: var(--color-text-muted);">0 ₫ (Đã chi)</td>
+              </tr>
+              <tr>
+                <td>• Chi phí Marketing & Quảng cáo Ads</td>
+                <td class="val-cell col-accrual">35.000.000 ₫</td>
+                <td class="val-cell col-cash">35.000.000 ₫</td>
+                <td class="diff-cell col-diff" style="color: var(--color-text-muted);">0 ₫ (Đã chi)</td>
+              </tr>
+              <tr>
+                <td>• Thu hồi công nợ các tháng trước (Cash inflow)</td>
+                <td class="val-cell col-accrual">0 ₫</td>
+                <td class="val-cell col-cash" style="color: var(--color-success);">+100.000.000 ₫</td>
+                <td class="diff-cell col-diff" style="color: var(--color-success);">+100.000.000 ₫</td>
+              </tr>
+
+              <!-- KẾT QUẢ CUỐI CÙNG -->
+              <tr class="row-final">
+                <td>LÃI RÒNG / DÒNG TIỀN THUẦN TÍCH LŨY</td>
+                <td class="val-cell col-accrual" style="color: var(--color-success);">+46.820.000 ₫</td>
+                <td class="val-cell col-cash" style="color: var(--color-success);">+85.650.000 ₫</td>
+                <td class="diff-cell col-diff" style="color: var(--color-success);">+38.830.000 ₫</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Right Column: Flow Breakdown & Recommendations -->
+        <div class="right-panels">
+          <!-- Flow Step Breakdown -->
+          <div class="panel-card">
+            <div class="panel-header">
+              <h2 class="panel-title">
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10a6 6 0 0 1 10.3-4.2"/><polyline points="14,2.5 14.3,6 10.8,5.7"/><path d="M16 10a6 6 0 0 1-10.3 4.2"/><polyline points="6,17.5 5.7,14 9.2,14.3"/></svg>
+                Phân Rã Dòng Giá Trị P&L (Waterfall)
+              </h2>
+            </div>
+            <div class="waterfall-flow">
+              <div class="flow-step">
+                <span>Doanh thu dồn tích (Accrual)</span>
+                <strong>348.25M</strong>
+              </div>
+              <div class="flow-step" style="color: var(--color-danger);">
+                <span>- Giá vốn hàng bán (COGS)</span>
+                <strong>-182.40M</strong>
+              </div>
+              <div class="flow-step">
+                <span>= Lợi nhuận gộp (47.6%)</span>
+                <strong style="color: var(--color-primary);">165.85M</strong>
+              </div>
+              <div class="flow-step" style="color: var(--color-danger);">
+                <span>- Chi phí OPEX & Marketing</span>
+                <strong>-100.00M</strong>
+              </div>
+              <div class="flow-step" style="background: #eff6ff; border-color: #bfdbfe;">
+                <span>= Lãi ròng sổ sách tháng 10</span>
+                <strong style="color: var(--color-success);">+46.82M</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Channel Net Margin -->
+          <div class="panel-card">
+            <div class="panel-header">
+              <h2 class="panel-title">
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="10" cy="10" r="7.5"/><line x1="10" y1="9" x2="10" y2="14"/><circle cx="10" cy="6" r="0.9" fill="currentColor" stroke="none"/></svg>
+                Biên Lãi Thuần Theo Kênh Bán
+              </h2>
+            </div>
+            <div class="channel-list">
+              <div class="channel-item">
+                <div class="channel-row">
+                  <span>Bán lẻ POS Showroom</span>
+                  <strong style="color: var(--color-success);">38.2% Lãi ròng</strong>
+                </div>
+                <div class="channel-track">
+                  <div class="channel-bar" style="width: 78%; background: var(--color-success);"></div>
+                </div>
+              </div>
+
+              <div class="channel-item">
+                <div class="channel-row">
+                  <span>Bán sỉ & Đại lý B2B</span>
+                  <strong>18.6% Lãi ròng</strong>
+                </div>
+                <div class="channel-track">
+                  <div class="channel-bar" style="width: 48%; background: var(--color-primary);"></div>
+                </div>
+              </div>
+
+              <div class="channel-item">
+                <div class="channel-row">
+                  <span>Kênh Website Online</span>
+                  <strong>14.5% Lãi ròng</strong>
+                </div>
+                <div class="channel-track">
+                  <div class="channel-bar" style="width: 38%; background: #64748b;"></div>
+                </div>
+              </div>
+
+              <div class="channel-item">
+                <div class="channel-row">
+                  <span>Sàn TMĐT (Shopee/TikTok)</span>
+                  <strong style="color: var(--color-warning);">8.2% (Bị xói mòn)</strong>
+                </div>
+                <div class="channel-track">
+                  <div class="channel-bar" style="width: 20%; background: var(--color-warning);"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- AI Financial Copilot Actions -->
+          <div class="panel-card" style="background: #eff6ff; border-color: #bfdbfe;">
+            <div class="panel-header" style="border-color: #bfdbfe;">
+              <h2 class="panel-title" style="color: #1e3a8a;">
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="6" width="12" height="9" rx="2"/><line x1="10" y1="6" x2="10" y2="3"/><circle cx="10" cy="2.3" r="0.8" fill="currentColor" stroke="none"/><circle cx="7.3" cy="10.5" r="1" fill="currentColor" stroke="none"/><circle cx="12.7" cy="10.5" r="1" fill="currentColor" stroke="none"/></svg>
+                AI Financial Copilot Đề Xuất
+              </h2>
+            </div>
+            <div style="font-size: 13px; color: #1e40af; line-height: 1.5;">
+              Cắt giảm 15% ngân sách quảng cáo kém hiệu quả trên sàn để tăng ngay <strong>+15.200.000 ₫</strong> vào lợi nhuận ròng Tháng 11.
+            </div>
+            <div style="display: flex; flex-direction: column; gap: var(--space-2); margin-top: var(--space-2);">
+              <a href="bo-ai-mo-phong.html" class="btn btn-primary" style="justify-content: center;">
+                + Mô Phỏng P&L Tháng 11
+              </a>
+              <button class="btn btn-outline" style="background: #ffffff; justify-content: center;" onclick="showToast('Đã lưu kịch bản tối ưu chi phí vào Sổ tay Giám đốc.')">
+                Lưu Kịch Bản Tối Ưu Chi Phí
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast">
+    <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="#22c55e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><polyline points="6.5,10.2 9,12.8 13.8,7.5"/></svg>
+    <span id="toastMsg">Thao tác thành công</span>
+  </div>
+
+  <script src="../_shared/nav-owner.js"></script>
+  <script>
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toastMsg');
+      toastMsg.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3500);
+    }
+
+    function setPeriod(btn, p) {
+      document.querySelectorAll('.period-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      showToast('Đã chuyển kỳ báo cáo: ' + btn.textContent);
+    }
+
+    function setMode(btn, mode) {
+      document.querySelectorAll('.mode-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const colAccrual = document.querySelectorAll('.col-accrual');
+      const colCash = document.querySelectorAll('.col-cash');
+      const colDiff = document.querySelectorAll('.col-diff');
+
+      if (mode === 'accrual') {
+        colAccrual.forEach(c => c.style.display = '');
+        colCash.forEach(c => c.style.display = 'none');
+        colDiff.forEach(c => c.style.display = 'none');
+      } else if (mode === 'cash') {
+        colAccrual.forEach(c => c.style.display = 'none');
+        colCash.forEach(c => c.style.display = '');
+        colDiff.forEach(c => c.style.display = 'none');
+      } else {
+        colAccrual.forEach(c => c.style.display = '');
+        colCash.forEach(c => c.style.display = '');
+        colDiff.forEach(c => c.style.display = '');
+      }
+      showToast('Chế độ hiển thị: ' + btn.textContent);
+    }
+  </script>
+</body>
+</html>

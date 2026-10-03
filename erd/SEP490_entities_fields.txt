@@ -1,0 +1,336 @@
+DANH SÁCH ENTITY VÀ FIELD - SEP490
+Nguồn: SEP490 (1) (1).drawio
+
+Trang: ERD(Deprecated, see v2 instead)
+
+01. users
+    - id
+    - email
+    - passwordHash
+    - avatarUrl
+    - fullName
+    - systemRole
+    - status
+    - createdAt
+    - updatedAt
+
+02. businesses
+    - id
+    - name
+    - businessType
+    - description
+    - currency
+    - taxCode
+    - status
+    - createdBy
+    - createdAt
+    - updatedAt
+
+03. business_members
+    - id
+    - businessId
+    - userId
+    - role
+    - status
+    - permissions
+    - createdAt
+    - updatedAt
+
+04. business_settings
+    - id
+    - businessId
+    - timezone
+    - lowStockDefault
+    - lowStockAlert
+    - aiEnabled
+    - settings
+    - createdAt
+    - updatedAt
+
+05. categories
+    - id
+    - businessId
+    - name
+    - description
+    - status
+    - createdAt
+    - updatedAt
+
+06. products
+    - id
+    - categoryId
+    - businessId
+    - name
+    - sku
+    - description
+    - productType
+    - status
+    - createdAt
+    - updatedAt
+
+07. product_variants
+    - productId
+    - id
+    - name
+    - sku
+    - sellingPrice
+    - costPrice
+    - attributes
+    - status
+    - createdAt
+    - updatedAt
+
+08. suppliers
+    - id
+    - businessId
+    - name
+    - contactName
+    - email
+    - phone
+    - address
+    - metadata
+    - status
+    - createdAt
+    - updatedAt
+
+09. inventory
+    - id
+    - businessId
+    - variantId
+    - quantity
+    - reservedQty
+    - lowStockThreshold
+    - createdAt
+    - updatedAt
+
+10. inventory_batches
+    - id
+    - inventoryId
+    - variantId
+    - supplierId
+    - batchNumber
+    - quantity
+    - remainingQuantity
+    - unitCost
+    - manufactureDate
+    - receivedAt
+    - expiresAt
+
+11. inventory_transactions
+    - id
+    - businessId
+    - variantId
+    - batchId
+    - type
+    - quantity
+    - beforeQuantity
+    - afterQuantity
+    - unitCost
+    - referenceType
+    - referenceId?
+    - reason
+    - metadata
+    - createdBy
+    - createdAt
+
+12. customers
+    - id
+    - businessId
+    - name
+    - email
+    - phone
+    - metadata
+    - createdAt
+    - updatedAt
+
+13. orders
+    - customerId
+    - businessId
+    - id
+    - createdById
+    - orderNumber
+    - status
+    - subtotal
+    - discount
+    - tax
+    - total
+    - cancellationReason
+    - createdAt
+    - updatedAt
+
+14. order_items
+    - id
+    - variantId
+    - orderId
+    - productNameSnapshot
+    - skuSnapshot
+    - quantity
+    - unitPrice
+    - unitCost
+    - discount
+    - subtotal
+
+15. payments
+    - id
+    - orderId
+    - amount
+    - method
+    - status
+    - transactionCode
+    - paidAt
+    - createdAt
+
+16. expense_categories
+    - id
+    - businessId
+    - name
+    - description
+    - status
+    - createdAt
+    - updatedAt
+
+17. expenses
+    - id
+    - businessId
+    - expenseCategoryId
+    - createdBy
+    - amount
+    - description
+    - metadata
+    - title
+    - expenseDate
+    - createdAt
+    - updatedAt
+
+18. ai_conversations
+    - id
+    - businessId
+    - userId
+    - title
+    - status
+    - createdAt
+    - updatedAt
+
+19. ai_messages
+    - id
+    - conversationId
+    - role
+    - content
+    - metadata
+    - createdAt
+
+20. ai_tool_executions
+    - id
+    - businessId
+    - conversationId
+    - messageId
+    - userId
+    - toolName
+    - arguments
+    - result
+    - success
+    - error
+    - executionTimeMs
+    - createdAt
+
+21. simulations
+    - id
+    - businessId
+    - createdById
+    - name
+    - type
+    - description
+    - status
+    - parameters
+    - baselineSnapshot
+    - scenarioInput
+    - createdAt
+    - updatedAt
+
+22. simulation_results
+    - id
+    - simulationId
+    - metricName
+    - projectedValue
+    - unit
+    - baselineValue
+    - difference
+    - differencePercent
+    - data
+    - createdAt
+
+23. forecast_runs
+    - businessId
+    - createdById
+    - forecastType
+    - id
+    - modelName
+    - modelVersion
+    - horizonDays
+    - inputPeriodStart
+    - inputPeriodEnd
+    - forecastStart
+    - forecastEnd
+    - parameters
+    - status
+    - errorMessage
+    - createdAt
+    - completedAt
+
+24. forecast_results
+    - id
+    - forecastRunId
+    - productId
+    - variantId
+    - forecastDate
+    - metricType
+    - predictedValue
+    - lowerBound
+    - upperBound
+    - confidence
+    - unit
+    - metadata
+    - createdAt
+
+25. notifications
+    - id
+    - businessId
+    - userId
+    - type
+    - title
+    - message
+    - data
+    - isRead
+    - createdAt
+
+26. audit_logs
+    - id
+    - userId
+    - businessId
+    - action
+    - entityType
+    - entityId?
+    - oldData
+    - newData
+    - metadata
+    - createdAt
+
+27. ai_insights
+    - id
+    - createdById
+    - businessId
+    - type
+    - severity
+    - title
+    - summary
+    - description
+    - data
+    - evidence
+    - recommendation
+    - confidence
+    - isRead
+    - createdAt
+    - expiresAt
+
+Tổng cộng: 27 entity, 275 field.
+Ghi chú: Sơ đồ không ghi kiểu dữ liệu cho các field. File được gửi chỉ có trang "ERD(Deprecated, see v2 instead)"; không có trang v2.

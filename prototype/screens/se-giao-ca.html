@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SE-03: Giao Ca, Kiểm Tiền Két & Kết Sổ Doanh Thu — ABC Copilot</title>
+  <link rel="stylesheet" href="../tokens.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    .page-container {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: var(--space-4);
+      padding-bottom: 90px;
+    }
+
+    /* Session Header */
+    .session-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space-3);
+      margin-bottom: var(--space-3);
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-3) var(--space-4);
+      box-shadow: var(--shadow-card);
+      flex-wrap: wrap;
+    }
+
+    .session-info {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1);
+    }
+
+    .session-title-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+    }
+
+    .session-title-row h1 {
+      font-size: var(--font-title);
+      font-weight: 700;
+      color: var(--color-text);
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .badge-session {
+      background: #eff6ff;
+      color: var(--color-primary);
+      border: 1px solid #bfdbfe;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: monospace;
+    }
+
+    .session-meta {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      font-size: 13px;
+      color: var(--color-text-muted);
+      flex-wrap: wrap;
+    }
+
+    .session-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: 7px 14px;
+      border-radius: var(--radius);
+      font-size: var(--font-base);
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text);
+      transition: all 0.15s ease;
+    }
+
+    .btn:hover {
+      background: #f1f3f5;
+    }
+
+    .btn-primary {
+      background: var(--color-primary);
+      color: #ffffff;
+      border-color: var(--color-primary);
+    }
+
+    .btn-primary:hover {
+      background: #2348a0;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border-color: var(--color-border);
+      color: var(--color-text);
+    }
+
+    .btn-outline:hover {
+      background: #f8fafc;
+    }
+
+    /* KPI Summary Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-3);
+      margin-bottom: var(--space-3);
+    }
+
+    .kpi-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-3) var(--space-4);
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1);
+    }
+
+    .kpi-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--color-text-muted);
+    }
+
+    .kpi-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--color-text);
+      line-height: 1.2;
+    }
+
+    .kpi-subtext {
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: var(--color-text-muted);
+    }
+
+    .kpi-subtext.success { color: var(--color-success); font-weight: 600; }
+    .kpi-subtext.warning { color: var(--color-warning); font-weight: 600; }
+    .kpi-subtext.danger { color: var(--color-danger); font-weight: 600; }
+
+    /* AI Insight Strip */
+    .ai-insight-strip {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: var(--radius);
+      padding: var(--space-2) var(--space-3);
+      margin-bottom: var(--space-3);
+      font-size: 13px;
+      color: #1e40af;
+    }
+
+    .ai-insight-strip svg {
+      flex-shrink: 0;
+      color: var(--color-primary);
+    }
+
+    .insight-text {
+      flex: 1;
+      line-height: 1.4;
+    }
+
+    .insight-link {
+      color: var(--color-primary);
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+    }
+
+    .insight-link:hover {
+      text-decoration: underline;
+    }
+
+    /* Main 2-Column Workspace Grid */
+    .workspace-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+    }
+
+    .panel-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-card);
+      padding: var(--space-3) var(--space-4);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--color-border);
+      padding-bottom: var(--space-2);
+    }
+
+    .panel-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--color-text);
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    /* Cash Counter Table */
+    .denom-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .denom-table th {
+      padding: 8px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .denom-table td {
+      padding: 10px;
+      border-bottom: 1px solid var(--color-border);
+      vertical-align: middle;
+    }
+
+    .denom-label {
+      font-weight: 700;
+      font-family: monospace;
+      font-size: 14px;
+      color: var(--color-text);
+    }
+
+    /* Qty Stepper */
+    .qty-stepper {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      background: var(--color-bg);
+      overflow: hidden;
+    }
+
+    .btn-step {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: var(--color-text);
+      transition: background 0.1s;
+    }
+
+    .btn-step:hover {
+      background: #e5e7eb;
+    }
+
+    .qty-input {
+      width: 48px;
+      height: 28px;
+      border: none;
+      border-left: 1px solid var(--color-border);
+      border-right: 1px solid var(--color-border);
+      text-align: center;
+      font-weight: 700;
+      font-size: 13px;
+      font-family: inherit;
+      background: #ffffff;
+      color: var(--color-text);
+    }
+
+    .denom-subtotal {
+      text-align: right;
+      font-family: monospace;
+      font-weight: 700;
+      color: var(--color-text);
+    }
+
+    /* Cash Allocation Summary Box */
+    .cash-allocation-box {
+      background: #f8fafc;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-3);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      font-size: 13px;
+    }
+
+    .alloc-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .alloc-row.highlight {
+      border-top: 1px dashed var(--color-border);
+      padding-top: var(--space-2);
+      font-size: 14px;
+    }
+
+    /* Right column panels */
+    .right-panels {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    /* Payment Gateway list */
+    .gateway-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .gateway-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--space-2) var(--space-3);
+      background: #f8fafc;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      font-size: 13px;
+    }
+
+    .gateway-name {
+      font-weight: 600;
+      color: var(--color-text);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Expense Mini Table */
+    .expense-mini-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    .expense-mini-table th {
+      text-align: left;
+      padding: 6px 8px;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--color-border);
+      color: var(--color-text-muted);
+      font-size: 11px;
+    }
+
+    .expense-mini-table td {
+      padding: 8px;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    /* Sign-off boxes */
+    .signoff-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-2);
+    }
+
+    .signoff-box {
+      border: 1px dashed var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-2);
+      text-align: center;
+      background: #fafafa;
+    }
+
+    .signoff-role {
+      font-size: 11px;
+      text-transform: uppercase;
+      color: var(--color-text-muted);
+      font-weight: 600;
+    }
+
+    .signoff-name {
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--color-text);
+      margin: 2px 0 6px 0;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .badge-success {
+      background: #ecfdf5;
+      color: var(--color-success);
+      border: 1px solid #a7f3d0;
+    }
+
+    .badge-warning {
+      background: #fffbeb;
+      color: var(--color-warning);
+      border: 1px solid #fde68a;
+    }
+
+    .badge-danger {
+      background: #fef2f2;
+      color: var(--color-danger);
+      border: 1px solid #fecaca;
+    }
+
+    /* Sticky Bottom Execution Bar */
+    .sticky-execution-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 64px;
+      background: var(--color-surface);
+      border-top: 1px solid var(--color-border);
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--space-4);
+      z-index: 100;
+    }
+
+    .bar-stats {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      font-size: 13px;
+    }
+
+    .bar-stat {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .bar-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .btn-lg {
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      background: #111827;
+      color: #ffffff;
+      padding: 12px 20px;
+      border-radius: var(--radius);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      font-size: 13px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      z-index: 999;
+      transform: translateY(-20px);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+  </style>
+</head>
+<body data-screen="se-giao-ca">
+  <div class="app-container">
+    <!-- Top Navigation Header (Injected dynamically by nav-employee.js) -->
+    <header id="app-topnav"></header>
+
+    <main class="page-container">
+      <!-- Session Header -->
+      <div class="session-header">
+        <div class="session-info">
+          <div class="session-title-row">
+            <h1>
+              <span style="color: var(--color-primary); display: inline-flex; align-items: center;">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2.5" width="12" height="15" rx="1.5"/><line x1="7" y1="6.5" x2="13" y2="6.5"/><line x1="7" y1="9.5" x2="13" y2="9.5"/><line x1="7" y1="12.5" x2="10.5" y2="12.5"/></svg>
+              </span>
+              Giao Ca, Kiểm Tiền Két & Kết Sổ Doanh Thu
+            </h1>
+            <span class="badge-session">#SFT-20241024-AM</span>
+            <span class="badge badge-warning">Đang kết ca</span>
+          </div>
+          <div class="session-meta">
+            <span>Ca trực: <strong>Ca Sáng (08:00 - 16:00, 24/10/2024)</strong></span>
+            <span>•</span>
+            <span>Thu ngân giao: <strong>Nguyễn Thị Mai (#02)</strong></span>
+            <span>•</span>
+            <span>Thu ngân nhận: <strong>Lê Văn Nam (#01)</strong></span>
+            <span>•</span>
+            <span>Quản lý ca: <strong>Trần Thu Hà (Store Manager)</strong></span>
+          </div>
+        </div>
+        <div class="session-actions">
+          <button class="btn btn-outline" onclick="showToast('Đang tạo bản in kết ca tạm tính...')">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2.5" width="10" height="5" rx="0.5"/><rect x="3" y="7.5" width="14" height="7" rx="1"/><rect x="6" y="12" width="8" height="5.5" rx="0.5"/></svg>
+            In Tạm [F7]
+          </button>
+          <button class="btn btn-outline" onclick="reportDiscrepancy()">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3 L18 17 L2 17 Z"/><line x1="10" y1="8.5" x2="10" y2="12.5"/><circle cx="10" cy="14.5" r="0.9" fill="currentColor" stroke="none"/></svg>
+            Báo Sai Lệch [F11]
+          </button>
+          <button class="btn btn-outline" onclick="showToast('Tải biên bản bàn giao điện tử #SFT-20241024-AM...')">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="10" y1="3" x2="10" y2="12.5"/><polyline points="6,9 10,13 14,9"/><line x1="4" y1="16.5" x2="16" y2="16.5"/></svg>
+            In Biên Bản [F8]
+          </button>
+        </div>
+      </div>
+
+      <!-- KPI Summary Cards -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label">Tổng Doanh Thu Ca Trực</div>
+          <div class="kpi-value">24.850.000 ₫</div>
+          <div class="kpi-subtext success">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><polyline points="6.5,10.2 9,12.8 13.8,7.5"/></svg>
+            36 giao dịch thành công (0 hủy/trả)
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Doanh Thu Không Tiền Mặt</div>
+          <div class="kpi-value">18.650.000 ₫</div>
+          <div class="kpi-subtext">
+            <span>VietQR: 14.25M • Thẻ/Ví: 4.4M</span>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Tiền Mặt Theo Sổ Sách</div>
+          <div class="kpi-value" id="kpiBookCash">6.200.000 ₫</div>
+          <div class="kpi-subtext">
+            <span>Đầu ca 2.0M + Thu 4.5M - Chi 300K</span>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Tiền Két Thực Đếm & Chênh Lệch</div>
+          <div class="kpi-value" id="kpiActualCash">6.220.000 ₫</div>
+          <div class="kpi-subtext success" id="kpiDiffBadge">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><polyline points="6.5,10.2 9,12.8 13.8,7.5"/></svg>
+            Chênh lệch: +20.000 ₫ (Tiền tip lẻ)
+          </div>
+        </div>
+      </div>
+
+      <!-- AI Insight Strip -->
+      <div class="ai-insight-strip">
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="6" width="12" height="9" rx="2"/><line x1="10" y1="6" x2="10" y2="3"/><circle cx="10" cy="2.3" r="0.8" fill="currentColor" stroke="none"/><circle cx="7.3" cy="10.5" r="1" fill="currentColor" stroke="none"/><circle cx="12.7" cy="10.5" r="1" fill="currentColor" stroke="none"/></svg>
+        <div class="insight-text">
+          <strong>Ghi chú kết ca Copilot:</strong> Ca sáng hoàn thành 36 đơn hàng thuận lợi. Số dư thực tế trong két thừa +20.000 ₫ khớp với tiền tip khách lẻ đơn #POS-0938. Khoản chi phụ trợ trong ca 300.000 ₫ đã có đủ 02 phiếu ký duyệt. Quỹ bàn giao ca tối giữ nguyên 2.000.000 ₫.
+        </div>
+        <a href="bo-ai-phan-tich.html" class="insight-link">
+          Xem báo cáo ca
+          <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="10" x2="15" y2="10"/><polyline points="11,6 15,10 11,14"/></svg>
+        </a>
+      </div>
+
+      <!-- Main Workspace 2-Column Grid -->
+      <div class="workspace-grid">
+        <!-- Left Column: Cash Denominations Counter & Settlement -->
+        <div class="panel-card">
+          <div class="panel-header">
+            <h2 class="panel-title">
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2.5" width="12" height="15" rx="1.5"/><line x1="7" y1="6.5" x2="13" y2="6.5"/><line x1="7" y1="9.5" x2="13" y2="9.5"/><line x1="7" y1="12.5" x2="10.5" y2="12.5"/></svg>
+              Kiểm Đếm Từng Mệnh Giá Tiền Két
+            </h2>
+            <button class="btn btn-outline" style="font-size: 12px; padding: 4px 8px;" onclick="syncWithBook()">
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10a6 6 0 0 1 10.3-4.2"/><polyline points="14,2.5 14.3,6 10.8,5.7"/><path d="M16 10a6 6 0 0 1-10.3 4.2"/><polyline points="6,17.5 5.7,14 9.2,14.3"/></svg>
+              Đồng bộ theo sổ sách
+            </button>
+          </div>
+
+          <table class="denom-table" id="denomTable">
+            <thead>
+              <tr>
+                <th>Mệnh giá</th>
+                <th style="text-align: center;">Số lượng (Tờ)</th>
+                <th style="text-align: right;">Thành tiền</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-val="500000">
+                <td><span class="denom-label">500.000 ₫</span></td>
+                <td style="text-align: center;">
+                  <div class="qty-stepper">
+                    <button class="btn-step" onclick="changeDenom(this, -1)">
+                      <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="4" y1="10" x2="16" y2="10"/></svg>
+                    </button>
+                    <input type="text" class="qty-input" value="6" onchange="updateDenom(this)">
+                    <button class="btn-step" onclick="changeDenom(this, 1)">
+                      <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="10" y1="4" x2="10" y2="16"/><line x1="4" y1="10" x2="16" y2="10"/></svg>
+                    </button>
+                  </div>
+                </td>
+                <td class="denom-subtotal">3.000.000 ₫</td>
+              </tr>
+              <tr data-val="200000">
+                <td><span class="denom-label">200.000 ₫</span></td>
+                <td style="text-align: center;">
+                  <div class="qty-stepper">
+                    <button class="btn-step" onclick="changeDenom(this, -1)">
+                      <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="4" y1="10" x2="16" y2="10"/></svg>
+                    </button>
+                    <input type="text" class="qty-input" value="8" onchange="updateDenom(this)">
+                    <button class="btn-step" onclick="changeDenom(this, 1)">
+                      <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="10" y1="4" x2="10" y2="16"/><line x1="4" y1="10" x2="16" y2="10"/></svg>
+                    </button>
+                  </div>
+                </td>
+                <td class="denom-subtotal">1.600.000 ₫</td>
+              </tr>
+              <tr data-val="100000">
+                <td><span class="denom-label">100.000 ₫</span></td>
+                <td style="text-align: center;">
+                  <div class="qty-stepper">
+                    <button class="btn-step" onclick="changeDenom(this, -1)">
+                      <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="4" y1="10" x2="16" y2="10"/></svg>
+                    </button>
+                    <input type="text" class="qty-input" value="10" onchange="updateDenom(this)">
+                    <button class="btn-step" onclick="changeDenom(this, 1)">
+                      <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="10" y1="4" x2="10" y2="16"/><line x1="4" y1="10" x2="16" y2="10"/></svg>
+                    </button>
+                  </div>
+                </td>
+                <td class="denom-subtotal">1.000.000 ₫</td>
+              </tr>
+              <tr data-val="50000">
+                <td><span class="denom-label">50.000 ₫</span></td>
+                <td style="text-align: center;">
+                  <div class="qty-stepper">
+                    <button class="btn-step" onclick="changeDenom(this, -1)">
+                      <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="4" y1="10" x2="16" y2="10"/></svg>
+                    </button>
+                    <input type="text" class="qty-input" value="6" onchange="updateDenom(this)">
+                    <button class="btn-step" onclick="changeDenom(this, 1)">
+                      <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="10" y1="4" x2="10" y2="16"/><line x1="4" y1="10" x2="16" y2="10"/></svg>
+                    </button>
+                  </div>
+                </td>
+                <td class="denom-subtotal">300.000 ₫</td>
+              </tr>
+              <tr data-val="20000">
+                <td><span class="denom-label">20.000 ₫</span></td>
+                <td style="text-align: center;">
+                  <div class="qty-stepper">
+                    <button class="btn-step" onclick="changeDenom(this, -1)">
+                      <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="4" y1="10" x2="16" y2="10"/></svg>
+                    </button>
+                    <input type="text" class="qty-input" value="10" onchange="updateDenom(this)">
+                    <button class="btn-step" onclick="changeDenom(this, 1)">
+                      <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="10" y1="4" x2="10" y2="16"/><line x1="4" y1="10" x2="16" y2="10"/></svg>
+                    </button>
+                  </div>
+                </td>
+                <td class="denom-subtotal">200.000 ₫</td>
+              </tr>
+              <tr data-val="10000">
+                <td><span class="denom-label">10.000 ₫</span></td>
+                <td style="text-align: center;">
+                  <div class="qty-stepper">
+                    <button class="btn-step" onclick="changeDenom(this, -1)">
+                      <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="4" y1="10" x2="16" y2="10"/></svg>
+                    </button>
+                    <input type="text" class="qty-input" value="8" onchange="updateDenom(this)">
+                    <button class="btn-step" onclick="changeDenom(this, 1)">
+                      <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="10" y1="4" x2="10" y2="16"/><line x1="4" y1="10" x2="16" y2="10"/></svg>
+                    </button>
+                  </div>
+                </td>
+                <td class="denom-subtotal">80.000 ₫</td>
+              </tr>
+              <tr data-val="small">
+                <td><span class="denom-label">Tiền lẻ (5.000 ₫ & 2.000 ₫)</span></td>
+                <td style="text-align: center; color: var(--color-text-muted);">Gộp tiền lẻ</td>
+                <td class="denom-subtotal" id="smallCashCell">40.000 ₫</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Cash Allocation -->
+          <div class="cash-allocation-box">
+            <div class="alloc-row">
+              <span style="color: var(--color-text-muted);">Tổng tiền mặt thực tế trong két:</span>
+              <strong style="font-family: monospace; font-size: 15px;" id="totalActualCash">6.220.000 ₫</strong>
+            </div>
+            <div class="alloc-row">
+              <span style="color: var(--color-text-muted);">Tiền để lại két ca tối (Closing Float):</span>
+              <strong style="font-family: monospace; color: var(--color-primary);" id="closingFloat">2.000.000 ₫</strong>
+            </div>
+            <div class="alloc-row highlight">
+              <span><strong>Tiền mặt nộp quản lý / két sắt (Cash Drop):</strong></span>
+              <strong style="font-family: monospace; font-size: 17px; color: var(--color-success);" id="cashDrop">4.220.000 ₫</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Digital Gateways, Cash Expenses & Signoff -->
+        <div class="right-panels">
+          <!-- Gateway Reconciliation -->
+          <div class="panel-card">
+            <div class="panel-header">
+              <h2 class="panel-title">
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2.5" width="12" height="15" rx="1.5"/><line x1="7" y1="6.5" x2="13" y2="6.5"/><line x1="7" y1="9.5" x2="13" y2="9.5"/><line x1="7" y1="12.5" x2="10.5" y2="12.5"/></svg>
+                Đối Soát Cổng Thanh Toán Số
+              </h2>
+              <span class="badge badge-success">Khớp 100%</span>
+            </div>
+            <div class="gateway-list">
+              <div class="gateway-item">
+                <div class="gateway-name">
+                  <span>VietQR Pro (Napas 247)</span>
+                  <span style="font-size: 11px; color: var(--color-text-muted);">(24 GD)</span>
+                </div>
+                <strong style="font-family: monospace;">14.250.000 ₫</strong>
+              </div>
+              <div class="gateway-item">
+                <div class="gateway-name">
+                  <span>Thẻ POS Quẹt Thẻ</span>
+                  <span style="font-size: 11px; color: var(--color-text-muted);">(05 GD)</span>
+                </div>
+                <strong style="font-family: monospace;">3.200.000 ₫</strong>
+              </div>
+              <div class="gateway-item">
+                <div class="gateway-name">
+                  <span>Ví Điện Tử MoMo</span>
+                  <span style="font-size: 11px; color: var(--color-text-muted);">(03 GD)</span>
+                </div>
+                <strong style="font-family: monospace;">1.200.000 ₫</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Cash Expenses from Drawer -->
+          <div class="panel-card">
+            <div class="panel-header">
+              <h2 class="panel-title">
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2.5" width="12" height="15" rx="1.5"/><line x1="7" y1="6.5" x2="13" y2="6.5"/><line x1="7" y1="9.5" x2="13" y2="9.5"/><line x1="7" y1="12.5" x2="10.5" y2="12.5"/></svg>
+                Nhật Ký Phiếu Chi Tại Két Trong Ca
+              </h2>
+              <span style="font-size: 12px; font-weight: 700; color: var(--color-danger);">-300.000 ₫</span>
+            </div>
+            <table class="expense-mini-table">
+              <thead>
+                <tr>
+                  <th>Nội dung chi</th>
+                  <th>Danh mục</th>
+                  <th style="text-align: right;">Số tiền</th>
+                  <th style="text-align: center;">Duyệt</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Mua giấy in bill K80 khẩn cấp</td>
+                  <td>Văn phòng phẩm</td>
+                  <td style="text-align: right; font-family: monospace; color: var(--color-danger);">-200.000 ₫</td>
+                  <td style="text-align: center;"><span class="badge badge-success">QL Hà</span></td>
+                </tr>
+                <tr>
+                  <td>Nước uống & đá lạnh quầy</td>
+                  <td>Vận hành quầy</td>
+                  <td style="text-align: right; font-family: monospace; color: var(--color-danger);">-100.000 ₫</td>
+                  <td style="text-align: center;"><span class="badge badge-success">TN Mai</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Signoff Section -->
+          <div class="panel-card">
+            <div class="panel-header">
+              <h2 class="panel-title">
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2.5" width="12" height="15" rx="1.5"/><line x1="7" y1="6.5" x2="13" y2="6.5"/><line x1="7" y1="9.5" x2="13" y2="9.5"/><line x1="7" y1="12.5" x2="10.5" y2="12.5"/></svg>
+                Ký Nhận & Bàn Giao Điện Tử
+              </h2>
+            </div>
+            <div class="signoff-grid">
+              <div class="signoff-box">
+                <div class="signoff-role">Thu ngân giao ca</div>
+                <div class="signoff-name">Nguyễn Thị Mai</div>
+                <span class="badge badge-success">
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><polyline points="6.5,10.2 9,12.8 13.8,7.5"/></svg>
+                  Đã chốt sổ
+                </span>
+              </div>
+              <div class="signoff-box">
+                <div class="signoff-role">Thu ngân nhận ca</div>
+                <div class="signoff-name">Lê Văn Nam</div>
+                <span class="badge badge-success">
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><polyline points="6.5,10.2 9,12.8 13.8,7.5"/></svg>
+                  Đã đếm két
+                </span>
+              </div>
+              <div class="signoff-box">
+                <div class="signoff-role">Quản lý duyệt</div>
+                <div class="signoff-name">Trần Thu Hà</div>
+                <span class="badge badge-warning" id="managerSignBadge">
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3 L18 17 L2 17 Z"/><line x1="10" y1="8.5" x2="10" y2="12.5"/><circle cx="10" cy="14.5" r="0.9" fill="currentColor" stroke="none"/></svg>
+                  Chờ khóa két
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Sticky Bottom Execution Bar -->
+    <div class="sticky-execution-bar">
+      <div class="bar-stats">
+        <div class="bar-stat">
+          <span style="color: var(--color-text-muted);">Mã ca:</span>
+          <strong>#SFT-20241024-AM</strong>
+        </div>
+        <div class="bar-stat">
+          <span style="color: var(--color-text-muted);">Tiền két thực có:</span>
+          <strong id="barActualCash" style="color: var(--color-text); font-family: monospace;">6.220.000 ₫</strong>
+        </div>
+        <div class="bar-stat">
+          <span style="color: var(--color-text-muted);">Nộp quản lý:</span>
+          <strong id="barCashDrop" style="color: var(--color-success); font-family: monospace; font-size: 16px;">4.220.000 ₫</strong>
+        </div>
+        <div class="bar-stat">
+          <span style="color: var(--color-text-muted);">Chênh lệch:</span>
+          <strong id="barDiff" style="color: var(--color-primary); font-family: monospace;">+20.000 ₫ (Tip lẻ)</strong>
+        </div>
+      </div>
+      <div class="bar-actions">
+        <button class="btn btn-outline" onclick="showToast('Đã lưu tạm dữ liệu giao ca.')">
+          Lưu Nháp
+        </button>
+        <button class="btn btn-outline" onclick="showToast('Đang gửi lệnh in biên bản kết ca [F8]...')">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2.5" width="10" height="5" rx="0.5"/><rect x="3" y="7.5" width="14" height="7" rx="1"/><rect x="6" y="12" width="8" height="5.5" rx="0.5"/></svg>
+          In Biên Bản [F8]
+        </button>
+        <button class="btn btn-primary btn-lg" onclick="confirmShiftHandover()">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><polyline points="6.5,10.2 9,12.8 13.8,7.5"/></svg>
+          XÁC NHẬN BÀN GIAO & KHÓA KÉT [F9]
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast">
+    <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="#22c55e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><polyline points="6.5,10.2 9,12.8 13.8,7.5"/></svg>
+    <span id="toastMsg">Thao tác thành công</span>
+  </div>
+
+  <script src="../_shared/nav-employee.js"></script>
+  <script>
+    const bookCash = 6200000;
+    const closingFloatVal = 2000000;
+    const smallCashVal = 40000;
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toastMsg');
+      toastMsg.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3500);
+    }
+
+    // Hotkey listener
+    window.addEventListener('keydown', function(e) {
+      if (e.key === 'F7') {
+        e.preventDefault();
+        showToast('Đang tạo bản in kết ca tạm tính [F7]...');
+      } else if (e.key === 'F8') {
+        e.preventDefault();
+        showToast('Đang gửi lệnh in biên bản kết ca [F8]...');
+      } else if (e.key === 'F9') {
+        e.preventDefault();
+        confirmShiftHandover();
+      } else if (e.key === 'F11') {
+        e.preventDefault();
+        reportDiscrepancy();
+      }
+    });
+
+    function changeDenom(btn, delta) {
+      const row = btn.closest('tr');
+      const input = row.querySelector('.qty-input');
+      let currentVal = parseInt(input.value || 0, 10);
+      let newVal = Math.max(0, currentVal + delta);
+      input.value = newVal;
+      recalcCash();
+    }
+
+    function updateDenom(input) {
+      let val = parseInt(input.value || 0, 10);
+      if (isNaN(val) || val < 0) val = 0;
+      input.value = val;
+      recalcCash();
+    }
+
+    function recalcCash() {
+      let total = smallCashVal;
+      document.querySelectorAll('#denomTable tbody tr[data-val]').forEach(r => {
+        const valStr = r.getAttribute('data-val');
+        if (valStr !== 'small') {
+          const denom = parseInt(valStr, 10);
+          const count = parseInt(r.querySelector('.qty-input').value || 0, 10);
+          const sub = denom * count;
+          r.querySelector('.denom-subtotal').textContent = sub.toLocaleString('vi-VN') + ' ₫';
+          total += sub;
+        }
+      });
+
+      // Update actual total
+      document.getElementById('totalActualCash').textContent = total.toLocaleString('vi-VN') + ' ₫';
+      document.getElementById('kpiActualCash').textContent = total.toLocaleString('vi-VN') + ' ₫';
+      document.getElementById('barActualCash').textContent = total.toLocaleString('vi-VN') + ' ₫';
+
+      // Cash drop
+      const drop = Math.max(0, total - closingFloatVal);
+      document.getElementById('cashDrop').textContent = drop.toLocaleString('vi-VN') + ' ₫';
+      document.getElementById('barCashDrop').textContent = drop.toLocaleString('vi-VN') + ' ₫';
+
+      // Discrepancy
+      const diff = total - bookCash;
+      const kpiDiffBadge = document.getElementById('kpiDiffBadge');
+      const barDiff = document.getElementById('barDiff');
+
+      if (diff === 0) {
+        kpiDiffBadge.className = 'kpi-subtext success';
+        kpiDiffBadge.innerHTML = `
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><polyline points="6.5,10.2 9,12.8 13.8,7.5"/></svg>
+          Khớp 100% sổ sách (Lệch: 0 ₫)
+        `;
+        barDiff.textContent = '0 ₫ (Khớp 100%)';
+        barDiff.style.color = 'var(--color-success)';
+      } else if (diff > 0) {
+        kpiDiffBadge.className = 'kpi-subtext success';
+        kpiDiffBadge.innerHTML = `
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><polyline points="6.5,10.2 9,12.8 13.8,7.5"/></svg>
+          Thừa két: +${diff.toLocaleString('vi-VN')} ₫
+        `;
+        barDiff.textContent = `+${diff.toLocaleString('vi-VN')} ₫ (Thừa)`;
+        barDiff.style.color = 'var(--color-primary)';
+      } else {
+        kpiDiffBadge.className = 'kpi-subtext danger';
+        kpiDiffBadge.innerHTML = `
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="10" cy="10" r="7.5"/><line x1="7.3" y1="7.3" x2="12.7" y2="12.7"/><line x1="12.7" y1="7.3" x2="7.3" y2="12.7"/></svg>
+          Thiếu két: ${diff.toLocaleString('vi-VN')} ₫
+        `;
+        barDiff.textContent = `${diff.toLocaleString('vi-VN')} ₫ (Thiếu)`;
+        barDiff.style.color = 'var(--color-danger)';
+      }
+    }
+
+    function syncWithBook() {
+      // Set to match exact book cash (6.200.000)
+      const inputs = document.querySelectorAll('#denomTable .qty-input');
+      // 500k: 6, 200k: 8, 100k: 10, 50k: 6, 20k: 9 (was 10), 10k: 8 -> total 6.200.000
+      inputs[0].value = 6;
+      inputs[1].value = 8;
+      inputs[2].value = 10;
+      inputs[3].value = 6;
+      inputs[4].value = 9;
+      inputs[5].value = 8;
+      recalcCash();
+      showToast('Đã đồng bộ số lượng tờ khớp chính xác 6.200.000 ₫ sổ sách');
+    }
+
+    function reportDiscrepancy() {
+      const reason = prompt('Nhập lý do sai lệch két gửi Store Manager xem xét:', 'Tiền tip lẻ tích lũy trong ca');
+      if (reason) {
+        showToast('Đã gửi báo cáo sai lệch lên Store Manager Trần Thu Hà');
+      }
+    }
+
+    function confirmShiftHandover() {
+      const actual = document.getElementById('totalActualCash').textContent;
+      const drop = document.getElementById('cashDrop').textContent;
+      const confirmText = `XÁC NHẬN GIAO CA & KHÓA KÉT:\n\n- Mã ca: #SFT-20241024-AM\n- Tiền két thực đếm: ${actual}\n- Tiền nộp quản lý / két sắt: ${drop}\n- Tiền để lại ca tối: 2.000.000 ₫\n- Thu ngân giao: Nguyễn Thị Mai\n- Thu ngân nhận: Lê Văn Nam\n\nBạn có chắc chắn muốn khóa két và bàn giao ca trực?`;
+
+      if (confirm(confirmText)) {
+        showToast('GIAO CA THÀNH CÔNG! Đã khóa két và cập nhật nhật ký ca trực.');
+        const badge = document.querySelector('.session-title-row .badge-warning');
+        if (badge) {
+          badge.className = 'badge badge-success';
+          badge.innerHTML = `
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><polyline points="6.5,10.2 9,12.8 13.8,7.5"/></svg>
+            Đã bàn giao thành công
+          `;
+        }
+        const mgrBadge = document.getElementById('managerSignBadge');
+        if (mgrBadge) {
+          mgrBadge.className = 'badge badge-success';
+          mgrBadge.innerHTML = `
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><polyline points="6.5,10.2 9,12.8 13.8,7.5"/></svg>
+            Đã phê duyệt
+          `;
+        }
+      }
+    }
+  </script>
+</body>
+</html>

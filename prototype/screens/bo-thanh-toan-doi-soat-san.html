@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đối Soát Chi Tiết Ví Sàn TMĐT - ABC Backoffice</title>
+  <link rel="stylesheet" href="../tokens.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-family);
+      font-size: var(--font-base);
+      color: var(--color-text);
+      background-color: var(--color-bg);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Topnav bar styles matching nav-owner */
+    .top-header {
+      height: 56px;
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--space-4);
+      flex-shrink: 0;
+      z-index: 100;
+    }
+    .top-nav-left {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+    }
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      text-decoration: none;
+      color: var(--color-text);
+      font-weight: 700;
+      font-size: 15px;
+    }
+    .brand-icon {
+      width: 28px;
+      height: 28px;
+      background: var(--color-primary);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      font-weight: 700;
+    }
+    .top-menu {
+      display: flex;
+      list-style: none;
+      gap: var(--space-1);
+    }
+    .menu-item {
+      position: relative;
+    }
+    .menu-link {
+      display: block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--color-text);
+      text-decoration: none;
+      border-radius: var(--radius);
+    }
+    .menu-item:hover .menu-link,
+    .menu-item.active .menu-link {
+      background: #f1f5f9;
+      color: var(--color-primary);
+    }
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      min-width: 220px;
+      padding: 6px 0;
+      z-index: 1000;
+    }
+    .menu-item:hover .dropdown-menu {
+      display: block;
+    }
+    .dropdown-item {
+      display: block;
+      padding: 8px 16px;
+      font-size: 13px;
+      color: var(--color-text);
+      text-decoration: none;
+    }
+    .dropdown-item:hover, .dropdown-item.active {
+      background: #f1f5f9;
+      color: var(--color-primary);
+      font-weight: 500;
+    }
+    .top-nav-right {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .role-badge {
+      font-size: 11px;
+      background: #e0e7ff;
+      color: var(--color-primary);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* Sub-header */
+    .page-header {
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+      padding: 12px var(--space-4);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .page-title-box {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .page-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--color-text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .page-subtitle {
+      font-size: 12px;
+      color: var(--color-text-muted);
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 500;
+      border-radius: var(--radius);
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text);
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .btn-primary {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: #fff;
+    }
+
+    /* Content Layout */
+    .content-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--space-4);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    /* AI Insight Strip */
+    .ai-insight-strip {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #1e40af;
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+    .ai-insight-content {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    .ai-insight-link {
+      color: var(--color-primary);
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Wallet Channels & Balances */
+    .wallet-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-3);
+    }
+    .wallet-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-3) var(--space-4);
+      box-shadow: var(--shadow-card);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .wallet-card.active {
+      border-color: var(--color-primary);
+      background: #f8fafc;
+    }
+    .wallet-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .wallet-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-text);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .wallet-amount {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--color-text);
+    }
+    .wallet-sub {
+      font-size: 11px;
+      color: var(--color-text-muted);
+    }
+
+    /* Take-rate Waterfall */
+    .waterfall-panel {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-3) var(--space-4);
+      box-shadow: var(--shadow-card);
+    }
+    .waterfall-header {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .waterfall-bar {
+      display: flex;
+      height: 24px;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+    .wf-seg {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 600;
+      color: #fff;
+    }
+    .wf-net { background: var(--color-success); width: 79.5%; }
+    .wf-pay { background: #64748b; width: 3.5%; }
+    .wf-com { background: #b8860b; width: 4.0%; }
+    .wf-xtra { background: #d64545; width: 8.0%; }
+    .wf-aff { background: #8b5cf6; width: 5.0%; }
+
+    .waterfall-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      font-size: 12px;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .legend-color {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+    }
+
+    /* Settlement Table */
+    .table-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+    .table-toolbar {
+      padding: var(--space-3);
+      border-bottom: 1px solid var(--color-border);
+      background: #fafbfc;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-2);
+    }
+    .status-chips {
+      display: flex;
+      gap: 8px;
+    }
+    .chip {
+      padding: 4px 10px;
+      border-radius: 14px;
+      font-size: 12px;
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text-muted);
+      cursor: pointer;
+    }
+    .chip.active {
+      background: #e0e7ff;
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+      font-weight: 600;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .data-table th {
+      background: #f8fafc;
+      padding: 10px 14px;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      border-bottom: 1px solid var(--color-border);
+      text-align: left;
+      font-size: 12px;
+    }
+    .data-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--color-border);
+      vertical-align: middle;
+    }
+    .data-table tr:hover td {
+      background: #fafbfc;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+    .badge-success { background: #dcfce7; color: var(--color-success); }
+    .badge-warning { background: #fef9c3; color: var(--color-warning); }
+    .badge-danger { background: #fee2e2; color: var(--color-danger); }
+  </style>
+</head>
+<body data-screen="bo-thanh-toan-doi-soat-san">
+  <!-- Top Navigation Header dynamically injected by nav-owner.js -->
+  <header id="app-topnav"></header>
+
+  <!-- Sub-header -->
+  <div class="page-header">
+    <div class="page-title-box">
+      <div class="page-title">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2.5" width="12" height="15" rx="1.5"/><line x1="7" y1="6.5" x2="13" y2="6.5"/><line x1="7" y1="9.5" x2="13" y2="9.5"/><line x1="7" y1="12.5" x2="10.5" y2="12.5"/></svg>
+        <span>Đối Soát Chi Tiết Ví Sàn TMĐT (Shopee & TikTok Shop)</span>
+      </div>
+      <div class="page-subtitle">Bóc tách biểu phí sàn (take-rate waterfall), kiểm tra lệch phí, đối soát thực nhận ví & quản trị rút tiền về ngân hàng</div>
+    </div>
+    <div class="header-actions">
+      <button class="btn">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 10a6 6 0 0 1 10.3-4.2"/><polyline points="14,2.5 14.3,6 10.8,5.7"/><path d="M16 10a6 6 0 0 1-10.3 4.2"/><polyline points="6,17.5 5.7,14 9.2,14.3"/></svg>
+        Đồng bộ API sàn
+      </button>
+      <button class="btn">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="10" y1="3" x2="10" y2="12.5"/><polyline points="6,9 10,13 14,9"/><line x1="4" y1="16.5" x2="16" y2="16.5"/></svg>
+        Tải file đối soát (.xlsx)
+      </button>
+      <button class="btn btn-primary">
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="10" y1="4" x2="10" y2="16"/><line x1="4" y1="10" x2="16" y2="10"/></svg>
+        Rút tiền về Vietcombank
+      </button>
+    </div>
+  </div>
+
+  <main class="content-area">
+    <!-- AI Insight Strip -->
+    <div class="ai-insight-strip">
+      <div class="ai-insight-content">
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="6" width="12" height="9" rx="2"/><line x1="10" y1="6" x2="10" y2="3"/><circle cx="10" cy="2.3" r="0.8" fill="currentColor" stroke="none"/><circle cx="7.3" cy="10.5" r="1" fill="currentColor" stroke="none"/><circle cx="12.7" cy="10.5" r="1" fill="currentColor" stroke="none"/></svg>
+        <span><strong>AI Copilot:</strong> Phát hiện 6 đơn hàng bị tính thừa phí sàn tổng cộng 385.000 ₫ (chủ yếu do trừ trùng phí Freeship Xtra). Đã chuẩn bị sẵn mẫu khiếu nại #TK-8839 gửi sàn.</span>
+      </div>
+      <a href="bo-ai-canh-bao-realtime.html" class="ai-insight-link">
+        <span>Xem chi tiết khiếu nại</span>
+        <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="10" x2="15" y2="10"/><polyline points="11,6 15,10 11,14"/></svg>
+      </a>
+    </div>
+
+    <!-- 3 Wallet Cards -->
+    <div class="wallet-grid">
+      <div class="wallet-card active">
+        <div class="wallet-info">
+          <div class="wallet-title">TẤT CẢ SÀN (TỔNG VÍ KHẢ DỤNG)</div>
+          <div class="wallet-amount">45.500.000 ₫</div>
+          <div class="wallet-sub">Kỳ 23/10 - 29/10 • Sẵn sàng rút</div>
+        </div>
+        <button class="btn btn-primary" style="font-size: 12px; padding: 4px 10px;">Rút toàn bộ</button>
+      </div>
+
+      <div class="wallet-card">
+        <div class="wallet-info">
+          <div class="wallet-title">SHOPEE MALL BLOOM</div>
+          <div class="wallet-amount" style="color: var(--color-primary);">17.100.000 ₫</div>
+          <div class="wallet-sub">Chưa rút • 812 đơn hoàn tất</div>
+        </div>
+        <button class="btn" style="font-size: 12px; padding: 4px 8px;">Rút Shopee</button>
+      </div>
+
+      <div class="wallet-card">
+        <div class="wallet-info">
+          <div class="wallet-title">TIKTOK SHOP OFFICIAL</div>
+          <div class="wallet-amount" style="color: var(--color-success);">28.400.000 ₫</div>
+          <div class="wallet-sub">Đã rút về VCB sáng nay (09:15)</div>
+        </div>
+        <span class="badge badge-success">Đã rút Bank</span>
+      </div>
+    </div>
+
+    <!-- Take-rate Waterfall Analysis Panel -->
+    <div class="waterfall-panel">
+      <div class="waterfall-header">
+        <span>Cơ Cấu Bóc Tách Biểu Phí Sàn (Take-rate Waterfall) — Kỳ Hiện Tại</span>
+        <span style="font-size: 12px; color: var(--color-text-muted);">GMV: 57.230.000 ₫ | Thực nhận: 45.500.000 ₫ (79.5%)</span>
+      </div>
+      <div class="waterfall-bar">
+        <div class="wf-seg wf-net">79.5% Thực nhận ví</div>
+        <div class="wf-seg wf-pay">3.5%</div>
+        <div class="wf-seg wf-com">4%</div>
+        <div class="wf-seg wf-xtra">8% Xtra</div>
+        <div class="wf-seg wf-aff">5% Aff</div>
+      </div>
+      <div class="waterfall-legend">
+        <div class="legend-item"><span class="legend-color" style="background: var(--color-success);"></span> Thực nhận ví (79.5% - 45.500.000 ₫)</div>
+        <div class="legend-item"><span class="legend-color" style="background: #64748b;"></span> Phí thanh toán (3.5% - 2.003.000 ₫)</div>
+        <div class="legend-item"><span class="legend-color" style="background: #b8860b;"></span> Phí hoa hồng cố định (4.0% - 2.289.000 ₫)</div>
+        <div class="legend-item"><span class="legend-color" style="background: #d64545;"></span> Dịch vụ Voucher & Freeship Xtra (8.0% - 4.578.000 ₫)</div>
+        <div class="legend-item"><span class="legend-color" style="background: #8b5cf6;"></span> Tiếp thị liên kết Affiliate Livestream (5.0% - 2.860.000 ₫)</div>
+      </div>
+    </div>
+
+    <!-- Settlement Table Card -->
+    <div class="table-card">
+      <div class="table-toolbar">
+        <div class="status-chips">
+          <button class="chip">Tất cả (1.420)</button>
+          <button class="chip active">Khớp chuẩn 100% (1.414)</button>
+          <button class="chip" style="color: var(--color-danger); border-color: #fca5a5;">Lệch phí / Khiếu nại (6)</button>
+          <button class="chip">Đã rút Bank</button>
+        </div>
+        <div style="font-size: 12px; color: var(--color-text-muted);">
+          Trích lục 5 giao dịch tiêu biểu
+        </div>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Mã Đơn & Sàn</th>
+            <th>Sản phẩm & Khách hàng</th>
+            <th>Tiền Thu Khách (GMV)</th>
+            <th>Trợ Giá Sàn/Shop</th>
+            <th>Tổng Phí Sàn Trừ</th>
+            <th>Thực Nhận Ví</th>
+            <th style="text-align: right;">Trạng Thái & Thao tác</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div style="font-weight: 600;">#241020SP89104</div>
+              <div style="font-size: 12px; color: var(--color-text-muted);">Shopee • Giao 21/10</div>
+            </td>
+            <td>
+              <div style="font-weight: 500;">Serum Klairs Midnight Blue 30ml</div>
+              <div style="font-size: 12px; color: var(--color-text-muted);">Lê Thuỳ Trang (Q.3, HCM)</div>
+            </td>
+            <td><strong>425.000 ₫</strong></td>
+            <td style="font-size: 12px; color: var(--color-text-muted);">-40k (Sàn) / -15k (Shop)</td>
+            <td style="color: var(--color-danger);">-68.850 ₫ (16.2%)</td>
+            <td style="font-weight: 600; color: var(--color-success);">341.150 ₫</td>
+            <td style="text-align: right;">
+              <span class="badge badge-success">Khớp chuẩn 100%</span>
+            </td>
+          </tr>
+
+          <tr>
+            <td>
+              <div style="font-weight: 600;">#57891244091</div>
+              <div style="font-size: 12px; color: var(--color-text-muted);">TikTok Shop • Giao 22/10</div>
+            </td>
+            <td>
+              <div style="font-weight: 500;">Combo 2 Son Kem Lì Merzy Soft Velvet</div>
+              <div style="font-size: 12px; color: var(--color-text-muted);">Nguyễn Hoàng Anh (Cầu Giấy, HN)</div>
+            </td>
+            <td><strong>390.000 ₫</strong></td>
+            <td style="font-size: 12px; color: var(--color-text-muted);">-55k (Live Sàn) / 0k (Shop)</td>
+            <td style="color: var(--color-danger);">-83.460 ₫ (21.4%)</td>
+            <td style="font-weight: 600; color: var(--color-success);">306.540 ₫</td>
+            <td style="text-align: right;">
+              <span class="badge badge-success">Khớp chuẩn</span>
+            </td>
+          </tr>
+
+          <tr>
+            <td>
+              <div style="font-weight: 600; color: var(--color-danger);">#241019SP72190</div>
+              <div style="font-size: 12px; color: var(--color-text-muted);">Shopee • Giao 19/10</div>
+            </td>
+            <td>
+              <div style="font-weight: 500;">Đầm Voan Dạ Hội Maison Bloom Rose (Size M)</div>
+              <div style="font-size: 12px; color: var(--color-text-muted);">Trần Kim Chi (Đà Nẵng)</div>
+            </td>
+            <td><strong>1.250.000 ₫</strong></td>
+            <td style="font-size: 12px; color: var(--color-text-muted);">-120k (Sàn) / -50k (Shop)</td>
+            <td style="color: var(--color-danger); font-weight: 600;">-322.500 ₫ (Tính thừa 120k)</td>
+            <td style="font-weight: 600; color: var(--color-warning);">877.500 ₫</td>
+            <td style="text-align: right;">
+              <button class="btn btn-primary" style="padding: 2px 8px; font-size: 11px;">Khiếu nại ngay</button>
+            </td>
+          </tr>
+
+          <tr>
+            <td>
+              <div style="font-weight: 600; color: var(--color-danger);">#57890918231</div>
+              <div style="font-size: 12px; color: var(--color-text-muted);">TikTok Shop • Hoàn hàng 20/10</div>
+            </td>
+            <td>
+              <div style="font-weight: 500;">Nước Hoa Hồng Klairs Supple 180ml</div>
+              <div style="font-size: 12px; color: var(--color-text-muted);">Khách trả hàng • Chưa hoàn phí Affiliate</div>
+            </td>
+            <td><strong>380.000 ₫</strong></td>
+            <td style="font-size: 12px; color: var(--color-text-muted);">-0 ₫</td>
+            <td style="color: var(--color-danger); font-weight: 600;">-45.600 ₫ (Affiliate sai)</td>
+            <td style="font-weight: 600; color: var(--color-danger);">-45.600 ₫</td>
+            <td style="text-align: right;">
+              <button class="btn btn-primary" style="padding: 2px 8px; font-size: 11px;">Khiếu nại ngay</button>
+            </td>
+          </tr>
+
+          <tr>
+            <td>
+              <div style="font-weight: 600;">#241021SP33201</div>
+              <div style="font-size: 12px; color: var(--color-text-muted);">Shopee • Giao 22/10</div>
+            </td>
+            <td>
+              <div style="font-weight: 500;">Áo Blazer Linen Phom Rộng Bloom Chic</div>
+              <div style="font-size: 12px; color: var(--color-text-muted);">Võ Nhật Linh (Ba Đình, HN)</div>
+            </td>
+            <td><strong>890.000 ₫</strong></td>
+            <td style="font-size: 12px; color: var(--color-text-muted);">-70k (Sàn) / -30k (Shop)</td>
+            <td style="color: var(--color-danger);">-144.180 ₫ (16.2%)</td>
+            <td style="font-weight: 600; color: var(--color-success);">715.820 ₫</td>
+            <td style="text-align: right;">
+              <span class="badge badge-success">Khớp chuẩn 100%</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <script src="../_shared/nav-owner.js"></script>
+</body>
+</html>

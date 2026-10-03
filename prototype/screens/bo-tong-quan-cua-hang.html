@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vận hành Cửa hàng - ABC E-commerce Backoffice</title>
+  <link rel="stylesheet" href="../tokens.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-family);
+      font-size: var(--font-base);
+      color: var(--color-text);
+      background-color: var(--color-bg);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .main-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .topbar {
+      height: 56px;
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--space-4);
+      flex-shrink: 0;
+    }
+    .topbar-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--color-text);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 500;
+      border-radius: var(--radius);
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text);
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .btn-primary {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: #fff;
+    }
+    .content-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--space-4);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-3);
+    }
+    .kpi-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-3);
+      box-shadow: var(--shadow-card);
+    }
+    .kpi-label {
+      font-size: 12px;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-1);
+    }
+    .kpi-value {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--color-text);
+      margin-bottom: var(--space-1);
+    }
+    .kpi-trend {
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .trend-up { color: var(--color-success); font-weight: 500; }
+    .trend-down { color: var(--color-danger); font-weight: 500; }
+    
+    .ai-insight-strip {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #1e40af;
+      font-size: 13px;
+    }
+    .ai-insight-content {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    .ai-insight-link {
+      color: var(--color-primary);
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .two-col-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: var(--space-4);
+    }
+    .panel {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .panel-header {
+      padding: var(--space-3) var(--space-4);
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #fafbfc;
+    }
+    .panel-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--color-text);
+    }
+    .panel-body {
+      padding: var(--space-3) var(--space-4);
+      flex: 1;
+    }
+    
+    /* Chart mock */
+    .bar-chart-container {
+      display: flex;
+      align-items: flex-end;
+      height: 160px;
+      gap: 16px;
+      padding-top: 20px;
+      border-bottom: 1px solid var(--color-border);
+      padding-bottom: 8px;
+    }
+    .bar-group {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100%;
+      justify-content: flex-end;
+      gap: 4px;
+    }
+    .bars-pair {
+      display: flex;
+      align-items: flex-end;
+      gap: 4px;
+      width: 100%;
+      height: 100%;
+      justify-content: center;
+    }
+    .bar {
+      width: 14px;
+      border-radius: 2px 2px 0 0;
+      transition: height 0.3s;
+    }
+    .bar-rev { background: var(--color-primary); }
+    .bar-exp { background: #94a3b8; }
+    .bar-label { font-size: 11px; color: var(--color-text-muted); }
+
+    /* Feed item */
+    .feed-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .feed-item:last-child { border-bottom: none; }
+    .feed-info { display: flex; flex-direction: column; gap: 2px; }
+    .feed-title { font-size: 13px; font-weight: 600; }
+    .feed-subtitle { font-size: 12px; color: var(--color-text-muted); }
+    .feed-amount { font-size: 13px; font-weight: 600; text-align: right; }
+
+    /* AI Priority Cards */
+    .ai-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-3);
+    }
+    .ai-rec-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-left: 4px solid var(--color-primary);
+      border-radius: var(--radius);
+      padding: var(--space-3);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: var(--shadow-card);
+    }
+    .ai-rec-card.warn {
+      border-left-color: var(--color-warning);
+    }
+    .ai-rec-card.danger {
+      border-left-color: var(--color-danger);
+    }
+    .ai-rec-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .ai-rec-title {
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+    .ai-rec-desc {
+      font-size: 12px;
+      color: var(--color-text-muted);
+      line-height: 1.4;
+      margin-bottom: 12px;
+    }
+    .ai-rec-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+    .badge-success { background: #dcfce7; color: var(--color-success); }
+    .badge-warning { background: #fef9c3; color: var(--color-warning); }
+    .badge-danger { background: #fee2e2; color: var(--color-danger); }
+  </style>
+</head>
+<body>
+  <!-- Page Shell Sidebar will be rendered by nav-owner.js -->
+  <aside id="sidebar-container"></aside>
+
+  <div class="main-wrapper">
+    <header class="topbar">
+      <div class="topbar-title">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2.5" width="12" height="15" rx="1.5"/><line x1="7" y1="6.5" x2="13" y2="6.5"/><line x1="7" y1="9.5" x2="13" y2="9.5"/><line x1="7" y1="12.5" x2="10.5" y2="12.5"/></svg>
+        <span>Vận hành Cửa hàng: Maison de Bloom - Flagship</span>
+      </div>
+      <div class="topbar-actions">
+        <span style="font-size: 13px; color: var(--color-text-muted);">Xin chào, Nguyễn Thị Mai (Chủ shop)</span>
+        <a href="se-ban-hang.html" class="btn btn-primary">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="10" y1="4" x2="10" y2="16"/><line x1="4" y1="10" x2="16" y2="10"/></svg>
+          Mở POS Bán hàng
+        </a>
+        <a href="bo-don-hang.html" class="btn">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="10" cy="10" r="7.5"/><line x1="10" y1="9" x2="10" y2="14"/><circle cx="10" cy="6" r="0.9" fill="currentColor" stroke="none"/></svg>
+          Sổ hóa đơn
+        </a>
+      </div>
+    </header>
+
+    <main class="content-area">
+      <!-- 4 KPI Cards -->
+      <section class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label">DOANH THU THUẦN (THÁNG)</div>
+          <div class="kpi-value">284.500.000 ₫</div>
+          <div class="kpi-trend trend-up">
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="10" x2="15" y2="10"/><polyline points="11,6 15,10 11,14"/></svg>
+            +14.2% so với tháng trước
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">CHI PHÍ PHÁT SINH</div>
+          <div class="kpi-value">162.100.000 ₫</div>
+          <div class="kpi-trend trend-down">
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="10" x2="15" y2="10"/><polyline points="11,6 15,10 11,14"/></svg>
+            +18.5% (Tăng chi quảng cáo)
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">LỢI NHUẬN RÒNG TẠM TÍNH</div>
+          <div class="kpi-value">122.400.000 ₫</div>
+          <div class="kpi-trend trend-up">
+            <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="10" x2="15" y2="10"/><polyline points="11,6 15,10 11,14"/></svg>
+            +8.9% biên đạt 43.0%
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">GIÁ TRỊ TỒN KHO ĐỊNH GIÁ</div>
+          <div class="kpi-value">418.900.000 ₫</div>
+          <div class="kpi-trend" style="color: var(--color-text-muted);">
+            Vốn lưu động đang nằm trong kho
+          </div>
+        </div>
+      </section>
+
+      <!-- AI Insight Strip -->
+      <section class="ai-insight-strip">
+        <div class="ai-insight-content">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="6" width="12" height="9" rx="2"/><line x1="10" y1="6" x2="10" y2="3"/><circle cx="10" cy="2.3" r="0.8" fill="currentColor" stroke="none"/><circle cx="7.3" cy="10.5" r="1" fill="currentColor" stroke="none"/><circle cx="12.7" cy="10.5" r="1" fill="currentColor" stroke="none"/></svg>
+          <span><strong>AI Copilot:</strong> Doanh thu tăng 14.2% nhưng biên lợi nhuận gộp giảm 3.1% do Chi phí Marketing TikTok Ads tăng đột biến. Đầm lụa Maxi tồn kho đọng 45 ngày chiếm dụng 38.000.000 ₫ vốn.</span>
+        </div>
+        <a href="bo-ai-phan-tich.html" class="ai-insight-link">
+          <span>Xem phân tích đầy đủ</span>
+          <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="10" x2="15" y2="10"/><polyline points="11,6 15,10 11,14"/></svg>
+        </a>
+      </section>
+
+      <!-- Middle Grid: Chart + Live Orders Stream -->
+      <div class="two-col-grid">
+        <!-- Chart Panel -->
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">Biến động Doanh thu & Chi phí 7 ngày gần nhất</span>
+            <div style="font-size: 12px; color: var(--color-text-muted); display: flex; gap: 12px; align-items: center;">
+              <span style="display: flex; align-items: center; gap: 4px;"><span style="width: 8px; height: 8px; background: var(--color-primary); border-radius: 2px;"></span> Doanh thu</span>
+              <span style="display: flex; align-items: center; gap: 4px;"><span style="width: 8px; height: 8px; background: #94a3b8; border-radius: 2px;"></span> Chi phí</span>
+              <span>TB: 11.850.000 ₫/ngày</span>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="bar-chart-container">
+              <div class="bar-group">
+                <div class="bars-pair">
+                  <div class="bar bar-rev" style="height: 65%;"></div>
+                  <div class="bar bar-exp" style="height: 40%;"></div>
+                </div>
+                <span class="bar-label">26/09</span>
+              </div>
+              <div class="bar-group">
+                <div class="bars-pair">
+                  <div class="bar bar-rev" style="height: 75%;"></div>
+                  <div class="bar bar-exp" style="height: 45%;"></div>
+                </div>
+                <span class="bar-label">27/09</span>
+              </div>
+              <div class="bar-group">
+                <div class="bars-pair">
+                  <div class="bar bar-rev" style="height: 90%;"></div>
+                  <div class="bar bar-exp" style="height: 50%;"></div>
+                </div>
+                <span class="bar-label">28/09</span>
+              </div>
+              <div class="bar-group">
+                <div class="bars-pair">
+                  <div class="bar bar-rev" style="height: 85%;"></div>
+                  <div class="bar bar-exp" style="height: 48%;"></div>
+                </div>
+                <span class="bar-label">29/09</span>
+              </div>
+              <div class="bar-group">
+                <div class="bars-pair">
+                  <div class="bar bar-rev" style="height: 70%;"></div>
+                  <div class="bar bar-exp" style="height: 42%;"></div>
+                </div>
+                <span class="bar-label">30/09</span>
+              </div>
+              <div class="bar-group">
+                <div class="bars-pair">
+                  <div class="bar bar-rev" style="height: 95%;"></div>
+                  <div class="bar bar-exp" style="height: 60%;"></div>
+                </div>
+                <span class="bar-label">01/10</span>
+              </div>
+              <div class="bar-group">
+                <div class="bars-pair">
+                  <div class="bar bar-rev" style="height: 80%;"></div>
+                  <div class="bar bar-exp" style="height: 52%;"></div>
+                </div>
+                <span class="bar-label">Hôm nay</span>
+              </div>
+            </div>
+
+            <!-- Top Products Summary Table below chart -->
+            <div style="margin-top: 14px;">
+              <div style="font-size: 13px; font-weight: 600; margin-bottom: 8px; display: flex; justify-content: space-between;">
+                <span>Top Sản phẩm bán chạy trong ngày</span>
+                <a href="bo-san-pham-danh-sach.html" style="font-size: 12px; color: var(--color-primary); text-decoration: none;">Xem toàn bộ catalog →</a>
+              </div>
+              <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                <thead>
+                  <tr style="border-bottom: 1px solid var(--color-border); text-align: left; color: var(--color-text-muted); font-size: 12px;">
+                    <th style="padding: 6px 0;">Sản phẩm</th>
+                    <th style="padding: 6px 8px; text-align: center;">SL Đã bán</th>
+                    <th style="padding: 6px 8px; text-align: right;">Doanh thu</th>
+                    <th style="padding: 6px 0; text-align: right;">Trạng thái tồn</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr style="border-bottom: 1px solid #f1f5f9;">
+                    <td style="padding: 8px 0; font-weight: 500;">Kem dưỡng ẩm Ceramide Hydrating 50ml</td>
+                    <td style="padding: 8px; text-align: center;">270 hũ</td>
+                    <td style="padding: 8px; text-align: right; font-weight: 600;">102.600.000 ₫</td>
+                    <td style="padding: 8px 0; text-align: right;"><span class="badge badge-success">Dồi dào</span></td>
+                  </tr>
+                  <tr style="border-bottom: 1px solid #f1f5f9;">
+                    <td style="padding: 8px 0; font-weight: 500;">Serum Phục hồi B5 Skin Recovery 30ml</td>
+                    <td style="padding: 8px; text-align: center;">145 lọ</td>
+                    <td style="padding: 8px; text-align: right; font-weight: 600;">65.250.000 ₫</td>
+                    <td style="padding: 8px 0; text-align: right;"><span class="badge badge-warning">Sắp hết (18 lọ)</span></td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 8px 0; font-weight: 500;">Kem chống nắng Sunblock SPF50+ 50ml</td>
+                    <td style="padding: 8px; text-align: center;">140 tuýp</td>
+                    <td style="padding: 8px; text-align: right; font-weight: 600;">58.800.000 ₫</td>
+                    <td style="padding: 8px 0; text-align: right;"><span class="badge badge-success">An toàn</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Live Stream Orders & Expiry Warnings -->
+        <div style="display: flex; flex-direction: column; gap: var(--space-4);">
+          <!-- Live Orders Feed -->
+          <div class="panel">
+            <div class="panel-header">
+              <span class="panel-title">Đơn hàng vừa ghi nhận</span>
+              <a href="bo-don-hang.html" style="font-size: 12px; color: var(--color-primary); text-decoration: none;">Xem tất cả</a>
+            </div>
+            <div class="panel-body" style="padding-top: 4px; padding-bottom: 4px;">
+              <div class="feed-item">
+                <div class="feed-info">
+                  <div class="feed-title">DH-20261002-089</div>
+                  <div class="feed-subtitle">Khách: Bùi Thu Hương • Chuyển khoản</div>
+                </div>
+                <div>
+                  <div class="feed-amount">1.250.000 ₫</div>
+                  <span class="badge badge-success">Đã thanh toán</span>
+                </div>
+              </div>
+              <div class="feed-item">
+                <div class="feed-info">
+                  <div class="feed-title">DH-20261002-088</div>
+                  <div class="feed-subtitle">Khách vãng lai (Tại quầy) • Tiền mặt</div>
+                </div>
+                <div>
+                  <div class="feed-amount">480.000 ₫</div>
+                  <span class="badge badge-success">Đã thanh toán</span>
+                </div>
+              </div>
+              <div class="feed-item">
+                <div class="feed-info">
+                  <div class="feed-title">DH-20261002-087</div>
+                  <div class="feed-subtitle">Khách: Lê Minh Anh • Thẻ tín dụng</div>
+                </div>
+                <div>
+                  <div class="feed-amount">2.100.000 ₫</div>
+                  <span class="badge badge-success">Đã thanh toán</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Lô Hạn Dùng & Cảnh Báo FEFO -->
+          <div class="panel">
+            <div class="panel-header">
+              <span class="panel-title">Cảnh báo Lô hàng & Tồn kho</span>
+              <a href="bo-kho-ton-kho.html" style="font-size: 12px; color: var(--color-primary); text-decoration: none;">Kho hàng →</a>
+            </div>
+            <div class="panel-body" style="padding-top: 4px; padding-bottom: 4px;">
+              <div class="feed-item">
+                <div class="feed-info">
+                  <div class="feed-title" style="color: var(--color-danger);">LOT-B5-0924 (Serum B5)</div>
+                  <div class="feed-subtitle">Tồn kho 18 lọ (Dưới ngưỡng 30 lọ)</div>
+                </div>
+                <span class="badge badge-danger">Cháy hàng 4d</span>
+              </div>
+              <div class="feed-item">
+                <div class="feed-info">
+                  <div class="feed-title" style="color: var(--color-warning);">LOT-CR-0724 (Ceramide 50ml)</div>
+                  <div class="feed-subtitle">Hết hạn: 15/11/2026 • Còn tồn 25 hũ</div>
+                </div>
+                <span class="badge badge-warning">Cận date FEFO</span>
+              </div>
+              <div class="feed-item">
+                <div class="feed-info">
+                  <div class="feed-title">Đầm lụa Maxi (Fashion)</div>
+                  <div class="feed-subtitle">Tồn 45 ngày • 38.000.000 ₫ vốn đọng</div>
+                </div>
+                <span class="badge badge-warning">Chậm luân chuyển</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom: AI Priority Action Recommendations -->
+      <div>
+        <div style="font-size: 14px; font-weight: 600; margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="6" width="12" height="9" rx="2"/><line x1="10" y1="6" x2="10" y2="3"/><circle cx="10" cy="2.3" r="0.8" fill="currentColor" stroke="none"/><circle cx="7.3" cy="10.5" r="1" fill="currentColor" stroke="none"/><circle cx="12.7" cy="10.5" r="1" fill="currentColor" stroke="none"/></svg>
+          <span>Hành động khuyến nghị ưu tiên cao từ AI Copilot</span>
+        </div>
+        <div class="ai-cards-grid">
+          <div class="ai-rec-card danger">
+            <div>
+              <div class="ai-rec-header">
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-danger);"><circle cx="10" cy="10" r="7.5"/><line x1="7.3" y1="7.3" x2="12.7" y2="12.7"/><line x1="12.7" y1="7.3" x2="7.3" y2="12.7"/></svg>
+                <div class="ai-rec-title">Nhập thêm 120 Serum B5 trước ngày 28/10</div>
+              </div>
+              <div class="ai-rec-desc">Tốc độ tiêu thụ đạt 12 lọ/ngày, tồn kho thực tế chỉ còn 18 lọ. Sẽ đứt hàng sau 36 giờ nếu không gửi đơn đặt hàng tới NCC Dược Mỹ Phẩm Việt.</div>
+            </div>
+            <div class="ai-rec-actions">
+              <a href="se-nhap-kho.html" class="btn btn-primary" style="font-size: 12px; padding: 4px 8px;">Tạo đơn đặt NCC</a>
+              <a href="bo-ai-mo-phong.html" class="btn" style="font-size: 12px; padding: 4px 8px;">Mô phỏng</a>
+            </div>
+          </div>
+
+          <div class="ai-rec-card warn">
+            <div>
+              <div class="ai-rec-header">
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-warning);"><path d="M10 3 L18 17 L2 17 Z"/><line x1="10" y1="8.5" x2="10" y2="12.5"/><circle cx="10" cy="14.5" r="0.9" fill="currentColor" stroke="none"/></svg>
+                <div class="ai-rec-title">Tạo Flash Sale xả lô Serum Vitamin C</div>
+              </div>
+              <div class="ai-rec-desc">Lô LOT-VC-0424 cận hạn dùng (30/11/2026), còn tồn 42 lọ. Giảm giá 25% kèm voucher thanh lý để thu hồi vốn lưu động 14.700.000 ₫.</div>
+            </div>
+            <div class="ai-rec-actions">
+              <button class="btn btn-primary" style="font-size: 12px; padding: 4px 8px;">Tạo voucher giảm 25%</button>
+              <button class="btn" style="font-size: 12px; padding: 4px 8px;">Bỏ qua</button>
+            </div>
+          </div>
+
+          <div class="ai-rec-card">
+            <div>
+              <div class="ai-rec-header">
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-primary);"><circle cx="10" cy="10" r="7.5"/><polyline points="6.5,10.2 9,12.8 13.8,7.5"/></svg>
+                <div class="ai-rec-title">Gợi ý bundle Áo Blazer + Quần tây ống suông</div>
+              </div>
+              <div class="ai-rec-desc">Phân tích giỏ hàng cho thấy 38% khách mua Áo Blazer có hành vi tìm kiếm Quần tây. Tạo combo giảm 10% sẽ đẩy giá trị đơn trung bình (AOV) lên +35%.</div>
+            </div>
+            <div class="ai-rec-actions">
+              <button class="btn btn-primary" style="font-size: 12px; padding: 4px 8px;">Tạo combo khuyến mãi</button>
+              <a href="bo-ai-phan-tich.html" class="btn" style="font-size: 12px; padding: 4px 8px;">Chi tiết tệp khách</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../_shared/nav-owner.js" data-screen="bo-tong-quan-cua-hang"></script>
+</body>
+</html>

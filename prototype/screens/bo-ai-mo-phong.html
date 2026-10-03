@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What-If Scenario Lab - ABC Copilot</title>
+  <link rel="stylesheet" href="../tokens.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    .page-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: var(--space-4);
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: var(--space-4);
+      flex-wrap: wrap;
+      gap: var(--space-3);
+    }
+
+    .title-area h1 {
+      font-size: var(--font-title);
+      font-weight: 700;
+      color: var(--color-text);
+      margin: 0 0 var(--space-1) 0;
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .title-area p {
+      color: var(--color-text-muted);
+      font-size: 13px;
+      margin: 0;
+    }
+
+    .engine-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--color-primary);
+      margin-top: var(--space-2);
+    }
+
+    .action-bar {
+      display: flex;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1);
+      padding: 8px 14px;
+      border-radius: var(--radius);
+      font-size: var(--font-base);
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text);
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+      background: var(--color-bg);
+    }
+
+    .btn-primary {
+      background: var(--color-primary);
+      color: #ffffff;
+      border-color: var(--color-primary);
+    }
+
+    .btn-primary:hover {
+      background: #22479e;
+    }
+
+    /* Preset Cards Grid */
+    .preset-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+    }
+
+    .preset-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-3);
+      box-shadow: var(--shadow-card);
+      cursor: pointer;
+      position: relative;
+    }
+
+    .preset-card.active {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 2px rgba(43, 89, 195, 0.2);
+    }
+
+    .preset-tag {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .preset-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--color-text);
+      margin: var(--space-1) 0;
+    }
+
+    .preset-desc {
+      font-size: 12px;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-2);
+      line-height: 1.4;
+    }
+
+    /* Dual Column Grid */
+    .content-grid {
+      display: grid;
+      grid-template-columns: 5fr 7fr;
+      gap: var(--space-4);
+    }
+
+    @media (max-width: 1024px) {
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel-box {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-4);
+      box-shadow: var(--shadow-card);
+      margin-bottom: var(--space-4);
+    }
+
+    .panel-header {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--color-text);
+      margin-bottom: var(--space-3);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Parameter Controls */
+    .control-group {
+      margin-bottom: var(--space-3);
+    }
+
+    .control-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-text);
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .slider-input {
+      width: 100%;
+      accent-color: var(--color-primary);
+    }
+
+    .control-sub {
+      font-size: 11px;
+      color: var(--color-text-muted);
+      display: flex;
+      justify-content: space-between;
+      margin-top: 2px;
+    }
+
+    /* Impact Metrics */
+    .impact-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+    }
+
+    .impact-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-3);
+      box-shadow: var(--shadow-card);
+    }
+
+    .impact-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      margin-bottom: 4px;
+    }
+
+    .impact-val {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--color-text);
+    }
+
+    .impact-diff {
+      font-size: 12px;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    /* AI Insight Strip */
+    .ai-box {
+      background: #f0f4ff;
+      border: 1px solid #c7d2fe;
+      border-radius: var(--radius);
+      padding: var(--space-3);
+      margin-top: var(--space-3);
+      display: flex;
+      gap: var(--space-2);
+      align-items: flex-start;
+    }
+  </style>
+</head>
+<body data-screen="bo-ai-mo-phong">
+  <!-- Top Navigation Header -->
+  <header id="app-topnav"></header>
+
+  <main class="page-container">
+    <!-- Header Bar -->
+    <div class="page-header">
+      <div class="title-area">
+        <h1>
+          <span style="color: var(--color-primary); display: inline-flex; align-items: center;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="8.5" cy="8.5" r="5"/><line x1="12.3" y1="12.3" x2="17" y2="17"/></svg></span>
+          Phòng Thí Nghiệm Kịch Bản Kinh Doanh What-If
+        </h1>
+        <p>Mô phỏng đa biến Monte Carlo (10.000 kịch bản) nhằm stress-test dòng tiền & biên lợi nhuận trước chiến dịch Q4</p>
+        <div class="engine-badge">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="6" width="12" height="9" rx="2"/><line x1="10" y1="6" x2="10" y2="3"/><circle cx="10" cy="2.3" r="0.8" fill="currentColor" stroke="none"/><circle cx="7.3" cy="10.5" r="1" fill="currentColor" stroke="none"/><circle cx="12.7" cy="10.5" r="1" fill="currentColor" stroke="none"/></svg>
+          Monte Carlo Engine • 10.000 biến số ngẫu nhiên • Độ tin cậy 95% (CI)
+        </div>
+      </div>
+      <div class="action-bar">
+        <button class="btn" type="button">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="10" y1="4" x2="10" y2="16"/><line x1="4" y1="10" x2="16" y2="10"/></svg>
+          Lưu Kịch Bản Mới
+        </button>
+        <button class="btn" type="button">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="10" y1="3" x2="10" y2="12.5"/><polyline points="6,9 10,13 14,9"/><line x1="4" y1="16.5" x2="16" y2="16.5"/></svg>
+          Xuất Báo Cáo PDF
+        </button>
+        <button class="btn btn-primary" type="button">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10a6 6 0 0 1 10.3-4.2"/><polyline points="14,2.5 14.3,6 10.8,5.7"/><path d="M16 10a6 6 0 0 1-10.3 4.2"/><polyline points="6,17.5 5.7,14 9.2,14.3"/></svg>
+          Chạy Mô Phỏng Lại
+        </button>
+      </div>
+    </div>
+
+    <!-- Presets Bar -->
+    <div class="preset-grid">
+      <div class="preset-card active">
+        <div style="display: flex; justify-content: space-between;">
+          <span class="preset-tag" style="background: #eff6ff; color: var(--color-primary);">Đang chọn</span>
+          <span style="font-size: 11px; font-weight: 600; color: var(--color-success);">Xác suất đạt: 82%</span>
+        </div>
+        <div class="preset-title">Kịch bản A: Đẩy mạnh Livestream 11.11</div>
+        <div class="preset-desc">Tăng Ads +40%, giảm giá 15%, gia tăng tồn kho son & toner thêm 200 SKU.</div>
+        <div style="font-size: 13px; font-weight: 700; color: var(--color-success);">
+          Lợi nhuận ròng: +538.200.000 ₫
+        </div>
+      </div>
+
+      <div class="preset-card">
+        <div style="display: flex; justify-content: space-between;">
+          <span class="preset-tag" style="background: var(--color-bg); color: var(--color-text-muted);">Phòng thủ</span>
+          <span style="font-size: 11px; color: var(--color-text-muted);">Rủi ro thấp</span>
+        </div>
+        <div class="preset-title">Kịch bản B: Bảo toàn dòng tiền</div>
+        <div class="preset-desc">Giữ nguyên Ads, cắt giảm SKU đọng vốn, thương lượng thanh toán NCC dời T+45.</div>
+        <div style="font-size: 13px; font-weight: 700; color: var(--color-text);">
+          Lợi nhuận ròng: 412.000.000 ₫
+        </div>
+      </div>
+
+      <div class="preset-card">
+        <div style="display: flex; justify-content: space-between;">
+          <span class="preset-tag" style="background: #fde8e8; color: var(--color-danger);">Stress-Test</span>
+          <span style="font-size: 11px; font-weight: 600; color: var(--color-danger);">Nguy cấp</span>
+        </div>
+        <div class="preset-title">Kịch bản C: Thủng sàn & Hoàn COD</div>
+        <div class="preset-desc">Doanh số giảm 25%, phí sàn tăng 12%, tỷ lệ hoàn COD nhảy vọt lên 8.0%.</div>
+        <div style="font-size: 13px; font-weight: 700; color: var(--color-danger);">
+          Lợi nhuận ròng: -48.500.000 ₫
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Dual Column Workspace -->
+    <div class="content-grid">
+      <!-- Left Column: Controls & Levers -->
+      <div>
+        <div class="panel-box">
+          <div class="panel-header">
+            <span>Bảng Điều Khiển Biến Số (Levers)</span>
+            <button class="btn" type="button" style="padding: 2px 8px; font-size: 11px;">Reset</button>
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>Tăng trưởng doanh số mục tiêu</span>
+              <span style="color: var(--color-primary); font-weight: 700;">+35%</span>
+            </div>
+            <input type="range" class="slider-input" min="10" max="80" value="35">
+            <div class="control-sub">
+              <span>+10% Thận trọng</span>
+              <span>+45% Cao</span>
+              <span>+80% Cực hạn</span>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>Voucher / Chiết khấu trung bình</span>
+              <span style="color: var(--color-danger); font-weight: 700;">15.0%</span>
+            </div>
+            <input type="range" class="slider-input" min="5" max="25" value="15">
+            <div class="control-sub">
+              <span>5% (Flash sale)</span>
+              <span>15% (Toàn sàn)</span>
+              <span>25% (Xả kho)</span>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>Ngân sách Quảng cáo (Ads)</span>
+              <span style="color: var(--color-primary); font-weight: 700;">140.000.000 ₫</span>
+            </div>
+            <input type="range" class="slider-input" min="85" max="250" value="140">
+            <div class="control-sub">
+              <span>85M (Mặc định)</span>
+              <span>140M (Kịch bản A)</span>
+              <span>250M (Đua Top)</span>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>Kỳ hạn thanh toán Nợ nhà cung cấp</span>
+            </div>
+            <select class="btn" style="width: 100%; font-size: 13px;">
+              <option value="30">T+30 (Chuẩn hợp đồng)</option>
+              <option value="45" selected>T+45 (Thương lượng đợt này)</option>
+              <option value="60">T+60 (Gối đầu xa)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Projected Impact & Chart -->
+      <div>
+        <div class="impact-grid">
+          <div class="impact-card">
+            <div class="impact-label">Doanh thu dự kiến</div>
+            <div class="impact-val">2.490.000.000 ₫</div>
+            <div class="impact-diff" style="color: var(--color-success);">+34.9% (+644.8M ₫)</div>
+          </div>
+
+          <div class="impact-card">
+            <div class="impact-label">Lợi nhuận ròng dự phóng</div>
+            <div class="impact-val" style="color: var(--color-success);">538.200.000 ₫</div>
+            <div class="impact-diff" style="color: var(--color-success);">Biên ròng 21.6% (+74.3M ₫)</div>
+          </div>
+
+          <div class="impact-card">
+            <div class="impact-label">Điểm hòa vốn (Break-Even)</div>
+            <div class="impact-val">1.120.000.000 ₫</div>
+            <div class="impact-diff" style="color: var(--color-text-muted);">Cần đạt 45% mục tiêu DT</div>
+          </div>
+
+          <div class="impact-card">
+            <div class="impact-label">Áp lực thanh khoản</div>
+            <div class="impact-val" style="color: var(--color-danger);">-65.000.000 ₫</div>
+            <div class="impact-diff" style="color: var(--color-danger);">Đáy rủi ro ngày 08/11 (Cần bù 100M)</div>
+          </div>
+        </div>
+
+        <div class="panel-box">
+          <div class="panel-header">
+            <span>Đồ Thị Quỹ Đạo Dòng Tiền & Hòa Vốn (Tháng 11)</span>
+          </div>
+
+          <div style="width: 100%; height: 200px; background: var(--color-bg); border-radius: var(--radius); padding: var(--space-2); margin-bottom: var(--space-3);">
+            <svg viewbox="0 0 800 180" style="width: 100%; height: 100%;">
+              <line x1="20" y1="90" x2="780" y2="90" stroke="#c7c4d8" stroke-dasharray="4 4" />
+              <text x="700" y="85" fill="#6b7280" font-size="10">0 ₫ Baseline</text>
+
+              <!-- Dip and Rebound Curve -->
+              <path d="M 20,80 Q 150,95 280,145 Q 400,165 520,110 Q 650,50 780,25" fill="none" stroke="#2b59c3" stroke-width="3" />
+              <!-- Danger point -->
+              <circle cx="280" cy="145" r="5" fill="#d64545" />
+              <text x="290" y="155" fill="#d64545" font-size="10" font-weight="700">08/11: ĐÁY TIỀN MẶT (-65M)</text>
+              <text x="540" y="90" fill="#1f9d55" font-size="10" font-weight="700">18/11: ĐỐI SOÁT SÀN (+850M)</text>
+            </svg>
+          </div>
+
+          <div class="ai-box">
+            <span style="color: var(--color-primary); display: inline-flex; align-items: center;"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="6" width="12" height="9" rx="2"/><line x1="10" y1="6" x2="10" y2="3"/><circle cx="10" cy="2.3" r="0.8" fill="currentColor" stroke="none"/><circle cx="7.3" cy="10.5" r="1" fill="currentColor" stroke="none"/><circle cx="12.7" cy="10.5" r="1" fill="currentColor" stroke="none"/></svg></span>
+            <div style="font-size: 13px; color: var(--color-text); line-height: 1.5;">
+              <strong style="color: var(--color-primary);">Khuyên nghị từ AI Copilot:</strong>
+              Kịch bản A mang lại lợi nhuận ròng hấp dẫn (+538.2M ₫) nhưng xuất hiện đáy âm dòng tiền 65M vào ngày 08/11 trước khi tiền sàn Shopee giải ngân. Khuyến nghị đàm phán nợ NCC sang T+45 hoặc chuẩn bị sẵn 100M tín dụng xoay vòng ngắn hạn.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Shared Top Navigation Script -->
+  <script src="../_shared/nav-owner.js"></script>
+</body>
+</html>

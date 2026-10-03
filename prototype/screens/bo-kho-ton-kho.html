@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản lý Tồn kho & FEFO - ABC Copilot</title>
+  <link rel="stylesheet" href="../tokens.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    /* Main Layout container using Design Tokens */
+    .page-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: var(--space-4);
+    }
+
+    /* Page Header */
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: var(--space-4);
+      flex-wrap: wrap;
+      gap: var(--space-3);
+    }
+
+    .title-area h1 {
+      font-size: var(--font-title);
+      font-weight: 700;
+      color: var(--color-text);
+      margin-bottom: var(--space-1);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .title-area p {
+      color: var(--color-text-muted);
+      font-size: 13px;
+      margin: 0;
+    }
+
+    .action-area {
+      display: flex;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+    }
+
+    /* KPI Grid - 4 Thẻ */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+    }
+
+    .kpi-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-3);
+      box-shadow: var(--shadow-card);
+    }
+
+    .kpi-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--color-text-muted);
+      font-weight: 600;
+      margin-bottom: var(--space-1);
+    }
+
+    .kpi-card-value {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--color-text);
+      margin-bottom: 2px;
+    }
+
+    .kpi-card-sub {
+      font-size: 12px;
+      color: var(--color-text-muted);
+    }
+
+    .kpi-icon {
+      font-size: 18px;
+    }
+
+    /* AI Insight Strip (Component Contract) */
+    .ai-insight-strip {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: var(--radius-sm);
+      padding: 10px 16px;
+      margin-bottom: var(--space-4);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--color-text);
+    }
+
+    .ai-insight-strip-content {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .ai-insight-strip-link {
+      color: var(--color-primary);
+      font-weight: 600;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .ai-insight-strip-link:hover {
+      text-decoration: underline;
+    }
+
+    /* Filter Bar */
+    .filter-bar {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-3);
+      margin-bottom: var(--space-3);
+      box-shadow: var(--shadow-card);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+    }
+
+    .search-box {
+      position: relative;
+      flex: 1;
+      min-width: 260px;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 8px 12px 8px 36px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      outline: none;
+    }
+
+    .search-box .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--color-text-muted);
+    }
+
+    .filter-controls {
+      display: flex;
+      gap: var(--space-2);
+      align-items: center;
+    }
+
+    .select-input {
+      padding: 8px 12px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      background: var(--color-surface);
+      color: var(--color-text);
+      outline: none;
+      cursor: pointer;
+    }
+
+    /* Table Container & Density (6 Primary Columns) */
+    .table-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+      margin-bottom: var(--space-4);
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      text-align: left;
+    }
+
+    .data-table th {
+      background: #f8fafc;
+      padding: 12px 16px;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      border-bottom: 1px solid var(--color-border);
+      white-space: nowrap;
+    }
+
+    .data-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--color-border);
+      vertical-align: middle;
+    }
+
+    .data-table tr:hover {
+      background-color: #f8fafc;
+    }
+
+    .product-meta {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .product-img {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-sm);
+      object-fit: cover;
+      background: #f1f5f9;
+      border: 1px solid var(--color-border);
+    }
+
+    .product-title {
+      font-weight: 600;
+      color: var(--color-text);
+    }
+
+    .product-sub {
+      font-size: 11px;
+      color: var(--color-text-muted);
+      font-family: monospace;
+    }
+
+    /* Badges strictly 3 status tokens */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .badge-success { background: var(--color-success-bg); color: var(--color-success); }
+    .badge-warning { background: var(--color-warning-bg); color: var(--color-warning); }
+    .badge-danger { background: var(--color-danger-bg); color: var(--color-danger); }
+
+    /* Button Variants */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text);
+      transition: all 0.15s ease;
+      text-decoration: none;
+    }
+
+    .btn:hover { background: #f1f5f9; }
+    .btn-primary { background: var(--color-primary); color: #ffffff; border-color: var(--color-primary); }
+    .btn-primary:hover { background: #2147a3; }
+    .btn-success { background: var(--color-success); color: #ffffff; border-color: var(--color-success); }
+    .btn-danger { background: var(--color-danger); color: #ffffff; border-color: var(--color-danger); }
+    .btn-sm { padding: 4px 8px; font-size: 12px; }
+
+    /* Standard Drawer Slide-Over Panel (z-index 2000+) */
+    .drawer-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: 2000;
+      display: none;
+    }
+
+    .drawer-backdrop.open {
+      display: block;
+    }
+
+    .drawer-panel {
+      position: fixed;
+      top: 0;
+      right: -520px;
+      width: 500px;
+      max-width: 100%;
+      height: 100vh;
+      background: #ffffff;
+      box-shadow: -4px 0 20px rgba(0,0,0,0.15);
+      z-index: 2010;
+      transition: right 0.25s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .drawer-panel.open {
+      right: 0;
+    }
+
+    .drawer-header {
+      padding: var(--space-3) var(--space-4);
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f8fafc;
+    }
+
+    .drawer-header h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .drawer-close-btn {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: var(--color-text-muted);
+      line-height: 1;
+    }
+
+    .drawer-body {
+      padding: var(--space-4);
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .form-group {
+      margin-bottom: var(--space-3);
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-1);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      box-sizing: border-box;
+      outline: none;
+    }
+
+    .form-control:focus {
+      border-color: var(--color-primary);
+    }
+
+    .drawer-footer {
+      padding: var(--space-3) var(--space-4);
+      border-top: 1px solid var(--color-border);
+      display: flex;
+      justify-content: flex-end;
+      gap: var(--space-2);
+      background: #f8fafc;
+    }
+  </style>
+</head>
+<body data-screen="bo-kho-ton-kho">
+
+  <!-- Header Page Shell -->
+  <header id="app-topnav"></header>
+
+  <main class="page-container">
+
+    <!-- Top Action & Title Bar -->
+    <div class="page-header">
+      <div class="title-area">
+        <h1>
+          <span style="color: var(--color-primary); display: inline-flex; align-items: center;"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.5 L10 3 L17.5 6.5 L10 10 Z"/><path d="M2.5 6.5 V14 L10 17.5 L17.5 14 V6.5"/><line x1="10" y1="10" x2="10" y2="17.5"/></svg></span>
+          Quản lý Tồn kho & FEFO
+        </h1>
+        <p>Giám sát tồn kho thực tế, hạn dùng lô sản xuất FEFO, ghi nhận xuất nhập kho và theo dõi mức tồn tối thiểu (`lowStockThreshold`).</p>
+      </div>
+
+      <div class="action-area">
+        <button type="button" class="btn btn-success" onclick="openInventoryDrawer('nhap')">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="10" y1="4" x2="10" y2="16"/><line x1="4" y1="10" x2="16" y2="10"/></svg> + Nhập kho
+        </button>
+        <button type="button" class="btn btn-danger" onclick="openInventoryDrawer('xuat')">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="4" y1="10" x2="16" y2="10"/></svg> - Xuất kho
+        </button>
+        <button type="button" class="btn" onclick="openInventoryDrawer('dieuchinh')">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="4" y1="6" x2="16" y2="6"/><circle cx="12" cy="6" r="1.4" fill="currentColor" stroke="none"/><line x1="4" y1="10" x2="16" y2="10"/><circle cx="7" cy="10" r="1.4" fill="currentColor" stroke="none"/><line x1="4" y1="14" x2="16" y2="14"/><circle cx="14" cy="14" r="1.4" fill="currentColor" stroke="none"/></svg> ± Điều chỉnh
+        </button>
+        <button type="button" class="btn btn-primary" onclick="openInventoryDrawer('tao')">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="10" y1="4" x2="10" y2="16"/><line x1="4" y1="10" x2="16" y2="10"/></svg> + Tạo Phiếu Mới
+        </button>
+      </div>
+    </div>
+
+    <!-- 4 KPI Cards Grid -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-card-header">
+          <span>TỔNG GIÁ TRỊ TỒN (FIFO)</span>
+          <span class="kpi-icon" style="color: var(--color-primary); display: inline-flex; align-items: center;"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2.5" width="12" height="15" rx="1.5"/><line x1="7" y1="6.5" x2="13" y2="6.5"/><line x1="7" y1="9.5" x2="13" y2="9.5"/><line x1="7" y1="12.5" x2="10.5" y2="12.5"/></svg></span>
+        </div>
+        <div class="kpi-card-value">890.400.000 ₫</div>
+        <div class="kpi-card-sub"><strong>142 SKU</strong> • 3.840 sản phẩm</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-card-header">
+          <span>SKU AN TOÀN / BÌNH THƯỜNG</span>
+          <span class="kpi-icon" style="color: var(--color-success); display: inline-flex; align-items: center;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><polyline points="6.5,10.2 9,12.8 13.8,7.5"/></svg></span>
+        </div>
+        <div class="kpi-card-value">128 <span style="font-size: 13px; font-weight: normal; color: var(--color-text-muted);">/ 142 SKU</span></div>
+        <div class="kpi-card-sub"><strong>90.1%</strong> đạt tiêu chuẩn an toàn</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-card-header">
+          <span>NGUY CƠ ĐỨT HÀNG (STOCK-OUT)</span>
+          <span class="kpi-icon" style="color: var(--color-danger); display: inline-flex; align-items: center;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3 L18 17 L2 17 Z"/><line x1="10" y1="8.5" x2="10" y2="12.5"/><circle cx="10" cy="14.5" r="0.9" fill="currentColor" stroke="none"/></svg></span>
+        </div>
+        <div class="kpi-card-value" style="color: var(--color-danger);">6 <span style="font-size: 13px; font-weight: normal;">SKU</span></div>
+        <div class="kpi-card-sub"><strong style="color: var(--color-danger);">4 SKU &lt; Min Stock</strong> • 2 SKU cạn 3-5 ngày</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-card-header">
+          <span>CẬN HẠN FEFO (&lt;90 NGÀY)</span>
+          <span class="kpi-icon" style="color: var(--color-warning); display: inline-flex; align-items: center;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3 L18 17 L2 17 Z"/><line x1="10" y1="8.5" x2="10" y2="12.5"/><circle cx="10" cy="14.5" r="0.9" fill="currentColor" stroke="none"/></svg></span>
+        </div>
+        <div class="kpi-card-value" style="color: var(--color-warning);">8 <span style="font-size: 13px; font-weight: normal;">Lô Date</span></div>
+        <div class="kpi-card-sub">Trị giá: <strong>64.200.000 ₫</strong> (Cần ưu tiên xả)</div>
+      </div>
+    </div>
+
+    <!-- AI Insight Strip (Component Contract Rule) -->
+    <div class="ai-insight-strip">
+      <div class="ai-insight-strip-content">
+        <span style="color: var(--color-primary); display: inline-flex; align-items: center;"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="6" width="12" height="9" rx="2"/><line x1="10" y1="6" x2="10" y2="3"/><circle cx="10" cy="2.3" r="0.8" fill="currentColor" stroke="none"/><circle cx="7.3" cy="10.5" r="1" fill="currentColor" stroke="none"/><circle cx="12.7" cy="10.5" r="1" fill="currentColor" stroke="none"/></svg></span>
+        <span><strong>AI Inventory Intelligence:</strong> Phát hiện 6 SKU có nguy cơ đứt hàng trong 3-5 ngày tới và 8 lô mỹ phẩm cận hạn FEFO cần xả hàng.</span>
+      </div>
+      <a href="bo-ai-phan-tich.html" class="ai-insight-strip-link">Xem phân tích đầy đủ →</a>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+      <div class="search-box">
+        <span class="search-icon" style="display: inline-flex; align-items: center;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="8.5" cy="8.5" r="5"/><line x1="12.3" y1="12.3" x2="17" y2="17"/></svg></span>
+        <input type="text" placeholder="Tìm kiếm theo Tên sản phẩm, Mã SKU, Barcode hoặc Số Lô (Lot #)...">
+      </div>
+      <div class="filter-controls">
+        <select class="select-input">
+          <option>Kho: Tất cả chi nhánh</option>
+          <option>Kho Q.1 (Showroom)</option>
+          <option>Kho Tân Bình (Tổng kho)</option>
+        </select>
+        <select class="select-input">
+          <option>Trạng thái: Tất cả</option>
+          <option>Nguy cơ đứt hàng</option>
+          <option>Dưới Min Stock</option>
+          <option>Cận hạn FEFO</option>
+        </select>
+        <button type="button" class="btn" title="Làm mới">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10a6 6 0 0 1 10.3-4.2"/><polyline points="14,2.5 14.3,6 10.8,5.7"/><path d="M16 10a6 6 0 0 1-10.3 4.2"/><polyline points="6,17.5 5.7,14 9.2,14.3"/></svg>
+        </button>
+        <button type="button" class="btn" title="Xuất File Excel">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="10" y1="3" x2="10" y2="12.5"/><polyline points="6,9 10,13 14,9"/><line x1="4" y1="16.5" x2="16" y2="16.5"/></svg> Xuất Excel
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Data Table (6 Primary Columns) -->
+    <div class="table-card">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Sản phẩm & SKU</th>
+            <th>Lô hàng & Hạn dùng (FEFO)</th>
+            <th style="text-align: right;">Tồn thực tế (`quantity`)</th>
+            <th style="text-align: right;">Tồn tối thiểu (`lowStockThreshold`)</th>
+            <th style="text-align: right;">Giá trị tồn (FIFO)</th>
+            <th style="text-align: center;">Trạng thái</th>
+            <th style="text-align: center;">Thao tác</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Row 1 -->
+          <tr>
+            <td>
+              <div class="product-meta">
+                <img src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=100&auto=format&fit=crop&q=80" class="product-img" alt="Bio-B5 Serum">
+                <div>
+                  <div class="product-title">Serum Phục Hồi Bio-B5 Hydra Max</div>
+                  <div class="product-sub">SKU-SKN-001 • Chai 50ml</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div><strong>Lot #24D</strong></div>
+              <div style="font-size: 11px; color: var(--color-text-muted);">Exp: 11/2026</div>
+            </td>
+            <td style="text-align: right; font-weight: 700; color: var(--color-danger);">18 hộp</td>
+            <td style="text-align: right; color: var(--color-text-muted);">30 hộp</td>
+            <td style="text-align: right; font-weight: 600;">5.040.000 ₫</td>
+            <td style="text-align: center;">
+              <span class="badge badge-danger">Nguy cơ đứt hàng</span>
+            </td>
+            <td style="text-align: center;">
+              <button type="button" class="btn btn-sm" onclick="openInventoryDrawer('view', 'Serum Phục Hồi Bio-B5 Hydra Max')">Chi tiết</button>
+            </td>
+          </tr>
+
+          <!-- Row 2 -->
+          <tr>
+            <td>
+              <div class="product-meta">
+                <img src="https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?w=100&auto=format&fit=crop&q=80" class="product-img" alt="Rosa Cream">
+                <div>
+                  <div class="product-title">Kem Dưỡng Tái Sinh Rosa Damascena</div>
+                  <div class="product-sub">SKU-CRM-012 • Hũ 50g</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div><strong>Lot #24C</strong></div>
+              <div style="font-size: 11px; color: var(--color-text-muted);">Exp: 08/2026</div>
+            </td>
+            <td style="text-align: right; font-weight: 700; color: var(--color-warning);">8 hộp</td>
+            <td style="text-align: right; color: var(--color-text-muted);">25 hộp</td>
+            <td style="text-align: right; font-weight: 600;">5.200.000 ₫</td>
+            <td style="text-align: center;">
+              <span class="badge badge-warning">Dưới Min Stock</span>
+            </td>
+            <td style="text-align: center;">
+              <button type="button" class="btn btn-sm" onclick="openInventoryDrawer('view', 'Kem Dưỡng Rosa Damascena')">Chi tiết</button>
+            </td>
+          </tr>
+
+          <!-- Row 3 -->
+          <tr>
+            <td>
+              <div class="product-meta">
+                <img src="https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=100&auto=format&fit=crop&q=80" class="product-img" alt="Lipstick">
+                <div>
+                  <div class="product-title">Son Lụa Dưỡng Ẩm Velvet Bloom #04</div>
+                  <div class="product-sub">SKU-LIP-004 • Thỏi 3.5g</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div><strong>Lot #24B</strong></div>
+              <div style="font-size: 11px; color: var(--color-warning); font-weight: 600;">Exp: 31/12/2024</div>
+            </td>
+            <td style="text-align: right; font-weight: 700;">42 cây</td>
+            <td style="text-align: right; color: var(--color-text-muted);">15 cây</td>
+            <td style="text-align: right; font-weight: 600;">6.300.000 ₫</td>
+            <td style="text-align: center;">
+              <span class="badge badge-warning">Cận hạn FEFO</span>
+            </td>
+            <td style="text-align: center;">
+              <button type="button" class="btn btn-sm" onclick="openInventoryDrawer('view', 'Son Velvet Bloom #04')">Chi tiết</button>
+            </td>
+          </tr>
+
+          <!-- Row 4 -->
+          <tr>
+            <td>
+              <div class="product-meta">
+                <img src="https://images.unsplash.com/photo-1556228720-195a672e8a03?w=100&auto=format&fit=crop&q=80" class="product-img" alt="Centella Toner">
+                <div>
+                  <div class="product-title">Nước Hoa Hồng Dịu Nhẹ Centella Toner</div>
+                  <div class="product-sub">SKU-TNR-008 • Chai 200ml</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div><strong>Lot #25A</strong></div>
+              <div style="font-size: 11px; color: var(--color-text-muted);">Exp: 04/2027</div>
+            </td>
+            <td style="text-align: right; font-weight: 700; color: var(--color-success);">120 chai</td>
+            <td style="text-align: right; color: var(--color-text-muted);">30 chai</td>
+            <td style="text-align: right; font-weight: 600;">18.000.000 ₫</td>
+            <td style="text-align: center;">
+              <span class="badge badge-success">An toàn</span>
+            </td>
+            <td style="text-align: center;">
+              <button type="button" class="btn btn-sm" onclick="openInventoryDrawer('view', 'Nước Hoa Hồng Centella Toner')">Chi tiết</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Pagination -->
+      <div class="pagination-bar">
+        <span>Hiển thị 1 - 4 trong tổng số 142 sản phẩm tồn kho</span>
+        <div style="display: flex; gap: var(--space-1);">
+          <button class="btn btn-sm" disabled>Trước</button>
+          <button class="btn btn-primary btn-sm">1</button>
+          <button class="btn btn-sm">2</button>
+          <button class="btn btn-sm">3</button>
+          <button class="btn btn-sm">Sau</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Slide-Over Drawer Component (z-index 2000+) -->
+  <div class="drawer-backdrop" id="inventoryDrawerBackdrop" onclick="closeInventoryDrawer()"></div>
+  
+  <div class="drawer-panel" id="inventoryDrawerPanel">
+    <div class="drawer-header">
+      <h3 id="drawerTitleText">Tạo Phiếu Kho Mới</h3>
+      <button type="button" class="drawer-close-btn" onclick="closeInventoryDrawer()">&times;</button>
+    </div>
+
+    <div class="drawer-body">
+      <form id="drawerForm" onsubmit="event.preventDefault(); saveInventoryForm();">
+        <div class="form-group">
+          <label>Loại giao dịch (`inventory_transactions.type`)</label>
+          <select class="form-control" id="transTypeSelect">
+            <option value="IN">Nhập kho (IN)</option>
+            <option value="OUT">Xuất kho (OUT)</option>
+            <option value="ADJUSTMENT">Điều chỉnh kiểm kê (ADJUSTMENT)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Sản phẩm (`product_variants.variantId`)</label>
+          <select class="form-control" id="productSelectInput">
+            <option>Serum Phục Hồi Bio-B5 Hydra Max (SKU-SKN-001)</option>
+            <option>Kem Dưỡng Tái Sinh Rosa Damascena (SKU-CRM-012)</option>
+            <option>Son Lụa Dưỡng Ẩm Velvet Bloom #04 (SKU-LIP-004)</option>
+            <option>Nước Hoa Hồng Dịu Nhẹ Centella Toner (SKU-TNR-008)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Số lô sản xuất (`inventory_batches.batchNumber`)</label>
+          <input type="text" class="form-control" placeholder="Ví dụ: Lot #24D" value="Lot #24E">
+        </div>
+
+        <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2);">
+          <div>
+            <label>Ngày sản xuất (`manufactureDate`)</label>
+            <input type="date" class="form-control" value="2024-10-01">
+          </div>
+          <div>
+            <label>Hạn sử dụng (`expiresAt`)</label>
+            <input type="date" class="form-control" value="2026-10-01">
+          </div>
+        </div>
+
+        <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2);">
+          <div>
+            <label>Số lượng giao dịch (`quantity`)</label>
+            <input type="number" class="form-control" value="50">
+          </div>
+          <div>
+            <label>Đơn giá vốn nhập (`unitCost`)</label>
+            <input type="number" class="form-control" value="280000">
+          </div>
+        </div>
+
+        <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2);">
+          <div>
+            <label>Tồn tạm giữ (`reservedQty`)</label>
+            <input type="number" class="form-control" value="0" readonly style="background: #f1f5f9;">
+          </div>
+          <div>
+            <label>Mức tồn tối thiểu (`lowStockThreshold`)</label>
+            <input type="number" class="form-control" value="30">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Lý do giao dịch (`reason`)</label>
+          <textarea class="form-control" rows="3" placeholder="Nhập lý do nhập/xuất kho hoặc ghi chú kiểm kê..."></textarea>
+        </div>
+      </form>
+    </div>
+
+    <div class="drawer-footer">
+      <button type="button" class="btn" onclick="closeInventoryDrawer()">Hủy bỏ</button>
+      <button type="button" class="btn btn-primary" onclick="saveInventoryForm()">Lưu Phiếu Kho</button>
+    </div>
+  </div>
+
+  <!-- Shared Top Navigation Dynamic Script -->
+  <script src="../_shared/nav-owner.js"></script>
+
+  <!-- Interactive Drawer Script -->
+  <script>
+    function openInventoryDrawer(mode, productName) {
+      const backdrop = document.getElementById('inventoryDrawerBackdrop');
+      const panel = document.getElementById('inventoryDrawerPanel');
+      const title = document.getElementById('drawerTitleText');
+      const transType = document.getElementById('transTypeSelect');
+
+      if (mode === 'nhap') {
+        title.innerText = 'Phiếu Nhập Kho Mới';
+        transType.value = 'IN';
+      } else if (mode === 'xuat') {
+        title.innerText = 'Phiếu Xuất Kho';
+        transType.value = 'OUT';
+      } else if (mode === 'dieuchinh') {
+        title.innerText = 'Điều Chỉnh Kiểm Kê Kho';
+        transType.value = 'ADJUSTMENT';
+      } else if (mode === 'view') {
+        title.innerText = 'Chi Tiết Sản Phẩm & Lô Kho: ' + (productName || '');
+      } else {
+        title.innerText = 'Tạo Phiếu Kho Mới';
+      }
+
+      backdrop.classList.add('open');
+      panel.classList.add('open');
+    }
+
+    function closeInventoryDrawer() {
+      const backdrop = document.getElementById('inventoryDrawerBackdrop');
+      const panel = document.getElementById('inventoryDrawerPanel');
+      backdrop.classList.remove('open');
+      panel.classList.remove('open');
+    }
+
+    function saveInventoryForm() {
+      alert('Đã ghi nhận phiếu giao dịch tồn kho thành công!');
+      closeInventoryDrawer();
+    }
+  </script>
+
+</body>
+</html>

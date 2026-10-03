@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BO-02: Quản lý Chi phí — ABC Prototype</title>
+  <link rel="stylesheet" href="../tokens.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+</head>
+<body data-screen="bo-chi-phi">
+  <div class="app-container">
+    <!-- Top Navigation Header (Rendered dynamically by nav-owner.js) -->
+    <header id="app-topnav"></header>
+
+    <!-- Main Content Area -->
+    <main class="main-area">
+      <!-- Page Header & Action Buttons -->
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Quản Lý Nhóm Chi Phí & Tài Chính Cơ Bản</h1>
+          <p class="page-subtitle">Phân loại hạng mục chi phí, quản lý định mức ngân sách và ghi nhận các khoản chi theo thời gian.</p>
+        </div>
+        <div style="display: flex; gap: var(--space-2);">
+          <button class="btn btn-secondary" type="button">Xuất Báo Cáo</button>
+          <button class="btn btn-secondary" type="button" onclick="openExpenseModal()">+ Ghi Khoản Chi Mới</button>
+          <button class="btn btn-primary" type="button" onclick="openCategoryModal()">+ Tạo Nhóm Chi Phí</button>
+        </div>
+      </div>
+
+      <!-- 4 Financial KPI Hero Cards (Component Contract) -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label">Tổng Doanh Thu Ghi Nhận</div>
+          <div class="kpi-value">1.845.200.000 ₫</div>
+          <div class="kpi-subtext" style="color: var(--color-success);">+18.4% so với tháng trước</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Giá Vốn Hàng Bán (COGS)</div>
+          <div class="kpi-value">968.730.000 ₫</div>
+          <div class="kpi-subtext">Chiếm 52.5% doanh thu</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Tổng Chi Phí Vận Hành (OPEX)</div>
+          <div class="kpi-value" style="color: var(--color-danger);">412.500.000 ₫</div>
+          <div class="kpi-subtext" style="color: var(--color-danger);">+4.2% so với định mức</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Lợi Nhuận Ước Tính (EBT)</div>
+          <div class="kpi-value" style="color: var(--color-success);">463.970.000 ₫</div>
+          <div class="kpi-subtext">Biên ròng: 25.15%</div>
+        </div>
+      </div>
+
+      <!-- AI Insight Strip (Component Contract: design-system.md) -->
+      <div class="ai-insight-strip">
+        <div class="ai-insight-strip-content">
+          <span class="ai-insight-strip-icon" style="display: inline-flex; align-items: center; gap: 4px;"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="6" width="12" height="9" rx="2"/><line x1="10" y1="6" x2="10" y2="3"/><circle cx="10" cy="2.3" r="0.8" fill="currentColor" stroke="none"/><circle cx="7.3" cy="10.5" r="1" fill="currentColor" stroke="none"/><circle cx="12.7" cy="10.5" r="1" fill="currentColor" stroke="none"/></svg> AI Insight:</span>
+          <span>Nhóm Marketing, Quảng cáo & Ads vượt 4.0% (+2.400.000 ₫) so với định mức ngân sách Tháng 10/2024.</span>
+        </div>
+        <a href="bo-ai-phan-tich.html" class="ai-insight-strip-link">Xem phân tích đầy đủ →</a>
+      </div>
+
+      <!-- Component Contract: List View (Expense Categories & Budget Tracking) -->
+      <div class="card">
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+          <div class="filter-group">
+            <input type="text" class="input-search" placeholder="Tìm kiếm nhóm chi phí...">
+            <select class="select-filter">
+              <option value="">Phân loại: Tất cả</option>
+              <option value="fixed">Định phí (Fixed)</option>
+              <option value="variable">Biến phí (Variable)</option>
+            </select>
+            <select class="select-filter">
+              <option value="">Trạng thái: Tất cả</option>
+              <option value="active">Đang hoạt động</option>
+              <option value="warning">Cảnh báo vượt ngân sách</option>
+            </select>
+          </div>
+          <div style="font-size: 12px; color: var(--color-text-muted);">
+            7 nhóm chi phí hoạt động
+          </div>
+        </div>
+
+        <!-- Data Table (Primary Fields Only: Category Name, Description, Spent Amount, Status) -->
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>STT & Nhóm Chi Phí</th>
+                <th>Mô Tả Diễn Giải</th>
+                <th class="text-right">Đã Chi Thực Tế</th>
+                <th class="text-center">Trạng Thái</th>
+                <th class="text-center">Thao Tác</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Row 1 -->
+              <tr onclick="showExpenseDetail('Nguyên vật liệu & Bao bì đóng gói', 'Hộp quà, túi xách vải, màng bóng khí, nhãn phụ', '78.450.000 ₫', 'Hoạt động')">
+                <td style="font-weight: 600;">01. Nguyên vật liệu & Bao bì đóng gói</td>
+                <td style="color: var(--color-text-muted);">Hộp quà, túi xách vải, màng bóng khí, nhãn phụ</td>
+                <td class="text-right" style="font-weight: 700;">78.450.000 ₫</td>
+                <td class="text-center"><span class="badge badge-success">An toàn</span></td>
+                <td class="text-center">
+                  <button class="btn btn-secondary" style="height: 26px; padding: 0 8px; font-size: 11px;" type="button">Chi tiết</button>
+                </td>
+              </tr>
+
+              <!-- Row 2 -->
+              <tr onclick="showExpenseDetail('Tiền thuê mặt bằng & Showroom', 'Flagship Showroom Q.1 + Kho trung chuyển Tân Bình', '120.000.000 ₫', 'Hoạt động')">
+                <td style="font-weight: 600;">02. Tiền thuê mặt bằng & Showroom</td>
+                <td style="color: var(--color-text-muted);">Flagship Showroom Q.1 + Kho trung chuyển Tân Bình</td>
+                <td class="text-right" style="font-weight: 700;">120.000.000 ₫</td>
+                <td class="text-center"><span class="badge badge-success">An toàn</span></td>
+                <td class="text-center">
+                  <button class="btn btn-secondary" style="height: 26px; padding: 0 8px; font-size: 11px;" type="button">Chi tiết</button>
+                </td>
+              </tr>
+
+              <!-- Row 3 -->
+              <tr onclick="showExpenseDetail('Điện nước, Internet & Tiện ích', 'EVN TP.HCM, Sawaco, Đường truyền FPT Business & Cloud', '16.850.000 ₫', 'Hoạt động')">
+                <td style="font-weight: 600;">03. Điện nước, Internet & Tiện ích</td>
+                <td style="color: var(--color-text-muted);">EVN TP.HCM, Sawaco, Đường truyền FPT Business & Cloud</td>
+                <td class="text-right" style="font-weight: 700;">16.850.000 ₫</td>
+                <td class="text-center"><span class="badge badge-success">An toàn</span></td>
+                <td class="text-center">
+                  <button class="btn btn-secondary" style="height: 26px; padding: 0 8px; font-size: 11px;" type="button">Chi tiết</button>
+                </td>
+              </tr>
+
+              <!-- Row 4 -->
+              <tr onclick="showExpenseDetail('Lương & Phúc lợi nhân sự', '18 nhân sự (Quản lý cửa hàng, tư vấn viên, thủ kho, kế toán)', '108.500.000 ₫', 'Hoạt động')">
+                <td style="font-weight: 600;">04. Lương & Phúc lợi nhân sự</td>
+                <td style="color: var(--color-text-muted);">18 nhân sự (Quản lý cửa hàng, tư vấn viên, thủ kho, kế toán)</td>
+                <td class="text-right" style="font-weight: 700;">108.500.000 ₫</td>
+                <td class="text-center"><span class="badge badge-success">An toàn</span></td>
+                <td class="text-center">
+                  <button class="btn btn-secondary" style="height: 26px; padding: 0 8px; font-size: 11px;" type="button">Chi tiết</button>
+                </td>
+              </tr>
+
+              <!-- Row 5 -->
+              <tr onclick="showExpenseDetail('Marketing, Quảng cáo & Ads', 'Meta Ads, TikTok Ads Shop, Booking KOLs & Livestream', '62.400.000 ₫', 'Cảnh báo vượt')">
+                <td style="font-weight: 600;">05. Marketing, Quảng cáo & Ads</td>
+                <td style="color: var(--color-text-muted);">Meta Ads, TikTok Ads Shop, Booking KOLs & Livestream</td>
+                <td class="text-right" style="font-weight: 700; color: var(--color-danger);">62.400.000 ₫</td>
+                <td class="text-center"><span class="badge badge-danger">Vượt ngân sách</span></td>
+                <td class="text-center">
+                  <button class="btn btn-secondary" style="height: 26px; padding: 0 8px; font-size: 11px;" type="button">Chi tiết</button>
+                </td>
+              </tr>
+
+              <!-- Row 6 -->
+              <tr onclick="showExpenseDetail('Vận chuyển & Giao hàng (Logistics)', 'Giao Hàng Tiết Kiệm, Shopee Xpress, GrabExpress', '21.300.000 ₫', 'Hoạt động')">
+                <td style="font-weight: 600;">06. Vận chuyển & Giao hàng (Logistics)</td>
+                <td style="color: var(--color-text-muted);">Giao Hàng Tiết Kiệm, Shopee Xpress, GrabExpress</td>
+                <td class="text-right" style="font-weight: 700;">21.300.000 ₫</td>
+                <td class="text-center"><span class="badge badge-success">An toàn</span></td>
+                <td class="text-center">
+                  <button class="btn btn-secondary" style="height: 26px; padding: 0 8px; font-size: 11px;" type="button">Chi tiết</button>
+                </td>
+              </tr>
+
+              <!-- Row 7 -->
+              <tr onclick="showExpenseDetail('Chi phí khác & Dự phòng vận hành', 'Văn phòng phẩm, trải nghiệm khách hàng, bảo trì POS', '5.000.000 ₫', 'Hoạt động')">
+                <td style="font-weight: 600;">07. Chi phí khác & Dự phòng vận hành</td>
+                <td style="color: var(--color-text-muted);">Văn phòng phẩm, trải nghiệm khách hàng, bảo trì POS</td>
+                <td class="text-right" style="font-weight: 700;">5.000.000 ₫</td>
+                <td class="text-center"><span class="badge badge-success">An toàn</span></td>
+                <td class="text-center">
+                  <button class="btn btn-secondary" style="height: 26px; padding: 0 8px; font-size: 11px;" type="button">Chi tiết</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Form Panel / Slide-Over Drawer (Secondary Fields - Rule: content-density.md) -->
+  <div class="drawer-backdrop" id="drawerBackdrop" onclick="closeDrawer()"></div>
+  <div class="drawer-panel" id="drawerPanel">
+    <div class="drawer-header">
+      <div class="drawer-title" id="drawerTitle">Ghi Nhận Khoản Chi Mới</div>
+      <button class="drawer-close" type="button" onclick="closeDrawer()">✕</button>
+    </div>
+    <div class="drawer-body">
+      <form id="expenseForm">
+        <div style="margin-bottom: var(--space-3);">
+          <label style="font-size: 12px; font-weight: 600; color: var(--color-text-muted); display: block; margin-bottom: 4px;">Tiêu đề khoản chi (*)</label>
+          <input type="text" id="expenseTitle" class="input-search" style="width: 100%;" placeholder="Ví dụ: Thanh toán hóa đơn điện showroom T10">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); margin-bottom: var(--space-3);">
+          <div>
+            <label style="font-size: 12px; font-weight: 600; color: var(--color-text-muted); display: block; margin-bottom: 4px;">Số tiền chi (VND) (*)</label>
+            <input type="number" id="expenseAmount" class="input-search" style="width: 100%; font-weight: 700;" placeholder="0">
+          </div>
+          <div>
+            <label style="font-size: 12px; font-weight: 600; color: var(--color-text-muted); display: block; margin-bottom: 4px;">Ngày ghi nhận chi (*)</label>
+            <input type="date" id="expenseDate" class="input-search" style="width: 100%;" value="2024-10-24">
+          </div>
+        </div>
+
+        <div style="margin-bottom: var(--space-3);">
+          <label style="font-size: 12px; font-weight: 600; color: var(--color-text-muted); display: block; margin-bottom: 4px;">Nhóm chi phí (Hạng mục)</label>
+          <select id="expenseCategory" class="select-filter" style="width: 100%;">
+            <option>01. Nguyên vật liệu & Bao bì đóng gói</option>
+            <option>02. Tiền thuê mặt bằng & Showroom</option>
+            <option>03. Điện nước, Internet & Tiện ích</option>
+            <option>04. Lương & Phúc lợi nhân sự</option>
+            <option>05. Marketing, Quảng cáo & Ads</option>
+            <option>06. Vận chuyển & Giao hàng</option>
+            <option>07. Chi phí khác & Dự phòng</option>
+          </select>
+        </div>
+
+        <div style="margin-bottom: var(--space-3);">
+          <label style="font-size: 12px; font-weight: 600; color: var(--color-text-muted); display: block; margin-bottom: 4px;">Diễn giải chi tiết khoản chi</label>
+          <textarea id="expenseDesc" class="input-search" style="width: 100%; height: 70px; padding: 8px; font-family: inherit;" placeholder="Ghi chú thêm thông tin hóa đơn, chứng từ..."></textarea>
+        </div>
+
+        <div style="margin-bottom: var(--space-3);">
+          <label style="font-size: 12px; font-weight: 600; color: var(--color-text-muted); display: block; margin-bottom: 4px;">Người ghi nhận (createdBy)</label>
+          <input type="text" id="expenseCreatedBy" class="input-search" style="width: 100%;" value="Nguyễn Thị Mai (Business Owner)" readonly>
+        </div>
+      </form>
+    </div>
+    <div class="drawer-footer">
+      <button class="btn btn-secondary" type="button" onclick="closeDrawer()">Hủy bỏ</button>
+      <button class="btn btn-primary" type="button" onclick="closeDrawer()">Lưu Khoản Chi</button>
+    </div>
+  </div>
+
+  <!-- Shared Navigation Script -->
+  <script src="../_shared/nav-owner.js"></script>
+
+  <!-- Interactive script for Form Drawer -->
+  <script>
+    function openExpenseModal() {
+      document.getElementById('drawerTitle').textContent = 'Ghi Nhận Khoản Chi Mới';
+      document.getElementById('drawerBackdrop').classList.add('open');
+      document.getElementById('drawerPanel').classList.add('open');
+    }
+
+    function openCategoryModal() {
+      document.getElementById('drawerTitle').textContent = 'Tạo Nhóm Chi Phí Mới';
+      document.getElementById('drawerBackdrop').classList.add('open');
+      document.getElementById('drawerPanel').classList.add('open');
+    }
+
+    function closeDrawer() {
+      document.getElementById('drawerBackdrop').classList.remove('open');
+      document.getElementById('drawerPanel').classList.remove('open');
+    }
+
+    function showExpenseDetail(catName, desc, spent, status) {
+      document.getElementById('drawerTitle').textContent = 'Chi Tiết Nhóm Chi Phí: ' + catName;
+      document.getElementById('expenseTitle').value = catName;
+      document.getElementById('expenseDesc').value = desc;
+      document.getElementById('drawerBackdrop').classList.add('open');
+      document.getElementById('drawerPanel').classList.add('open');
+    }
+  </script>
+</body>
+</html>

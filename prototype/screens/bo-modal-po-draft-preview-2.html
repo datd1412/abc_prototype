@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dự Báo & Phê Duyệt Đơn Đặt Hàng PO Mega 11.11 - ABC Backoffice</title>
+  <link rel="stylesheet" href="../tokens.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-family);
+      font-size: var(--font-base);
+      color: var(--color-text);
+      background-color: var(--color-bg);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Modal / Form Header */
+    .top-header {
+      height: 56px;
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--space-4);
+      flex-shrink: 0;
+    }
+    .breadcrumb-title {
+      font-size: 15px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .breadcrumb-link {
+      color: var(--color-text-muted);
+      text-decoration: none;
+    }
+    .breadcrumb-link:hover { color: var(--color-primary); }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 500;
+      border-radius: var(--radius);
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text);
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .btn-primary {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: #fff;
+    }
+
+    /* Multi-PO Tabs */
+    .po-nav-tabs {
+      background: #f1f5f9;
+      border-bottom: 1px solid var(--color-border);
+      padding: 6px var(--space-4);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      flex-shrink: 0;
+    }
+    .po-tab-btn {
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--color-text-muted);
+      border-radius: var(--radius);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .po-tab-btn.active {
+      background: var(--color-surface);
+      border-color: var(--color-border);
+      color: var(--color-primary);
+      font-weight: 600;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+
+    /* Statusbar */
+    .statusbar {
+      background: #fafbfc;
+      border-bottom: 1px solid var(--color-border);
+      padding: 8px var(--space-4);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .status-steps {
+      display: flex;
+      gap: 4px;
+    }
+    .status-step {
+      padding: 4px 12px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--color-text-muted);
+      border-radius: 4px;
+    }
+    .status-step.active {
+      background: #e0e7ff;
+      color: var(--color-primary);
+      font-weight: 600;
+    }
+
+    /* Content Area */
+    .content-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--space-4);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .form-sheet {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-card);
+      width: 100%;
+      max-width: 1000px;
+      padding: var(--space-5);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    .doc-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 1px solid var(--color-border);
+      padding-bottom: var(--space-4);
+    }
+    .doc-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--color-text);
+      margin-bottom: 4px;
+    }
+    .doc-meta {
+      font-size: 12px;
+      color: var(--color-text-muted);
+      line-height: 1.5;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-4);
+      background: #f8fafc;
+      padding: var(--space-3) var(--space-4);
+      border-radius: var(--radius);
+      border: 1px solid var(--color-border);
+      font-size: 13px;
+    }
+    .info-row {
+      display: flex;
+      margin-bottom: 6px;
+    }
+    .info-label {
+      width: 130px;
+      color: var(--color-text-muted);
+      flex-shrink: 0;
+    }
+    .info-value {
+      font-weight: 500;
+      color: var(--color-text);
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .data-table th {
+      background: #f8fafc;
+      padding: 10px 12px;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      border-bottom: 1px solid var(--color-border);
+      text-align: left;
+      font-size: 12px;
+    }
+    .data-table td {
+      padding: 12px;
+      border-bottom: 1px solid var(--color-border);
+      vertical-align: middle;
+    }
+
+    .total-summary-box {
+      align-self: flex-end;
+      width: 380px;
+      background: #fafbfc;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-3);
+      font-size: 13px;
+    }
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+    }
+    .total-row.grand {
+      border-top: 1px solid var(--color-border);
+      padding-top: 8px;
+      margin-top: 4px;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--color-primary);
+    }
+
+    .footer-bar {
+      height: 60px;
+      background: var(--color-surface);
+      border-top: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--space-4);
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="top-header">
+    <div class="breadcrumb-title">
+      <a href="bo-don-hang.html" class="breadcrumb-link">Đơn Mua Hàng (PO)</a>
+      <span style="color: var(--color-text-muted);">/</span>
+      <span>Đợt Đặt Hàng Nhập Kho Mega 11.11 (2 Đơn Đề Xuất)</span>
+    </div>
+    <div class="header-actions">
+      <button class="btn">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2.5" width="10" height="5" rx="0.5"/><rect x="3" y="7.5" width="14" height="7" rx="1"/><rect x="6" y="12" width="8" height="5.5" rx="0.5"/></svg>
+        In bản nháp (Ctrl+P)
+      </button>
+      <button class="btn">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="10" y1="3" x2="10" y2="12.5"/><polyline points="6,9 10,13 14,9"/><line x1="4" y1="16.5" x2="16" y2="16.5"/></svg>
+        Tải PDF báo giá
+      </button>
+      <a href="bo-ai-du-bao-goi-y-nhap.html" class="btn">
+        Đóng
+      </a>
+    </div>
+  </header>
+
+  <!-- Multi-PO Tabs -->
+  <div class="po-nav-tabs">
+    <button class="po-tab-btn active" id="btn-tab-po1" onclick="switchPO('po-1')">
+      <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><polyline points="6.5,10.2 9,12.8 13.8,7.5"/></svg>
+      PO #01: Klairs VN (2 SKU • 88.270.000 ₫)
+    </button>
+    <button class="po-tab-btn" id="btn-tab-po2" onclick="switchPO('po-2')">
+      <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.5 L10 3 L17.5 6.5 L10 10 Z"/><path d="M2.5 6.5 V14 L10 17.5 L17.5 14 V6.5"/><line x1="10" y1="10" x2="10" y2="17.5"/></svg>
+      PO #02: Xưởng May Mặc Bloom (1 SKU • 24.500.000 ₫)
+    </button>
+  </div>
+
+  <!-- Statusbar -->
+  <div class="statusbar">
+    <div class="status-steps">
+      <div class="status-step active">1. Bản nháp (Draft)</div>
+      <div class="status-step">2. Đã phê duyệt</div>
+      <div class="status-step">3. Đã gửi NCC</div>
+      <div class="status-step">4. Nhập kho hoàn tất</div>
+    </div>
+    <div style="font-size: 12px; color: var(--color-text-muted);">
+      Tổng giá trị 2 đơn hàng: <strong>112.770.000 ₫</strong>
+    </div>
+  </div>
+
+  <main class="content-area">
+    <!-- PO 01 CONTENT -->
+    <div id="po-1" class="po-content form-sheet">
+      <div class="doc-header">
+        <div>
+          <div class="doc-title">ĐƠN ĐẶT HÀNG: #PO-20261028-KL01</div>
+          <div class="doc-meta">
+            Nhà cung cấp: <strong>Công ty TNHH Phân Phối Mỹ Phẩm Klairs VN</strong><br>
+            Ngày tạo: <strong>02/10/2026</strong> • Ngày dự kiến giao hàng: <strong>29/10/2026</strong>
+          </div>
+        </div>
+        <span class="status-step active" style="font-size: 13px;">DỰ THẢO PO-01</span>
+      </div>
+
+      <div class="info-grid">
+        <div>
+          <div style="font-weight: 600; margin-bottom: 8px; color: var(--color-primary);">NHÀ CUNG CẤP:</div>
+          <div class="info-row"><span class="info-label">Đơn vị:</span><span class="info-value">Klairs VN - NPP Quốc tế</span></div>
+          <div class="info-row"><span class="info-label">Đại diện KD:</span><span class="info-value">Trần Minh Quân (0912 345 678)</span></div>
+          <div class="info-row"><span class="info-label">Email:</span><span class="info-value">orders@klairs.vn</span></div>
+        </div>
+        <div>
+          <div style="font-weight: 600; margin-bottom: 8px; color: var(--color-primary);">ĐỊA ĐIỂM GIAO:</div>
+          <div class="info-row"><span class="info-label">Kho nhận:</span><span class="info-value">Kho Tổng Logistics Tân Bình</span></div>
+          <div class="info-row"><span class="info-label">Thủ kho:</span><span class="info-value">Lê Thu Trang (0908 112 233)</span></div>
+        </div>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Mặt hàng & SKU</th>
+            <th>Cam kết HSD</th>
+            <th style="text-align: center;">Tồn hiện tại</th>
+            <th style="text-align: center;">SL Đặt</th>
+            <th style="text-align: right;">Đơn giá</th>
+            <th style="text-align: right;">Thành tiền (₫)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div style="font-weight: 600;">Serum Klairs Midnight Blue Calming 30ml</div>
+              <div style="font-size: 11px; color: var(--color-text-muted);">SKU: KLAIRS-MID-30ML</div>
+            </td>
+            <td>Date mới 2027</td>
+            <td style="text-align: center; color: var(--color-danger); font-weight: 600;">14 chai</td>
+            <td style="text-align: center; font-weight: 700;">200 chai</td>
+            <td style="text-align: right;">252.200 ₫</td>
+            <td style="text-align: right; font-weight: 600;">50.440.000 ₫</td>
+          </tr>
+          <tr>
+            <td>
+              <div style="font-weight: 600;">Kem Dưỡng Phyto Calming Cream 50ml</div>
+              <div style="font-size: 11px; color: var(--color-text-muted);">SKU: PHYTO-CLM-50</div>
+            </td>
+            <td>Date mới 2027</td>
+            <td style="text-align: center; color: var(--color-warning); font-weight: 600;">28 hộp</td>
+            <td style="text-align: center; font-weight: 700;">150 hộp</td>
+            <td style="text-align: right;">252.200 ₫</td>
+            <td style="text-align: right; font-weight: 600;">37.830.000 ₫</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="total-summary-box">
+        <div class="total-row"><span>Tổng tiền niêm yết:</span><span>98.000.000 ₫</span></div>
+        <div class="total-row"><span>Chiết khấu sỉ gộp (> 50M):</span><span style="color: var(--color-success);">-9.730.000 ₫</span></div>
+        <div class="total-row grand"><span>TỔNG PO-01:</span><span>88.270.000 ₫</span></div>
+      </div>
+    </div>
+
+    <!-- PO 02 CONTENT -->
+    <div id="po-2" class="po-content form-sheet" style="display: none;">
+      <div class="doc-header">
+        <div>
+          <div class="doc-title">ĐƠN ĐẶT HÀNG: #PO-20261028-BL02</div>
+          <div class="doc-meta">
+            Nhà cung cấp: <strong>Xưởng May Thiết Kế & May Mặc Bloom Sài Gòn</strong><br>
+            Ngày tạo: <strong>02/10/2026</strong> • Ngày cam kết hoàn tất giao hàng: <strong>27/10/2026 (5 ngày may)</strong>
+          </div>
+        </div>
+        <span class="status-step active" style="font-size: 13px;">DỰ THẢO PO-02</span>
+      </div>
+
+      <div class="info-grid">
+        <div>
+          <div style="font-weight: 600; margin-bottom: 8px; color: var(--color-primary);">XƯỞNG SẢN XUẤT:</div>
+          <div class="info-row"><span class="info-label">Đơn vị:</span><span class="info-value">Xưởng May Mặc Bloom Sài Gòn</span></div>
+          <div class="info-row"><span class="info-label">Chủ xưởng:</span><span class="info-value">Lê Hoàng Nam (0988 776 655)</span></div>
+          <div class="info-row"><span class="info-label">Địa chỉ xưởng:</span><span class="info-value">Khu công nghiệp Tân Bình, TP.HCM</span></div>
+        </div>
+        <div>
+          <div style="font-weight: 600; margin-bottom: 8px; color: var(--color-primary);">QUY CÁCH TIẾP NHẬN:</div>
+          <div class="info-row"><span class="info-label">Kho nhận:</span><span class="info-value">Kho Tổng Logistics Tân Bình</span></div>
+          <div class="info-row"><span class="info-label">Kiểm tra QC:</span><span class="info-value">Nghiệm thu đường may & kích thước Size M</span></div>
+        </div>
+      </div>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Mặt hàng & Biến thể</th>
+            <th>Quy cách sản xuất</th>
+            <th style="text-align: center;">Tồn hiện tại</th>
+            <th style="text-align: center;">SL Đặt May</th>
+            <th style="text-align: right;">Đơn giá may</th>
+            <th style="text-align: right;">Thành tiền (₫)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div style="font-weight: 600;">Đầm Dạ Hội Silk Maxi Bloom Ruby (Size M)</div>
+              <div style="font-size: 11px; color: var(--color-text-muted);">SKU: DR-RUBY-MAXI-M • Lụa tơ tằm đỏ ruby</div>
+            </td>
+            <td>May theo rập mẫu chuẩn 2026, đóng túi zip riêng</td>
+            <td style="text-align: center; color: var(--color-danger); font-weight: 600;">0 chiếc (Hết M)</td>
+            <td style="text-align: center; font-weight: 700;">50 chiếc</td>
+            <td style="text-align: right;">490.000 ₫</td>
+            <td style="text-align: right; font-weight: 600;">24.500.000 ₫</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="total-summary-box">
+        <div class="total-row"><span>Đặt cọc sản xuất (30%):</span><span style="font-weight: 600; color: var(--color-primary);">7.350.000 ₫</span></div>
+        <div class="total-row"><span>Thanh toán khi nhận hàng (70%):</span><span>17.150.000 ₫</span></div>
+        <div class="total-row grand"><span>TỔNG PO-02:</span><span>24.500.000 ₫</span></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Fixed Footer -->
+  <footer class="footer-bar">
+    <a href="bo-ai-du-bao-goi-y-nhap.html" class="btn">Hủy bỏ</a>
+    <div style="display: flex; gap: var(--space-2);">
+      <button class="btn">Lưu bản nháp</button>
+      <button class="btn">Xem trước mẫu in A4</button>
+      <a href="se-nhap-kho.html" class="btn btn-primary">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><polyline points="6.5,10.2 9,12.8 13.8,7.5"/></svg>
+        Phê duyệt & Gửi NCC (PO-01 & PO-02)
+      </a>
+    </div>
+  </footer>
+
+  <script>
+    function switchPO(poId) {
+      document.querySelectorAll('.po-content').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('.po-tab-btn').forEach(btn => btn.classList.remove('active'));
+
+      const target = document.getElementById(poId);
+      if (target) target.style.display = 'flex';
+
+      if (poId === 'po-1') document.getElementById('btn-tab-po1').classList.add('active');
+      if (poId === 'po-2') document.getElementById('btn-tab-po2').classList.add('active');
+    }
+  </script>
+</body>
+</html>

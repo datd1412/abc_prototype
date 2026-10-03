@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BO-AI: Copilot Trợ Lý Ra Quyết Định Kinh Doanh — ABC Copilot</title>
+  <link rel="stylesheet" href="../tokens.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    .page-container {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: var(--space-4);
+      height: calc(100vh - 60px);
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
+    }
+
+    /* AI Chat Workspace 2-Column Layout */
+    .chat-layout {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: var(--space-3);
+      flex: 1;
+      min-height: 0; /* Important for inner scroll */
+    }
+
+    /* Left Sidebar: Conversations & Topics */
+    .chat-sidebar {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .sidebar-header {
+      padding: var(--space-3);
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .btn-new-chat {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      padding: 8px 14px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 600;
+      background: var(--color-primary);
+      color: #ffffff;
+      border: none;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    .btn-new-chat:hover {
+      background: #2348a0;
+    }
+
+    .sidebar-tabs {
+      display: flex;
+      gap: 4px;
+      padding: 4px var(--space-2);
+      border-bottom: 1px solid var(--color-border);
+      background: #f8fafc;
+    }
+
+    .side-tab {
+      flex: 1;
+      padding: 6px;
+      border: none;
+      background: transparent;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--color-text-muted);
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .side-tab.active {
+      background: #ffffff;
+      color: var(--color-primary);
+      font-weight: 600;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+    }
+
+    .conversation-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--space-2);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .conv-item {
+      padding: 10px 12px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      border: 1px solid transparent;
+      transition: all 0.12s ease;
+    }
+
+    .conv-item:hover {
+      background: #f1f5f9;
+    }
+
+    .conv-item.active {
+      background: #eff6ff;
+      border-color: #bfdbfe;
+    }
+
+    .conv-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-text);
+      line-height: 1.3;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .conv-snippet {
+      font-size: 11px;
+      color: var(--color-text-muted);
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .conv-time {
+      font-size: 10px;
+      color: #94a3b8;
+      display: flex;
+      justify-content: space-between;
+      margin-top: 2px;
+    }
+
+    /* Center Main Chat Panel */
+    .chat-main {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .chat-header {
+      padding: var(--space-3) var(--space-4);
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #fcfcfd;
+    }
+
+    .chat-header-title {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .chat-header-title h1 {
+      font-size: 16px;
+      font-weight: 700;
+      margin: 0;
+      color: var(--color-text);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .chat-meta {
+      font-size: 12px;
+      color: var(--color-text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .chat-header-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    /* Message Thread Flow */
+    .message-stream {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--space-4);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    .message-block {
+      display: flex;
+      gap: var(--space-3);
+      max-width: 900px;
+    }
+
+    .message-block.user {
+      align-self: flex-end;
+      flex-direction: row-reverse;
+    }
+
+    .avatar-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 9999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .avatar-user {
+      background: #e0e7ff;
+      color: var(--color-primary);
+    }
+
+    .avatar-ai {
+      background: #ecfdf5;
+      color: var(--color-success);
+      border: 1px solid #a7f3d0;
+    }
+
+    .message-bubble {
+      background: #f8fafc;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-3) var(--space-4);
+      font-size: 13px;
+      color: var(--color-text);
+      line-height: 1.5;
+      position: relative;
+    }
+
+    .message-block.user .message-bubble {
+      background: #eff6ff;
+      border-color: #bfdbfe;
+      color: #1e3a8a;
+    }
+
+    .ai-badge-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: 11px;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-2);
+      padding-bottom: var(--space-1);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    /* Content Cards Inside AI Message */
+    .metric-comparison-box {
+      background: #ffffff;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-3);
+      margin: var(--space-2) 0;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-3);
+    }
+
+    .metric-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .metric-name {
+      font-size: 11px;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .metric-val {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--color-text);
+      font-family: monospace;
+    }
+
+    .evidence-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-2);
+      margin: var(--space-2) 0;
+    }
+
+    .evidence-card {
+      background: #ffffff;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-2) var(--space-3);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .evidence-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+      font-size: 12px;
+    }
+
+    /* Action Plan Cards */
+    .action-plan-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      margin: var(--space-3) 0;
+    }
+
+    .action-card {
+      background: #ffffff;
+      border: 1px solid var(--color-border);
+      border-left: 3px solid var(--color-primary);
+      border-radius: var(--radius);
+      padding: var(--space-2) var(--space-3);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .action-card.warning {
+      border-left-color: var(--color-warning);
+    }
+
+    .action-card.success {
+      border-left-color: var(--color-success);
+    }
+
+    .action-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .action-title {
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--color-text);
+    }
+
+    .action-desc {
+      font-size: 12px;
+      color: var(--color-text-muted);
+    }
+
+    /* Feedback & Copy Toolbar */
+    .ai-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: var(--space-2);
+      padding-top: var(--space-2);
+      border-top: 1px dashed var(--color-border);
+      font-size: 12px;
+      color: var(--color-text-muted);
+    }
+
+    .ai-actions-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .tool-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: transparent;
+      border: 1px solid var(--color-border);
+      border-radius: 4px;
+      padding: 3px 8px;
+      font-size: 11px;
+      color: var(--color-text);
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+
+    .tool-btn:hover {
+      background: #e2e8f0;
+    }
+
+    /* Prompt Chips Footer */
+    .prompt-chips-bar {
+      padding: var(--space-2) var(--space-4);
+      background: #f8fafc;
+      border-top: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      overflow-x: auto;
+    }
+
+    .prompt-chip {
+      padding: 5px 12px;
+      border-radius: 9999px;
+      background: #ffffff;
+      border: 1px solid var(--color-border);
+      font-size: 12px;
+      color: var(--color-text);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .prompt-chip:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+      background: #eff6ff;
+    }
+
+    /* Chat Input Bar */
+    .chat-input-bar {
+      padding: var(--space-3) var(--space-4);
+      background: #ffffff;
+      border-top: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .chat-textarea {
+      flex: 1;
+      height: 42px;
+      padding: 10px 14px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-family: inherit;
+      color: var(--color-text);
+      background: var(--color-bg);
+      resize: none;
+      transition: all 0.15s ease;
+    }
+
+    .chat-textarea:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      background: #ffffff;
+      box-shadow: 0 0 0 2px rgba(43, 89, 195, 0.15);
+    }
+
+    .btn-send {
+      height: 42px;
+      padding: 0 18px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 600;
+      background: var(--color-primary);
+      color: #ffffff;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-send:hover {
+      background: #2348a0;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .badge-success {
+      background: #ecfdf5;
+      color: var(--color-success);
+      border: 1px solid #a7f3d0;
+    }
+
+    .badge-warning {
+      background: #fffbeb;
+      color: var(--color-warning);
+      border: 1px solid #fde68a;
+    }
+
+    .badge-danger {
+      background: #fef2f2;
+      color: var(--color-danger);
+      border: 1px solid #fecaca;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: 6px 12px;
+      border-radius: var(--radius);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text);
+      transition: all 0.15s ease;
+    }
+
+    .btn:hover {
+      background: #f1f3f5;
+    }
+
+    .btn-primary {
+      background: var(--color-primary);
+      color: #ffffff;
+      border-color: var(--color-primary);
+    }
+
+    .btn-primary:hover {
+      background: #2348a0;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      background: #111827;
+      color: #ffffff;
+      padding: 12px 20px;
+      border-radius: var(--radius);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      font-size: 13px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      z-index: 999;
+      transform: translateY(-20px);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+  </style>
+</head>
+<body data-screen="bo-ai-copilot-tro-ly">
+  <div class="app-container">
+    <!-- Top Navigation Header (Injected dynamically by nav-owner.js) -->
+    <header id="app-topnav"></header>
+
+    <main class="page-container">
+      <div class="chat-layout">
+        <!-- Left Sidebar: Conversations & Topics -->
+        <aside class="chat-sidebar">
+          <div class="sidebar-header">
+            <button class="btn-new-chat" onclick="newChat()">
+              <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="10" y1="4" x2="10" y2="16"/><line x1="4" y1="10" x2="16" y2="10"/></svg>
+              Cuộc trò chuyện mới
+            </button>
+          </div>
+
+          <div class="sidebar-tabs">
+            <button class="side-tab active" onclick="switchSideTab(this)">Gần đây</button>
+            <button class="side-tab" onclick="switchSideTab(this)">Đã ghim (2)</button>
+            <button class="side-tab" onclick="switchSideTab(this)">Chủ đề</button>
+          </div>
+
+          <div class="conversation-list">
+            <div class="conv-item active" onclick="selectConv(this, 1)">
+              <div class="conv-title">
+                <span>Doanh thu tuần 42 giảm 12%</span>
+                <span class="badge badge-warning" style="font-size: 9px; padding: 1px 4px;">Cần xử lý</span>
+              </div>
+              <div class="conv-snippet">
+                Phân tích đứt hàng Serum B5 và tác động bán chéo giỏ hàng...
+              </div>
+              <div class="conv-time">
+                <span>Hôm nay 09:42</span>
+                <span>3 đề xuất PO</span>
+              </div>
+            </div>
+
+            <div class="conv-item" onclick="selectConv(this, 2)">
+              <div class="conv-title">
+                <span>Đề xuất nhập Serum B5 cuối năm</span>
+                <span class="badge badge-success" style="font-size: 9px; padding: 1px 4px;">Đã duyệt</span>
+              </div>
+              <div class="conv-snippet">
+                Mô phỏng nhu cầu tồn kho an toàn cho 45 ngày cao điểm Tết...
+              </div>
+              <div class="conv-time">
+                <span>2 ngày trước</span>
+                <span>PO #PO-202410-09</span>
+              </div>
+            </div>
+
+            <div class="conv-item" onclick="selectConv(this, 3)">
+              <div class="conv-title">
+                <span>Hiệu quả chi phí Marketing Tuần 42</span>
+              </div>
+              <div class="conv-snippet">
+                Tỷ lệ hoàn COD tăng và chi phí quảng cáo trỏ link vào sản phẩm hết hàng...
+              </div>
+              <div class="conv-time">
+                <span>5 ngày trước</span>
+                <span>Tiết kiệm 1.2M</span>
+              </div>
+            </div>
+
+            <div class="conv-item" onclick="selectConv(this, 4)">
+              <div class="conv-title">
+                <span>12 sản phẩm tồn kho &gt; 90 ngày</span>
+                <span class="badge badge-danger" style="font-size: 9px; padding: 1px 4px;">Tồn đọng</span>
+              </div>
+              <div class="conv-snippet">
+                Danh mục son kem lì và phấn phủ cần kích cầu xả hàng quay vòng vốn...
+              </div>
+              <div class="conv-time">
+                <span>1 tuần trước</span>
+                <span>What-If Flash Sale</span>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Center Main Chat Panel -->
+        <section class="chat-main">
+          <!-- Chat Header -->
+          <div class="chat-header">
+            <div class="chat-header-title">
+              <h1>
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="6" width="12" height="9" rx="2"/><line x1="10" y1="6" x2="10" y2="3"/><circle cx="10" cy="2.3" r="0.8" fill="currentColor" stroke="none"/><circle cx="7.3" cy="10.5" r="1" fill="currentColor" stroke="none"/><circle cx="12.7" cy="10.5" r="1" fill="currentColor" stroke="none"/></svg>
+                ABC Copilot — Trợ Lý Ra Quyết Định Kinh Doanh
+              </h1>
+              <span class="badge badge-success">Sẵn sàng phản hồi</span>
+              <div class="chat-meta">
+                <span>•</span>
+                <span>Dữ liệu: <strong>1.480 đơn hàng & 320 mã tồn kho</strong></span>
+                <span>•</span>
+                <span>Cập nhật: <strong>Thời gian thực</strong></span>
+              </div>
+            </div>
+            <div class="chat-header-actions">
+              <button class="btn" onclick="showToast('Đang xuất báo cáo tóm lược quyết sách ra file PDF...')">
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="10" y1="3" x2="10" y2="12.5"/><polyline points="6,9 10,13 14,9"/><line x1="4" y1="16.5" x2="16" y2="16.5"/></svg>
+                Xuất PDF
+              </button>
+              <button class="btn" onclick="showToast('Gửi báo cáo phân tích tới nhóm quản lý điều hành...')">
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2.5" width="12" height="15" rx="1.5"/><line x1="7" y1="6.5" x2="13" y2="6.5"/><line x1="7" y1="9.5" x2="13" y2="9.5"/><line x1="7" y1="12.5" x2="10.5" y2="12.5"/></svg>
+                Gửi Quản Lý
+              </button>
+            </div>
+          </div>
+
+          <!-- Message Thread Flow -->
+          <div class="message-stream" id="messageStream">
+            <!-- User Message -->
+            <div class="message-block user">
+              <div class="avatar-icon avatar-user">BO</div>
+              <div class="message-bubble">
+                <strong>Nguyễn Thị Mai</strong> • 09:42<br>
+                Tại sao tuần này doanh thu của cửa hàng giảm 12% so với tuần trước? Nguyên nhân chính là gì và tôi nên làm gì ngay hôm nay để bù đắp doanh số?
+              </div>
+            </div>
+
+            <!-- AI Response Message -->
+            <div class="message-block">
+              <div class="avatar-icon avatar-ai">
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="6" width="12" height="9" rx="2"/><line x1="10" y1="6" x2="10" y2="3"/><circle cx="10" cy="2.3" r="0.8" fill="currentColor" stroke="none"/><circle cx="7.3" cy="10.5" r="1" fill="currentColor" stroke="none"/><circle cx="12.7" cy="10.5" r="1" fill="currentColor" stroke="none"/></svg>
+              </div>
+              <div class="message-bubble">
+                <div class="ai-badge-row">
+                  <span><strong>ABC Copilot v4.2</strong></span>
+                  <span>•</span>
+                  <span>Phân tích 1.480 giao dịch & 320 mã SKU</span>
+                  <span>•</span>
+                  <span style="color: var(--color-success); font-weight: 600;">Độ tin cậy: 98.4%</span>
+                </div>
+
+                <!-- 1. Trả lời trực diện -->
+                <p style="margin: 0 0 var(--space-2) 0;">
+                  Chào chị Mai, doanh thu Tuần 42 đạt <strong>125.400.000 ₫</strong> (giảm <strong>-12.2%</strong> so với 142.800.000 ₫ ở Tuần 41). Sự sụt giảm bắt đầu xuất hiện rõ rệt từ ngày <strong>Thứ Ba</strong> khi sản phẩm bán chạy chủ lực bị đứt hàng.
+                </p>
+
+                <!-- Metric box -->
+                <div class="metric-comparison-box">
+                  <div class="metric-item">
+                    <span class="metric-name">Doanh thu tuần 41 (Trước)</span>
+                    <span class="metric-val">142.800.000 ₫</span>
+                  </div>
+                  <div class="metric-item">
+                    <span class="metric-name">Doanh thu tuần 42 (Hiện tại)</span>
+                    <span class="metric-val" style="color: var(--color-danger);">125.400.000 ₫</span>
+                  </div>
+                  <div class="metric-item">
+                    <span class="metric-name">Mức chênh lệch</span>
+                    <span class="metric-val" style="color: var(--color-danger);">-17.400.000 ₫ (-12%)</span>
+                  </div>
+                </div>
+
+                <!-- 2. Bằng chứng số liệu -->
+                <div style="font-weight: 700; margin: var(--space-2) 0 4px 0;">3 Cụm Dữ Liệu Tác Động Trực Tiếp Được Xác Minh:</div>
+                <div class="evidence-grid">
+                  <div class="evidence-card">
+                    <div class="evidence-header">
+                      <span>Đứt hàng: Serum Bio-B5 100ml</span>
+                      <span class="badge badge-danger">Tồn kho: 0</span>
+                    </div>
+                    <div style="font-size: 11px; color: var(--color-text-muted);">
+                      • Mã SKU: <code>MB-SER-B5-01</code><br>
+                      • Doanh thu: 6.400.000 ₫ (giảm 65% so với 18.5M)<br>
+                      • Thời điểm hết hàng: Thứ Ba 22/10
+                    </div>
+                  </div>
+
+                  <div class="evidence-card">
+                    <div class="evidence-header">
+                      <span>Mất hiệu ứng Bán Chéo (Cross-sell)</span>
+                      <span class="badge badge-warning">-35% AOV</span>
+                    </div>
+                    <div style="font-size: 11px; color: var(--color-text-muted);">
+                      • Khách hủy mua kèm Kem Ceramide khi hết serum<br>
+                      • Giá trị đơn hàng trung bình giảm từ 680k xuống 440k
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 3. Phân tích nguyên nhân -->
+                <p style="margin: var(--space-2) 0; font-size: 12.5px; color: #374151;">
+                  <strong>Nguyên nhân cốt lõi:</strong> Tốc độ bán thực tế tăng 1.8 lần do chương trình khuyến mãi tháng nhưng tồn kho an toàn chỉ dự phòng 5 ngày dẫn đến đứt hàng giữa chu kỳ. Đồng thời chi phí quảng cáo vẫn phân bổ cho sản phẩm đã hết hàng.
+                </p>
+
+                <!-- 4. Đề xuất hành động 1-click -->
+                <div style="font-weight: 700; margin: var(--space-2) 0 6px 0; color: var(--color-primary);">Kế Hoạch Hành Động Đề Xuất Thực Hiện Ngay:</div>
+                <div class="action-plan-list">
+                  <div class="action-card">
+                    <div class="action-info">
+                      <div class="action-title">1. Kích hoạt đơn nhập khẩn cấp 80 chai Serum Bio-B5</div>
+                      <div class="action-desc">NCC Dược Mỹ Phẩm Minh Anh cam kết giao trong 24h. Chiết khấu 28% (Tổng vốn: 21.600.000 ₫).</div>
+                    </div>
+                    <button class="btn btn-primary" onclick="triggerCreatePO()">
+                      Tạo PO Đặt Hàng Ngay
+                    </button>
+                  </div>
+
+                  <div class="action-card warning">
+                    <div class="action-info">
+                      <div class="action-title">2. Tạm dừng chi phí marketing trỏ vào sản phẩm hết hàng</div>
+                      <div class="action-desc">Tiết kiệm ngay 1.200.000 ₫/ngày chi phí vận hành cho tới khi hàng về kho kiểm kê xong.</div>
+                    </div>
+                    <button class="btn btn-outline" onclick="showToast('Đã tạm dừng phân bổ ngân sách marketing vào SKU đứt hàng.')">
+                      Tạm Dừng Chiến Dịch
+                    </button>
+                  </div>
+
+                  <div class="action-card success">
+                    <div class="action-info">
+                      <div class="action-title">3. Kích cầu sản phẩm thay thế & xả hàng tồn kho chậm</div>
+                      <div class="action-desc">Đưa dữ liệu vào mô hình What-If để tính toán ưu đãi combo Kem Ceramide + Nước Tẩy Trang.</div>
+                    </div>
+                    <a href="bo-ai-mo-phong.html" class="btn btn-outline">
+                      Mở Mô Phỏng What-If
+                    </a>
+                  </div>
+                </div>
+
+                <!-- Toolbar feedback & copy -->
+                <div class="ai-toolbar">
+                  <span>Câu trả lời có giúp ích cho việc ra quyết định không?</span>
+                  <div class="ai-actions-row">
+                    <button class="tool-btn" onclick="showToast('Cảm ơn bạn đã phản hồi đánh giá.')">
+                      <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><polyline points="6.5,10.2 9,12.8 13.8,7.5"/></svg>
+                      Hữu ích
+                    </button>
+                    <button class="tool-btn" onclick="showToast('Đã ghi nhận để cải thiện thuật toán tư vấn.')">
+                      Chưa rõ
+                    </button>
+                    <button class="tool-btn" onclick="copyAnswer()">
+                      <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2.5" width="12" height="15" rx="1.5"/><line x1="7" y1="6.5" x2="13" y2="6.5"/><line x1="7" y1="9.5" x2="13" y2="9.5"/><line x1="7" y1="12.5" x2="10.5" y2="12.5"/></svg>
+                      Sao chép tóm tắt
+                    </button>
+                    <button class="tool-btn" onclick="showToast('Đã lưu vào Sổ tay Giám đốc để theo dõi định kỳ.')">
+                      Lưu Sổ Tay
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Prompt Chips Footer -->
+          <div class="prompt-chips-bar">
+            <span style="font-size: 11px; font-weight: 600; color: var(--color-text-muted); white-space: nowrap;">Gợi ý câu hỏi:</span>
+            <button class="prompt-chip" onclick="applyPrompt('Dự báo doanh số tuần tới nếu nhập đủ 80 chai Serum B5?')">
+              Dự báo doanh số tuần tới nếu nhập đủ 80 chai Serum B5?
+            </button>
+            <button class="prompt-chip" onclick="applyPrompt('So sánh giá nhập của 2 nhà cung cấp Serum B5 hiện có')">
+              So sánh giá nhập của 2 nhà cung cấp Serum B5 hiện có
+            </button>
+            <button class="prompt-chip" onclick="applyPrompt('Danh sách khách hàng VIP cần gửi voucher chăm sóc lại')">
+              Danh sách khách hàng VIP cần gửi voucher chăm sóc lại
+            </button>
+          </div>
+
+          <!-- Chat Input Bar -->
+          <div class="chat-input-bar">
+            <textarea id="chatInput" class="chat-textarea" placeholder="Hỏi Copilot về doanh thu, tồn kho, dòng tiền hoặc yêu cầu lập kế hoạch..." onkeydown="handleChatKey(event)"></textarea>
+            <button class="btn-send" onclick="sendChat()">
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="10" x2="15" y2="10"/><polyline points="11,6 15,10 11,14"/></svg>
+              Gửi
+            </button>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast">
+    <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="#22c55e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><polyline points="6.5,10.2 9,12.8 13.8,7.5"/></svg>
+    <span id="toastMsg">Thao tác thành công</span>
+  </div>
+
+  <script src="../_shared/nav-owner.js"></script>
+  <script>
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toastMsg');
+      toastMsg.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3500);
+    }
+
+    function switchSideTab(btn) {
+      document.querySelectorAll('.side-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    function selectConv(el, id) {
+      document.querySelectorAll('.conv-item').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      showToast('Đã tải phiên hội thoại: ' + el.querySelector('.conv-title span').textContent);
+    }
+
+    function newChat() {
+      showToast('Khởi tạo cuộc trò chuyện mới với AI Copilot.');
+      document.getElementById('chatInput').focus();
+    }
+
+    function applyPrompt(text) {
+      const input = document.getElementById('chatInput');
+      input.value = text;
+      input.focus();
+    }
+
+    function handleChatKey(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendChat();
+      }
+    }
+
+    function sendChat() {
+      const input = document.getElementById('chatInput');
+      const val = (input.value || '').trim();
+      if (!val) return;
+
+      const stream = document.getElementById('messageStream');
+
+      // Append user message
+      const userDiv = document.createElement('div');
+      userDiv.className = 'message-block user';
+      userDiv.innerHTML = `
+        <div class="avatar-icon avatar-user">BO</div>
+        <div class="message-bubble">
+          <strong>Nguyễn Thị Mai</strong> • Vừa xong<br>
+          ${val}
+        </div>
+      `;
+      stream.appendChild(userDiv);
+      input.value = '';
+
+      // Auto scroll
+      stream.scrollTop = stream.scrollHeight;
+
+      // Simulate AI thinking and reply
+      setTimeout(() => {
+        const aiDiv = document.createElement('div');
+        aiDiv.className = 'message-block';
+        aiDiv.innerHTML = `
+          <div class="avatar-icon avatar-ai">
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="6" width="12" height="9" rx="2"/><line x1="10" y1="6" x2="10" y2="3"/><circle cx="10" cy="2.3" r="0.8" fill="currentColor" stroke="none"/><circle cx="7.3" cy="10.5" r="1" fill="currentColor" stroke="none"/><circle cx="12.7" cy="10.5" r="1" fill="currentColor" stroke="none"/></svg>
+          </div>
+          <div class="message-bubble">
+            <div class="ai-badge-row">
+              <span><strong>ABC Copilot v4.2</strong></span>
+              <span>•</span>
+              <span style="color: var(--color-success); font-weight: 600;">Đã tính toán xong</span>
+            </div>
+            <p style="margin: 0;">
+              Tôi đã phân tích yêu cầu: <em>"${val}"</em> trên tập dữ liệu vận hành hiện thời. Hệ thống khuyến nghị ưu tiên theo dõi các chỉ số biến động tồn kho và biên lợi nhuận ròng.
+            </p>
+          </div>
+        `;
+        stream.appendChild(aiDiv);
+        stream.scrollTop = stream.scrollHeight;
+      }, 700);
+    }
+
+    function triggerCreatePO() {
+      const confirmText = "TẠO ĐƠN NHẬP HÀNG KHẨN CẤP (PO):\n\n- Nhà cung cấp: Dược Mỹ Phẩm Minh Anh\n- Mặt hàng: 80 chai Serum Bio-B5 Hydra Max 100ml\n- Đơn giá chiết khấu: 270.000 ₫/chai (CK 28%)\n- Tổng giá trị PO: 21.600.000 ₫\n- Trạng thái: PO Draft (Chờ phê duyệt)\n\nBạn có muốn tự động tạo PO này vào hệ thống?";
+      if (confirm(confirmText)) {
+        showToast("ĐÃ TẠO PO DRAFT THÀNH CÔNG! Mã phiếu: #PO-202410-093.");
+      }
+    }
+
+    function copyAnswer() {
+      navigator.clipboard.writeText("Doanh thu Tuần 42 giảm 12% chủ yếu do đứt hàng Serum Bio-B5 từ ngày Thứ Ba (doanh thu SKU giảm 65%). Đề xuất: 1) Nhập khẩn cấp 80 chai Serum B5 (21.6M); 2) Tắt Ads trỏ vào SKU hết hàng (tiết kiệm 1.2M/ngày); 3) Kích cầu combo kem dưỡng thay thế.");
+      showToast("Đã sao chép tóm lược báo cáo vào clipboard!");
+    }
+  </script>
+</body>
+</html>

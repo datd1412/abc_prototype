@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Anomaly Detection & Risk Control - ABC Copilot</title>
+  <link rel="stylesheet" href="../tokens.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    .page-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: var(--space-4);
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: var(--space-4);
+      flex-wrap: wrap;
+      gap: var(--space-3);
+    }
+
+    .title-area h1 {
+      font-size: var(--font-title);
+      font-weight: 700;
+      color: var(--color-text);
+      margin: 0 0 var(--space-1) 0;
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .title-area p {
+      color: var(--color-text-muted);
+      font-size: 13px;
+      margin: 0;
+    }
+
+    .sentinel-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1);
+      padding: var(--space-1) var(--space-2);
+      background: #eff6ff;
+      color: var(--color-primary);
+      border: 1px solid #bfdbfe;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--color-primary);
+      border-radius: 50%;
+      display: inline-block;
+      box-shadow: 0 0 0 2px rgba(43, 89, 195, 0.3);
+    }
+
+    .action-bar {
+      display: flex;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1);
+      padding: 8px 14px;
+      border-radius: var(--radius);
+      font-size: var(--font-base);
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text);
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+      background: var(--color-bg);
+    }
+
+    .btn-primary {
+      background: var(--color-primary);
+      color: #ffffff;
+      border-color: var(--color-primary);
+    }
+
+    .btn-primary:hover {
+      background: #22479e;
+    }
+
+    .btn-danger {
+      background: var(--color-danger);
+      color: #ffffff;
+      border-color: var(--color-danger);
+    }
+
+    .btn-danger:hover {
+      background: #b53838;
+    }
+
+    /* KPI Grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+    }
+
+    .kpi-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-3);
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .kpi-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-2);
+    }
+
+    .kpi-label {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--color-text-muted);
+    }
+
+    .kpi-value {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--color-text);
+      line-height: 1.2;
+    }
+
+    .kpi-sub {
+      font-size: 13px;
+      color: var(--color-text-muted);
+      margin-top: var(--space-1);
+    }
+
+    /* Filter Bar */
+    .filter-bar {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-2) var(--space-3);
+      margin-bottom: var(--space-4);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+    }
+
+    .filter-tabs {
+      display: flex;
+      gap: var(--space-1);
+    }
+
+    .tab-btn {
+      padding: var(--space-1) var(--space-3);
+      border-radius: var(--radius);
+      border: 1px solid transparent;
+      background: transparent;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--color-text-muted);
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      background: var(--color-bg);
+      border-color: var(--color-border);
+      color: var(--color-text);
+      font-weight: 600;
+    }
+
+    /* Content Layout (Dual Column) */
+    .content-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: var(--space-4);
+    }
+
+    @media (max-width: 1024px) {
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Anomaly Card Feed */
+    .anomaly-feed {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .anomaly-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-left: 4px solid var(--color-danger);
+      border-radius: var(--radius);
+      padding: var(--space-4);
+      box-shadow: var(--shadow-card);
+    }
+
+    .anomaly-card.warning {
+      border-left-color: var(--color-warning);
+    }
+
+    .anomaly-card.positive {
+      border-left-color: var(--color-success);
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: var(--space-2);
+    }
+
+    .badge-group {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .badge-critical {
+      background: #fde8e8;
+      color: var(--color-danger);
+    }
+
+    .badge-warning {
+      background: #fef9c3;
+      color: #854d0e;
+    }
+
+    .badge-success {
+      background: #dcfce7;
+      color: var(--color-success);
+    }
+
+    .anomaly-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--color-text);
+      margin-bottom: var(--space-1);
+    }
+
+    .anomaly-desc {
+      font-size: 14px;
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-3);
+      line-height: 1.5;
+    }
+
+    /* Evidence Grid */
+    .evidence-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-2);
+      background: var(--color-bg);
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius);
+      margin-bottom: var(--space-3);
+    }
+
+    @media (max-width: 640px) {
+      .evidence-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .evidence-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .evidence-label {
+      font-size: 11px;
+      color: var(--color-text-muted);
+    }
+
+    .evidence-val {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--color-text);
+    }
+
+    /* AI Recommendation Strip */
+    .ai-box {
+      background: #f0f4ff;
+      border: 1px solid #c7d2fe;
+      border-radius: var(--radius);
+      padding: var(--space-3);
+      margin-bottom: var(--space-3);
+      display: flex;
+      gap: var(--space-2);
+      align-items: flex-start;
+    }
+
+    .ai-box-icon {
+      color: var(--color-primary);
+      font-size: 20px;
+    }
+
+    .ai-box-content {
+      font-size: 13px;
+      color: var(--color-text);
+      line-height: 1.5;
+    }
+
+    .ai-box-title {
+      font-weight: 700;
+      color: var(--color-primary);
+      margin-bottom: 2px;
+    }
+
+    .card-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      pt: var(--space-2);
+      border-top: 1px solid var(--color-border);
+      margin-top: var(--space-2);
+    }
+
+    /* Right Panel (Sentinel Health & Config) */
+    .side-panel {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .panel-box {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-3);
+      box-shadow: var(--shadow-card);
+    }
+
+    .panel-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--color-text);
+      margin-bottom: var(--space-2);
+      display: flex;
+      align-items: center;
+      gap: var(--space-1);
+    }
+
+    .sensor-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .sensor-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      padding: var(--space-1) 0;
+      border-bottom: 1px dashed var(--color-border);
+    }
+
+    .sensor-item:last-child {
+      border-bottom: none;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--color-success);
+      display: inline-block;
+      margin-right: 6px;
+    }
+  </style>
+</head>
+<body data-screen="bo-ai-canh-bao">
+  <!-- Top Navigation Header -->
+  <header id="app-topnav"></header>
+
+  <main class="page-container">
+    <!-- Header Bar -->
+    <div class="page-header">
+      <div class="title-area">
+        <h1>
+          <span style="color: var(--color-danger); display: inline-flex; align-items: center;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3 L18 17 L2 17 Z"/><line x1="10" y1="8.5" x2="10" y2="12.5"/><circle cx="10" cy="14.5" r="0.9" fill="currentColor" stroke="none"/></svg></span>
+          Trung Tâm Cảnh Báo Rủi Ro Thời Gian Thực
+          <span class="sentinel-badge">
+            <span class="pulse-dot"></span>
+            Real-time Sentinel AI • Quét 60s/lần
+          </span>
+        </h1>
+        <p>Phát hiện bất thường tồn kho, biến động COGS & nguy cơ đứt hàng trước khi gây tổn thất dòng tiền</p>
+      </div>
+      <div class="action-bar">
+        <button class="btn" type="button">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="4" y1="6" x2="16" y2="6"/><circle cx="12" cy="6" r="1.4" fill="currentColor" stroke="none"/><line x1="4" y1="10" x2="16" y2="10"/><circle cx="7" cy="10" r="1.4" fill="currentColor" stroke="none"/><line x1="4" y1="14" x2="16" y2="14"/><circle cx="14" cy="14" r="1.4" fill="currentColor" stroke="none"/></svg>
+          Cấu hình Ngưỡng AI
+        </button>
+        <button class="btn" type="button">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="10" y1="3" x2="10" y2="12.5"/><polyline points="6,9 10,13 14,9"/><line x1="4" y1="16.5" x2="16" y2="16.5"/></svg>
+          Xuất Audit Trail (CSV)
+        </button>
+        <button class="btn btn-primary" type="button">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10a6 6 0 0 1 10.3-4.2"/><polyline points="14,2.5 14.3,6 10.8,5.7"/><path d="M16 10a6 6 0 0 1-10.3 4.2"/><polyline points="6,17.5 5.7,14 9.2,14.3"/></svg>
+          Quét Lại Ngay
+        </button>
+      </div>
+    </div>
+
+    <!-- KPI Metric Pulse Strip -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span class="kpi-label" style="color: var(--color-danger);">Bất thường khẩn cấp</span>
+          <span style="color: var(--color-danger); display: inline-flex; align-items: center;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3 L18 17 L2 17 Z"/><line x1="10" y1="8.5" x2="10" y2="12.5"/><circle cx="10" cy="14.5" r="0.9" fill="currentColor" stroke="none"/></svg></span>
+        </div>
+        <div class="kpi-value" style="color: var(--color-danger);">03</div>
+        <div class="kpi-sub">Cần can thiệp trong <strong>24h</strong> (Ước tính tổn thất <strong>~48.200.000 ₫</strong>)</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span class="kpi-label">Tỷ lệ tự động xử lý</span>
+          <span style="color: var(--color-primary); display: inline-flex; align-items: center;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><polyline points="6.5,10.2 9,12.8 13.8,7.5"/></svg></span>
+        </div>
+        <div class="kpi-value">94.2%</div>
+        <div class="kpi-sub" style="color: var(--color-success); font-weight: 600;">+3.8% (32/34 cảnh báo đã hóa giải)</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span class="kpi-label" style="color: var(--color-success);">Thất thoát ngăn chặn</span>
+          <span style="color: var(--color-success); display: inline-flex; align-items: center;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><polyline points="6.5,10.2 9,12.8 13.8,7.5"/></svg></span>
+        </div>
+        <div class="kpi-value" style="color: var(--color-success);">142.500.000 ₫</div>
+        <div class="kpi-sub">Bảo toàn lợi nhuận nhờ chặn chi phí Ads vượt trần & đứt kho</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span class="kpi-label">Cảm biến Sentinel</span>
+          <span style="color: var(--color-primary); display: inline-flex; align-items: center;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="10" cy="10" r="7.5"/><line x1="10" y1="9" x2="10" y2="14"/><circle cx="10" cy="6" r="0.9" fill="currentColor" stroke="none"/></svg></span>
+        </div>
+        <div class="kpi-value">100%</div>
+        <div class="kpi-sub">5/5 Cụm Active (Đơn hàng, Tồn FEFO, COGS, POS Q.1, TikTok)</div>
+      </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+      <div class="filter-tabs">
+        <button class="tab-btn active" type="button">Tất cả (8)</button>
+        <button class="tab-btn" type="button">Nghiêm trọng (3)</button>
+        <button class="tab-btn" type="button">Cảnh báo (3)</button>
+        <button class="tab-btn" type="button">Tích cực (2)</button>
+      </div>
+      <div style="display: flex; gap: var(--space-2); font-size: 13px; color: var(--color-text-muted);">
+        <span>Kênh: <strong>Tất cả kênh</strong></span>
+        <span>|</span>
+        <span>Kho: <strong>Tân Bình & Showroom Q.1</strong></span>
+      </div>
+    </div>
+
+    <!-- Dual Column Main Workspace -->
+    <div class="content-grid">
+      <!-- Left Column: Anomaly Priority Feed -->
+      <div class="anomaly-feed">
+
+        <!-- Anomaly 1: Critical -->
+        <div class="anomaly-card">
+          <div class="card-top">
+            <div class="badge-group">
+              <span class="badge badge-critical">Nghiêm trọng</span>
+              <span style="font-size: 12px; color: var(--color-text-muted);">Kho Tân Bình & TikTok Shop • 18 phút trước</span>
+            </div>
+            <div style="font-size: 13px; font-weight: 700; color: var(--color-danger);">
+              Thiệt hại tiềm tàng: -19.500.000 ₫
+            </div>
+          </div>
+          <div class="anomaly-title">
+            Đột biến tốc độ xuất bán & Nguy cơ cạn kho Serum Bio-B5 Hydra Max
+          </div>
+          <div class="anomaly-desc">
+            Livestream TikTok Shop tối qua đạt viral KOC 250k view khiến lượng đặt hàng tăng vọt 34 đơn trong đêm. Tồn kho vận hành tại kho Tân Bình đang tiến sát ngưỡng cạn hàng.
+          </div>
+
+          <div class="evidence-grid">
+            <div class="evidence-item">
+              <span class="evidence-label">Tồn kho khả dụng</span>
+              <span class="evidence-val" style="color: var(--color-danger);">18 chai</span>
+            </div>
+            <div class="evidence-item">
+              <span class="evidence-label">Tốc độ tiêu thụ</span>
+              <span class="evidence-val">6.2 chai/ngày (+140%)</span>
+            </div>
+            <div class="evidence-item">
+              <span class="evidence-label">Runway còn lại</span>
+              <span class="evidence-val" style="color: var(--color-danger);">2.9 ngày</span>
+            </div>
+            <div class="evidence-item">
+              <span class="evidence-label">Lead-time NCC DermaLab</span>
+              <span class="evidence-val">5.0 ngày</span>
+            </div>
+          </div>
+
+          <div class="ai-box">
+            <span class="ai-box-icon" style="display: inline-flex; align-items: center;"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="6" width="12" height="9" rx="2"/><line x1="10" y1="6" x2="10" y2="3"/><circle cx="10" cy="2.3" r="0.8" fill="currentColor" stroke="none"/><circle cx="7.3" cy="10.5" r="1" fill="currentColor" stroke="none"/><circle cx="12.7" cy="10.5" r="1" fill="currentColor" stroke="none"/></svg></span>
+            <div class="ai-box-content">
+              <div class="ai-box-title">Phân tích Sentinel Root-Cause & Khuyến nghị (Độ tin cậy: 96%):</div>
+              Chênh lệch lead-time (5 ngày) và runway (2.9 ngày) sẽ gây đứt hàng vào cuối tuần. Khuyến nghị điều chuyển ngay 25 chai từ Showroom Q.1 (tồn an toàn hiện có 48 chai) để duy trì bán hàng online, đồng thời lập đơn mua PO-04 nhập khẩn 150 chai.
+            </div>
+          </div>
+
+          <div class="card-actions">
+            <div style="display: flex; gap: var(--space-2);">
+              <button class="btn btn-primary" type="button">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2.5" width="12" height="15" rx="1.5"/><line x1="7" y1="6.5" x2="13" y2="6.5"/><line x1="7" y1="9.5" x2="13" y2="9.5"/><line x1="7" y1="12.5" x2="10.5" y2="12.5"/></svg>
+                Tạo PO Khẩn Cấp (150 chai)
+              </button>
+              <button class="btn" type="button">
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10a6 6 0 0 1 10.3-4.2"/><polyline points="14,2.5 14.3,6 10.8,5.7"/><path d="M16 10a6 6 0 0 1-10.3 4.2"/><polyline points="6,17.5 5.7,14 9.2,14.3"/></svg>
+                Điều chuyển 25 chai từ Q.1
+              </button>
+            </div>
+            <button class="btn" type="button" style="color: var(--color-text-muted);">
+              Bỏ qua / Đã xử lý
+            </button>
+          </div>
+        </div>
+
+        <!-- Anomaly 2: Warning FEFO -->
+        <div class="anomaly-card warning">
+          <div class="card-top">
+            <div class="badge-group">
+              <span class="badge badge-warning">Cảnh báo FEFO</span>
+              <span style="font-size: 12px; color: var(--color-text-muted);">Kho Q.1 • Lô L-20240320 • 2 giờ trước</span>
+            </div>
+            <div style="font-size: 13px; font-weight: 700; color: #854d0e;">
+              Rủi ro hủy hàng: 8.400.000 ₫
+            </div>
+          </div>
+          <div class="anomaly-title">
+            Lô hàng Lotion Rau Má 200ml cận hạn sử dụng (Còn 14 ngày)
+          </div>
+          <div class="anomaly-desc">
+            Lô L-20240320 còn tồn 42 chai có ngày hết hạn `expiresAt` tới gần. Tốc độ bán hiện tại 1.1 chai/ngày không đủ giải phóng lô trước ngày hết hạn.
+          </div>
+
+          <div class="evidence-grid">
+            <div class="evidence-item">
+              <span class="evidence-label">Số lượng lô còn</span>
+              <span class="evidence-val">42 chai</span>
+            </div>
+            <div class="evidence-item">
+              <span class="evidence-label">Ngày hết hạn</span>
+              <span class="evidence-val" style="color: var(--color-warning);">12/11/2024 (14 ngày)</span>
+            </div>
+            <div class="evidence-item">
+              <span class="evidence-label">Giá trị lô</span>
+              <span class="evidence-val">8.400.000 ₫</span>
+            </div>
+            <div class="evidence-item">
+              <span class="evidence-label">Dự báo tiêu thụ</span>
+              <span class="evidence-val">15 chai</span>
+            </div>
+          </div>
+
+          <div class="ai-box">
+            <span class="ai-box-icon" style="display: inline-flex; align-items: center;"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="6" width="12" height="9" rx="2"/><line x1="10" y1="6" x2="10" y2="3"/><circle cx="10" cy="2.3" r="0.8" fill="currentColor" stroke="none"/><circle cx="7.3" cy="10.5" r="1" fill="currentColor" stroke="none"/><circle cx="12.7" cy="10.5" r="1" fill="currentColor" stroke="none"/></svg></span>
+            <div class="ai-box-content">
+              <div class="ai-box-title">Gợi ý kích cầu FEFO từ AI Copilot:</div>
+              Kích hoạt chương trình Flash Sale giảm 25% cho lô L-20240320 hoặc tạo combo quà tặng kèm đơn sỉ trên 500k để giải phóng toàn bộ 42 chai trong 7 ngày tới.
+            </div>
+          </div>
+
+          <div class="card-actions">
+            <div style="display: flex; gap: var(--space-2);">
+              <button class="btn btn-primary" type="button">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.5 L10 3 L17.5 6.5 L10 10 Z"/><path d="M2.5 6.5 V14 L10 17.5 L17.5 14 V6.5"/><line x1="10" y1="10" x2="10" y2="17.5"/></svg>
+                Tạo Flash Sale FEFO -25%
+              </button>
+            </div>
+            <button class="btn" type="button" style="color: var(--color-text-muted);">
+              Xem chi tiết lô
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Sentinel Health & AI Configuration Summary -->
+      <div class="side-panel">
+        <div class="panel-box">
+          <div class="panel-title">
+            <span style="color: var(--color-primary); display: inline-flex; align-items: center;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="10" cy="10" r="7.5"/><line x1="10" y1="9" x2="10" y2="14"/><circle cx="10" cy="6" r="0.9" fill="currentColor" stroke="none"/></svg></span>
+            Trạng Thái Cảm Biến Sentinel
+          </div>
+          <div class="sensor-list">
+            <div class="sensor-item">
+              <span><span class="status-dot"></span> Sentinel Orders & Sales</span>
+              <span style="font-weight: 600; color: var(--color-success);">Hoạt động</span>
+            </div>
+            <div class="sensor-item">
+              <span><span class="status-dot"></span> Inventory FEFO Watcher</span>
+              <span style="font-weight: 600; color: var(--color-success);">Hoạt động</span>
+            </div>
+            <div class="sensor-item">
+              <span><span class="status-dot"></span> COGS & Margin Tracker</span>
+              <span style="font-weight: 600; color: var(--color-success);">Hoạt động</span>
+            </div>
+            <div class="sensor-item">
+              <span><span class="status-dot"></span> Multi-channel Sync</span>
+              <span style="font-weight: 600; color: var(--color-success);">Hoạt động</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-box">
+          <div class="panel-title">
+            <span style="color: var(--color-primary); display: inline-flex; align-items: center;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="10" cy="10" r="7.5"/><line x1="10" y1="9" x2="10" y2="14"/><circle cx="10" cy="6" r="0.9" fill="currentColor" stroke="none"/></svg></span>
+            Phân Tích Chuyên Sâu
+          </div>
+          <p style="font-size: 13px; color: var(--color-text-muted); margin-bottom: var(--space-2);">
+            Xem xu hướng biến động và báo cáo đa chiều từ dữ liệu AI Sentinel.
+          </p>
+          <a href="bo-ai-phan-tich.html" class="btn btn-primary" style="width: 100%; justify-content: center;">
+            Xem phân tích đầy đủ →
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Shared Top Navigation Script -->
+  <script src="../_shared/nav-owner.js"></script>
+</body>
+</html>

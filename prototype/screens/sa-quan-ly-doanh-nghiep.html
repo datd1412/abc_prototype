@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản Lý Doanh Nghiệp Multi-Tenant - ABC Copilot</title>
+  <link rel="stylesheet" href="../tokens.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    .page-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: var(--space-4);
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: var(--space-4);
+      flex-wrap: wrap;
+      gap: var(--space-3);
+    }
+
+    .title-area h1 {
+      font-size: var(--font-title);
+      font-weight: 700;
+      color: var(--color-text);
+      margin: 0 0 var(--space-1) 0;
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .title-area p {
+      color: var(--color-text-muted);
+      font-size: 13px;
+      margin: 0;
+    }
+
+    .action-bar {
+      display: flex;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1);
+      padding: 8px 14px;
+      border-radius: var(--radius);
+      font-size: var(--font-base);
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text);
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+      background: var(--color-bg);
+    }
+
+    .btn-primary {
+      background: var(--color-primary);
+      color: #ffffff;
+      border-color: var(--color-primary);
+    }
+
+    .btn-primary:hover {
+      background: #22479e;
+    }
+
+    /* KPI Grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+    }
+
+    .kpi-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-3);
+      box-shadow: var(--shadow-card);
+    }
+
+    .kpi-label {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--color-text-muted);
+      margin-bottom: 4px;
+    }
+
+    .kpi-val {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--color-text);
+    }
+
+    .kpi-sub {
+      font-size: 12px;
+      color: var(--color-text-muted);
+      margin-top: 4px;
+    }
+
+    /* Zero-Trust Notice Banner */
+    .zero-trust-banner {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: var(--radius);
+      padding: var(--space-3) var(--space-4);
+      margin-bottom: var(--space-4);
+      display: flex;
+      gap: var(--space-3);
+      align-items: flex-start;
+    }
+
+    .banner-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--color-danger);
+      margin-bottom: 2px;
+    }
+
+    .banner-desc {
+      font-size: 13px;
+      color: var(--color-text);
+      line-height: 1.5;
+    }
+
+    /* Filter Bar */
+    .filter-bar {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-3);
+      margin-bottom: var(--space-4);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: var(--space-3);
+    }
+
+    .filter-group {
+      display: flex;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+    }
+
+    .search-input {
+      padding: 6px 12px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      width: 280px;
+    }
+
+    /* Table Styles */
+    .table-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-card);
+      overflow-x: auto;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .data-table th {
+      background: var(--color-bg);
+      color: var(--color-text-muted);
+      font-weight: 600;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: var(--space-3);
+      border-bottom: 1px solid var(--color-border);
+      text-align: left;
+    }
+
+    .data-table td {
+      padding: var(--space-3);
+      border-bottom: 1px solid var(--color-border);
+      vertical-align: middle;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .badge-success { background: #dcfce7; color: var(--color-success); }
+    .badge-warning { background: #fef9c3; color: #854d0e; }
+    .badge-danger { background: #fde8e8; color: var(--color-danger); }
+  </style>
+</head>
+<body data-screen="sa-quan-ly-doanh-nghiep">
+  <!-- Top Navigation Header -->
+  <header id="app-topnav"></header>
+
+  <main class="page-container">
+    <!-- Header Bar -->
+    <div class="page-header">
+      <div class="title-area">
+        <h1>
+          <span style="color: var(--color-primary); display: inline-flex; align-items: center;"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2.5" width="12" height="15" rx="1.5"/><line x1="7" y1="6.5" x2="13" y2="6.5"/><line x1="7" y1="9.5" x2="13" y2="9.5"/><line x1="7" y1="12.5" x2="10.5" y2="12.5"/></svg></span>
+          Trung Tâm Quản Trị Khách Thuê & Doanh Nghiệp (Multi-Tenant Hub)
+        </h1>
+        <p>Quản lý danh sách doanh nghiệp đăng ký, trạng thái database isolation & phân bổ tài nguyên</p>
+      </div>
+      <div class="action-bar">
+        <button class="btn" type="button">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="4" y1="6" x2="16" y2="6"/><circle cx="12" cy="6" r="1.4" fill="currentColor" stroke="none"/><line x1="4" y1="10" x2="16" y2="10"/><circle cx="7" cy="10" r="1.4" fill="currentColor" stroke="none"/><line x1="4" y1="14" x2="16" y2="14"/><circle cx="14" cy="14" r="1.4" fill="currentColor" stroke="none"/></svg>
+          Cấu Hình Sharding
+        </button>
+        <button class="btn" type="button">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><polyline points="6.5,10.2 9,12.8 13.8,7.5"/></svg>
+          Báo Cáo SOC2
+        </button>
+        <button class="btn btn-primary" type="button">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="10" y1="4" x2="10" y2="16"/><line x1="4" y1="10" x2="16" y2="10"/></svg>
+          + Onboard Doanh Nghiệp Mới
+        </button>
+      </div>
+    </div>
+
+    <!-- Health Metrics -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Tổng Doanh Nghiệp (Tenants)</div>
+        <div class="kpi-val">48 Tenants</div>
+        <div class="kpi-sub" style="color: var(--color-success); font-weight: 600;">42 Đang hoạt động • 4 Tạm ngưng • 2 Onboarding</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-label">Database Isolation</div>
+        <div class="kpi-val" style="color: var(--color-success);">100% Schema Isolated</div>
+        <div class="kpi-sub">Khóa KMS Envelope Sharded từng tenant</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-label">Yêu cầu hỗ trợ SA</div>
+        <div class="kpi-val" style="color: var(--color-warning);">04 Support Tickets</div>
+        <div class="kpi-sub">Chờ cấp quyền Break-Glass Session</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-label">Giám sát can thiệp ngầm</div>
+        <div class="kpi-val" style="color: var(--color-primary);">100% Audit Guard</div>
+        <div class="kpi-sub">Log SHA-256 bất biến lưu trữ 7 năm</div>
+      </div>
+    </div>
+
+    <!-- Zero-Trust Banner -->
+    <div class="zero-trust-banner">
+      <span style="color: var(--color-danger); display: inline-flex; align-items: center;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3 L18 17 L2 17 Z"/><line x1="10" y1="8.5" x2="10" y2="12.5"/><circle cx="10" cy="14.5" r="0.9" fill="currentColor" stroke="none"/></svg></span>
+      <div>
+        <div class="banner-title">NGUYÊN TẮC ZERO-TRUST: CẤM CAN THIỆP DỮ LIỆU KINH DOANH</div>
+        <div class="banner-desc">
+          Quản trị viên (SA) tuyệt đối <strong>KHÔNG ĐƯỢC</strong> xem, sửa hoặc xuất dữ liệu kinh doanh của doanh nghiệp khi chưa có Ticket hỗ trợ được xác thực chữ ký số từ phía đại diện doanh nghiệp. Mọi thao tác đều được ghi nhật ký WORM chống xóa sửa.
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+      <div class="filter-group">
+        <input type="text" class="search-input" placeholder="Tìm theo Tên DN, Tenant ID, MST, Đại diện..." />
+        <select class="btn" style="font-size: 13px;">
+          <option>Gói dịch vụ: Tất cả</option>
+          <option>Enterprise Pro</option>
+          <option>Enterprise Suite</option>
+          <option>SME Growth</option>
+        </select>
+        <select class="btn" style="font-size: 13px;">
+          <option>Trạng thái: Tất cả</option>
+          <option>Đang hoạt động (42)</option>
+          <option>Tạm ngưng (4)</option>
+        </select>
+      </div>
+      <div style="font-size: 13px; color: var(--color-text-muted);">Hiển thị: <strong>48 Doanh nghiệp</strong></div>
+    </div>
+
+    <!-- Table Card -->
+    <div class="table-card">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Doanh Nghiệp & Tenant ID</th>
+            <th>Mã Số Thuế</th>
+            <th>Đại Diện Pháp Luật</th>
+            <th>Gói Dịch Vụ</th>
+            <th>Database Schema / Region</th>
+            <th>Trạng Thái</th>
+            <th>Ngày Khởi Tạo</th>
+            <th style="text-align: right;">Thao Tác SA</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <strong>Maison de Bloom Co., Ltd</strong><br>
+              <span style="color: var(--color-text-muted); font-size: 11px;">TNT-88301 • Retail Cosmetic</span>
+            </td>
+            <td>0317829102</td>
+            <td>Nguyễn Thị Mai (Owner)</td>
+            <td><span class="badge badge-success">Enterprise Pro</span></td>
+            <td>`tenant_maison_bloom_prod`<br><span style="color: var(--color-text-muted); font-size: 11px;">HCMC-02 DR Cluster</span></td>
+            <td><span class="badge badge-success">Đang hoạt động</span></td>
+            <td>15/01/2024</td>
+            <td style="text-align: right;">
+              <button class="btn" type="button" style="padding: 4px 10px; font-size: 12px;">Break-Glass</button>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <strong>Chuỗi Mỹ Phẩm Derma Beauty</strong><br>
+              <span style="color: var(--color-text-muted); font-size: 11px;">TNT-88302 • Multi-store</span>
+            </td>
+            <td>0109283741</td>
+            <td>Trần Văn Hùng (Owner)</td>
+            <td><span class="badge badge-success">Enterprise Suite</span></td>
+            <td>`tenant_derma_beauty_prod`<br><span style="color: var(--color-text-muted); font-size: 11px;">HN-01 Primary</span></td>
+            <td><span class="badge badge-success">Đang hoạt động</span></td>
+            <td>20/02/2024</td>
+            <td style="text-align: right;">
+              <button class="btn" type="button" style="padding: 4px 10px; font-size: 12px;">Break-Glass</button>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <strong>Phân Phối Mỹ Phẩm Green Life</strong><br>
+              <span style="color: var(--color-text-muted); font-size: 11px;">TNT-88303 • Wholesale</span>
+            </td>
+            <td>0316492019</td>
+            <td>Phạm Thị Hương (Owner)</td>
+            <td><span class="badge badge-warning">SME Growth</span></td>
+            <td>`tenant_green_life_prod`<br><span style="color: var(--color-text-muted); font-size: 11px;">HCMC-02 DR Cluster</span></td>
+            <td><span class="badge badge-warning">Tạm ngưng cước</span></td>
+            <td>05/04/2024</td>
+            <td style="text-align: right;">
+              <button class="btn" type="button" style="padding: 4px 10px; font-size: 12px;">Mo-Khoa</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- Shared Top Navigation Script -->
+  <script src="../_shared/nav-admin.js"></script>
+</body>
+</html>

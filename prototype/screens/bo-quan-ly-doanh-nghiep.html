@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BO-01: Cấu hình Doanh nghiệp — ABC Prototype</title>
+  <link rel="stylesheet" href="../tokens.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+</head>
+<body data-screen="bo-quan-ly-doanh-nghiep">
+  <div class="app-container">
+    <!-- Top Navigation Header (Rendered dynamically by nav-owner.js) -->
+    <header id="app-topnav"></header>
+
+    <!-- Main Content Area -->
+    <main class="main-area">
+      <!-- Page Header & Action Buttons -->
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Quản Lý Doanh Nghiệp & Cấu Hình Vận Hành</h1>
+          <p class="page-subtitle">Thiết lập thông tin pháp lý doanh nghiệp, đơn vị tiền tệ, múi giờ và định mức cảnh báo tồn kho.</p>
+        </div>
+        <div style="display: flex; gap: var(--space-2);">
+          <button class="btn btn-secondary" type="button">Hủy bỏ</button>
+          <button class="btn btn-primary" type="button">Lưu Thay Đổi</button>
+        </div>
+      </div>
+
+      <!-- Component Contract: Form Panel (Breadcrumb -> Section Groups -> Fixed Buttons) -->
+      <div class="card">
+        <!-- Section 1: Thông tin Pháp lý Doanh nghiệp (entity: businesses) -->
+        <div style="margin-bottom: var(--space-4);">
+          <h2 style="font-size: 16px; font-weight: 700; color: var(--color-primary); margin-bottom: var(--space-3); border-bottom: 1px solid var(--color-border); padding-bottom: 8px;">
+            1. Hồ Sơ Doanh Nghiệp & Thông Tin Pháp Lý
+          </h2>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); margin-bottom: var(--space-3);">
+            <div>
+              <label style="font-size: 12px; font-weight: 600; color: var(--color-text-muted); display: block; margin-bottom: 4px;">Tên doanh nghiệp / Thương hiệu (*)</label>
+              <input type="text" class="input-search" style="width: 100%;" value="Maison de Bloom">
+            </div>
+            <div>
+              <label style="font-size: 12px; font-weight: 600; color: var(--color-text-muted); display: block; margin-bottom: 4px;">Loại hình doanh nghiệp</label>
+              <select class="select-filter" style="width: 100%;">
+                <option value="corporate">Công ty Cổ phần</option>
+                <option value="llc">Công ty TNHH</option>
+                <option value="individual">Hộ kinh doanh cá thể</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); margin-bottom: var(--space-3);">
+            <div>
+              <label style="font-size: 12px; font-weight: 600; color: var(--color-text-muted); display: block; margin-bottom: 4px;">Mã số thuế (*)</label>
+              <input type="text" class="input-search" style="width: 100%; font-weight: 600;" value="0317892341">
+            </div>
+            <div>
+              <label style="font-size: 12px; font-weight: 600; color: var(--color-text-muted); display: block; margin-bottom: 4px;">Trạng thái doanh nghiệp</label>
+              <select class="select-filter" style="width: 100%;">
+                <option value="active">Đang hoạt động (active)</option>
+                <option value="suspended">Tạm dừng (suspended)</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label style="font-size: 12px; font-weight: 600; color: var(--color-text-muted); display: block; margin-bottom: 4px;">Mô tả hoạt động kinh doanh</label>
+            <textarea class="input-search" style="width: 100%; height: 70px; padding: 8px; font-family: inherit;">Chuỗi bán lẻ mỹ phẩm, chăm sóc da & thời trang thiết kế cao cấp.</textarea>
+          </div>
+        </div>
+
+        <!-- Section 2: Cấu hình Vận hành & Tiền tệ (entity: business_settings) -->
+        <div style="margin-bottom: var(--space-4);">
+          <h2 style="font-size: 16px; font-weight: 700; color: var(--color-primary); margin-bottom: var(--space-3); border-bottom: 1px solid var(--color-border); padding-bottom: 8px;">
+            2. Tham Số Tiền Tệ & Múi Giờ Hệ Thống
+          </h2>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--space-3);">
+            <div>
+              <label style="font-size: 12px; font-weight: 600; color: var(--color-text-muted); display: block; margin-bottom: 4px;">Đơn vị tiền tệ chính</label>
+              <input type="text" class="input-search" style="width: 100%; font-weight: 700;" value="VND (₫)" readonly>
+            </div>
+            <div>
+              <label style="font-size: 12px; font-weight: 600; color: var(--color-text-muted); display: block; margin-bottom: 4px;">Múi giờ hệ thống (timezone)</label>
+              <select class="select-filter" style="width: 100%;">
+                <option value="Asia/Ho_Chi_Minh">GMT+7 (Asia/Ho_Chi_Minh)</option>
+                <option value="UTC">UTC Universal</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size: 12px; font-weight: 600; color: var(--color-text-muted); display: block; margin-bottom: 4px;">Trạng thái Trí tuệ AI Copilot</label>
+              <select class="select-filter" style="width: 100%;">
+                <option value="true">Kích hoạt (aiEnabled = true)</option>
+                <option value="false">Tắt (aiEnabled = false)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3: Định mức Tồn kho An toàn & Cảnh báo (entity: business_settings) -->
+        <div style="margin-bottom: var(--space-4);">
+          <h2 style="font-size: 16px; font-weight: 700; color: var(--color-primary); margin-bottom: var(--space-3); border-bottom: 1px solid var(--color-border); padding-bottom: 8px;">
+            3. Ngưỡng Cảnh Báo Tồn Kho Mặc Định
+          </h2>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3);">
+            <div>
+              <label style="font-size: 12px; font-weight: 600; color: var(--color-text-muted); display: block; margin-bottom: 4px;">Mức tồn kho an toàn mặc định (lowStockDefault)</label>
+              <input type="number" class="input-search" style="width: 100%;" value="15">
+              <span style="font-size: 11px; color: var(--color-text-muted);">Tự động áp dụng cho các SKU chưa cấu hình ngưỡng riêng.</span>
+            </div>
+            <div>
+              <label style="font-size: 12px; font-weight: 600; color: var(--color-text-muted); display: block; margin-bottom: 4px;">Cảnh báo tồn kho khẩn cấp (lowStockAlert)</label>
+              <input type="number" class="input-search" style="width: 100%; color: var(--color-danger); font-weight: 700;" value="5">
+              <span style="font-size: 11px; color: var(--color-danger);">Gửi cảnh báo đứt hàng khi số lượng khả dụng dưới ngưỡng này.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section Footer Buttons -->
+        <div style="display: flex; justify-content: flex-end; gap: var(--space-2); border-top: 1px solid var(--color-border); padding-top: var(--space-3);">
+          <button class="btn btn-secondary" type="button">Hủy bỏ</button>
+          <button class="btn btn-primary" type="button">Lưu Cấu Hình Doanh Nghiệp</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Shared Navigation Script -->
+  <script src="../_shared/nav-owner.js"></script>
+</body>
+</html>

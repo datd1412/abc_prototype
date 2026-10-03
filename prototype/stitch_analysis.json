@@ -1,0 +1,1318 @@
+[
+  {
+    "folder": "ai_copilot_tr_l_quy_t_nh",
+    "has_code": true,
+    "is_mobile": false,
+    "has_sidebar": true,
+    "h1": "ABC Copilot — Trợ lý Ra Quyết Định Kinh Doanh",
+    "h2_list": [
+      "Hội thoại Copilot"
+    ],
+    "buttons": [
+      "sync",
+      "logout",
+      "auto_awesomeHỏi AI",
+      "notifications4",
+      "help",
+      "add Cuộc trò chuyện mới",
+      "Gần đây",
+      "Đã ghim (2)"
+    ],
+    "labels": [],
+    "length": 55241
+  },
+  {
+    "folder": "ai_insights_ph_t_hi_n_b_t_th_ng_th_i_gian_th_c",
+    "has_code": true,
+    "is_mobile": false,
+    "has_sidebar": true,
+    "h1": "Trung tâm AI Insights &amp; Phát hiện Bất thường Engine v4.2",
+    "h2_list": [
+      "CẢNH BÁO RÒ RỈ NGÂN SÁCH TIKTOK ADS: ROAS lao dốc xuống 1.1x (Ngưỡng hòa vốn &gt; 2.5x)",
+      "LỆCH PHA ĐỐI SOÁT VÍ SHOPEE MALL: Phát hiện 6 đơn hoàn hàng bị sàn trừ kép phí vận chuyển",
+      "LÔ DATE CẬN HẠN NGUY HIỂM: 45 Hộp Phyto Calming Cream Lô LOT-202305 còn 42 ngày hết hạn",
+      "BẤT THƯỜNG GIAO HÀNG (J&amp;T): Tỷ lệ giao trễ SLA tăng đột biến +18% khu vực Đà Nẵng - Quảng Nam",
+      "CƠ HỘI BÙNG NỔ DOANH THU: \"Đầm Lụa Maxi Ruby\" bất ngờ viral organic sau clip review của KOC"
+    ],
+    "buttons": [
+      "arrow_back_ios_newHỏi AI",
+      "tune Cấu hình ngưỡng",
+      "file_download Xuất báo cáo",
+      "done_all Duyệt xử lý nhanh",
+      "bolt Quét cưỡng bức",
+      "Tất cả bất thường (8)",
+      "Marketing &amp; Ads (2)",
+      "Tồn kho &amp; Hạn dùng (2)"
+    ],
+    "labels": [],
+    "length": 54852
+  },
+  {
+    "folder": "b_o_c_o_l_i_l_p_l_chi_ti_t_accrual_vs_cashflow",
+    "has_code": true,
+    "is_mobile": false,
+    "has_sidebar": true,
+    "h1": "Báo Cáo Kết Quả Kinh Doanh &amp; Dòng Tiền Thực Tế",
+    "h2_list": [
+      "AI Financial Copilot — Phân Tích Chênh Lệch &amp; Tối Ưu Chi Phí"
+    ],
+    "buttons": [
+      "sync",
+      "logout",
+      "auto_awesomeHỏi AI",
+      "notifications4",
+      "help",
+      "file_download Xuất báo cáo",
+      "share Gửi Kế toán thuế",
+      "tune + Mô phỏng What-If P&amp;L"
+    ],
+    "labels": [],
+    "length": 59723
+  },
+  {
+    "folder": "b_o_c_o_t_ng_quan_ch_c_a_h_ng",
+    "has_code": true,
+    "is_mobile": false,
+    "has_sidebar": true,
+    "h1": "Xin chào, Nguyễn Thị Mai!",
+    "h2_list": [
+      "Biến động Doanh thu &amp; Chi phí"
+    ],
+    "buttons": [
+      "sync",
+      "logout",
+      "auto_awesomeHỏi AI",
+      "notifications4",
+      "help",
+      "file_download Xuất báo cáo",
+      "add_circle Tạo đơn bán mới",
+      "smart_toy Hỏi chi tiết AI"
+    ],
+    "labels": [],
+    "length": 50019
+  },
+  {
+    "folder": "bo_01_qu_n_l_doanh_nghi_p_c_u_h_nh_v_n_h_nh",
+    "has_code": true,
+    "is_mobile": false,
+    "has_sidebar": true,
+    "h1": "Quản lý Doanh nghiệp &amp; Cấu hình Vận hành (Business Profile &amp; Operational Settings)",
+    "h2_list": [
+      "Hồ sơ Doanh nghiệp Pháp lý",
+      "Cấu hình Vận hành &amp; Tham số Doanh nghiệp",
+      "Quản lý Nhân sự &amp; Phân quyền Ma trận (RBAC Access Matrix)"
+    ],
+    "buttons": [
+      "dock_to_right",
+      "BO",
+      "SE",
+      "SA",
+      "searchTìm kiếm dữ liệu, SKU, lệnh...⌘K",
+      "smart_toyAI Copilot",
+      "notifications",
+      "add_business Tạo Doanh nghiệp Mới (+)"
+    ],
+    "labels": [
+      "Đơn vị tiền tệ chính",
+      "Quy tắc làm tròn số lẻ",
+      "Múi giờ hệ thống",
+      "Zalo ZNS Official Gửi trực tiếp số CEO",
+      "Telegram Bot VIP Kênh điều hành nội bộ",
+      "Mobile Push App App Copilot Manager"
+    ],
+    "length": 58350
+  },
+  {
+    "folder": "bo_02_ghi_nh_n_chi_ph_nhanh_qu_n_l_ng_n_s_ch_opex_mobile",
+    "has_code": true,
+    "is_mobile": true,
+    "has_sidebar": false,
+    "h1": "Chi Phí &amp; Ngân Sách",
+    "h2_list": [
+      "Chụp Hóa Đơn OCR &amp; Ghi Nhanh"
+    ],
+    "buttons": [
+      "storefrontChi nhánh Q.1expand_more",
+      "notifications",
+      "Tháng 10/2024 expand_more",
+      "add_circle Lập phiếu chi",
+      "download Xuất sổ",
+      "tune",
+      "photo_camera Quét hóa đơn / e-VAT",
+      "mic Nói để nhập chi"
+    ],
+    "labels": [],
+    "length": 32846
+  },
+  {
+    "folder": "bo_02_qu_n_l_chi_ph_t_i_ch_nh_c_b_n",
+    "has_code": true,
+    "is_mobile": false,
+    "has_sidebar": true,
+    "h1": "Quản lý Nhóm Chi Phí &amp; Tài Chính Cơ Bản",
+    "h2_list": [
+      "Danh Mục Nhóm Chi Phí &amp; Kiểm Soát Định Mức Ngân Sách",
+      "Nhật Ký Ghi Nhận Khoản Chi Chi Tiết (Expense Ledger)",
+      "Bảng Tính Lợi Nhuận Ước Tính &amp; P&amp;L Rút Gọn (Financial Statement)"
+    ],
+    "buttons": [
+      "sync",
+      "logout",
+      "auto_awesomeHỏi AI",
+      "notifications4",
+      "help",
+      "download Xuất Báo Cáo",
+      "folder_open + Tạo Nhóm Chi Phí",
+      "add_circle + Ghi Nhận Khoản Chi Mới"
+    ],
+    "labels": [],
+    "length": 85579
+  },
+  {
+    "folder": "bo_03_qu_n_l_s_n_ph_m_b_ng_gi",
+    "has_code": true,
+    "is_mobile": true,
+    "has_sidebar": true,
+    "h1": "Quản lý Sản phẩm &amp; Bảng Giá",
+    "h2_list": [
+      "Ma Trận Biên Lợi Nhuận Theo Danh Mục"
+    ],
+    "buttons": [
+      "sync",
+      "logout",
+      "auto_awesomeHỏi AI",
+      "notifications4",
+      "help",
+      "file_download Xuất Excel Bảng Giá",
+      "dynamic_form Cấu hình Hàng Loạt",
+      "add_circle + Thêm Sản Phẩm Mới"
+    ],
+    "labels": [
+      "Chọn sản phẩm test thử nghiệm:",
+      "Giá vốn mới (COGS):",
+      "Giá bán đề xuất:"
+    ],
+    "length": 66029
+  },
+  {
+    "folder": "bo_04_ki_m_tra_t_n_kho_nhanh_qu_t_m_fefo_mobile",
+    "has_code": true,
+    "is_mobile": true,
+    "has_sidebar": false,
+    "h1": "Kiểm Kho Nhanh &amp; Lô Date FEFO",
+    "h2_list": [
+      "Serum Phục Hồi Bio-B5 Hydra Max",
+      "Biến Động Tồn &amp; Nhật Ký Quầy"
+    ],
+    "buttons": [
+      "barcode_scanner",
+      "notifications",
+      "cancel",
+      "tune Lọc",
+      "Tất cả (142 SKU)",
+      "Cảnh báo hết hàng (6)",
+      "Cận date FEFO &lt;90 ngày (8)",
+      "Kho Q.1 (Tủ Kính VIP)"
+    ],
+    "labels": [
+      "Lý do điều chỉnh:"
+    ],
+    "length": 42547
+  },
+  {
+    "folder": "bo_04_qu_n_l_t_n_kho_ki_m_so_t_xu_t_nh_p",
+    "has_code": true,
+    "is_mobile": false,
+    "has_sidebar": true,
+    "h1": "Quản lý Tồn kho &amp; Kiểm soát Xuất Nhập Tồn",
+    "h2_list": [
+      "AI Inventory Intelligence &amp; Dự Báo Tiêu Thụ Tự Động"
+    ],
+    "buttons": [
+      "sync",
+      "logout",
+      "auto_awesomeHỏi AI",
+      "notifications4",
+      "help",
+      "history Lịch sử biến động",
+      "add_box + Nhập kho",
+      "indeterminate_check_box - Xuất kho"
+    ],
+    "labels": [
+      "Chọn Mặt Hàng &amp; SKU",
+      "Lý Do Điều Chỉnh",
+      "Tồn sổ sách",
+      "Số lượng đếm thực tế",
+      "Ghi chú giải trình kiểm đếm"
+    ],
+    "length": 71609
+  },
+  {
+    "folder": "bo_05_b_o_c_o_dashboard_kpi_doanh_nghi_p_mobile",
+    "has_code": true,
+    "is_mobile": true,
+    "has_sidebar": false,
+    "h1": "",
+    "h2_list": [
+      "Chỉ số tài chính cốt lõi"
+    ],
+    "buttons": [
+      "notifications",
+      "sync",
+      "Hôm nay",
+      "7 ngày qua",
+      "Tháng này (T10/2024)",
+      "Quý này (Q4)",
+      "post_add Tạo PO Khẩn Cấp",
+      "Chi tiết arrow_forward"
+    ],
+    "labels": [],
+    "length": 44853
+  },
+  {
+    "folder": "bo_05_b_o_c_o_t_ng_quan_dashboard_kpi_doanh_nghi_p",
+    "has_code": true,
+    "is_mobile": false,
+    "has_sidebar": true,
+    "h1": "Executive Command Center",
+    "h2_list": [
+      "Xu Hướng Tăng Trưởng Doanh Thu &amp; Biên Lợi Nhuận Theo Thời Gian"
+    ],
+    "buttons": [
+      "arrow_back_ios_newHỏi AI",
+      "notifications4",
+      "help_outline",
+      "file_download Xuất Báo Cáo PDF/Excel",
+      "tune + Tùy Chỉnh Widget KPI",
+      "Hôm nay",
+      "7 ngày qua",
+      "Tháng này (T10/2024)"
+    ],
+    "labels": [],
+    "length": 60765
+  },
+  {
+    "folder": "bo_06_chi_ti_t_n_h_ng_l_ch_s_v_ng_i_bi_n_ng",
+    "has_code": true,
+    "is_mobile": false,
+    "has_sidebar": true,
+    "h1": "#ORD-2024-9982",
+    "h2_list": [
+      "Lịch Sử Biến Động Vòng Đời Đơn Hàng (Lifecycle Audit Trail)"
+    ],
+    "buttons": [
+      "notifications",
+      "smart_toyHỏi AI",
+      "print In phiếu gửi &amp; A6",
+      "sync Đồng bộ sàn",
+      "download Xuất PDF/Excel",
+      "cancel Hủy &amp; Hoàn kho",
+      "refresh Cập nhật real-time",
+      "content_copy"
+    ],
+    "labels": [],
+    "length": 43644
+  },
+  {
+    "folder": "bo_06_form_t_o_n_h_ng_m_i_xu_t_kho_a_k_nh",
+    "has_code": true,
+    "is_mobile": false,
+    "has_sidebar": true,
+    "h1": "",
+    "h2_list": [
+      "1. Phân loại Kênh Bán &amp; Điểm Kho Xuất",
+      "2. Sản Phẩm &amp; Chọn Lô FEFO Xuất Kho",
+      "3. Thông Tin Khách Hàng &amp; Giao Nhận",
+      "Tổng Kết Đơn Hàng"
+    ],
+    "buttons": [
+      "notifications",
+      "smart_toyHỏi AI",
+      "domain Bán sỉ / Đại lý (B2B)",
+      "forum Online Hotline / Zalo",
+      "videocam TikTok Shop Manual",
+      "shopping_bag Shopee Mall Direct",
+      "F3",
+      "add_box Thêm thủ công"
+    ],
+    "labels": [
+      "Kho hàng chỉ định xuất",
+      "Nhân viên chốt đơn",
+      "Chính sách giá áp dụng",
+      "storefront Nhận Tại Quầy Khách mang về trực tiếp",
+      "local_shipping GHTK Chuẩn Giao 1-2 ngày • 30.000 ₫",
+      "bolt Ahamove Hỏa Tốc Giao trong 2h • 55.000 ₫",
+      "package_2 J&amp;T Express Đồng giá COD • 32.000 ₫",
+      "Địa chỉ giao nhận tận nơi"
+    ],
+    "length": 54947
+  },
+  {
+    "folder": "bo_06_qu_n_l_n_h_ng_v_n_h_nh_a_k_nh",
+    "has_code": true,
+    "is_mobile": false,
+    "has_sidebar": true,
+    "h1": "Quản lý Đơn Hàng &amp; Vận Hành Đa Kênh",
+    "h2_list": [
+      "Cơ Chế Tự Động Khóa &amp; Hoàn Kho Thông Minh",
+      "Cơ Cấu Thanh Toán (Tháng 10)"
+    ],
+    "buttons": [
+      "notifications",
+      "smart_toyHỏi AI",
+      "sync Đồng bộ Sàn TMĐT",
+      "download Xuất Excel",
+      "print In Phiếu Đóng Gói Loạt",
+      "add_circle + Tạo Đơn Hàng Mới",
+      "Tất cả đơn hàng 4.280",
+      "Chờ xác nhận 12"
+    ],
+    "labels": [],
+    "length": 62765
+  },
+  {
+    "folder": "bo_06_qu_n_l_n_h_ng_v_n_h_nh_a_k_nh_mobile",
+    "has_code": true,
+    "is_mobile": true,
+    "has_sidebar": false,
+    "h1": "",
+    "h2_list": [
+      "Đơn Hàng Đa Kênh"
+    ],
+    "buttons": [
+      "expand_more",
+      "search",
+      "notifications",
+      "print In loạt",
+      "add Tạo đơn",
+      "barcode_scanner",
+      "tune",
+      "Tất cả 4.280"
+    ],
+    "labels": [],
+    "length": 32674
+  },
+  {
+    "folder": "bo_07_ai_business_analytics_ph_n_t_ch_hi_u_su_t_a_chi_u",
+    "has_code": true,
+    "is_mobile": false,
+    "has_sidebar": true,
+    "h1": "BO-07: AI Business Analytics &amp; Phân Tích Đa Chiều",
+    "h2_list": [
+      "AI Root-Cause Analysis: Phân Tích Sự Biến Động Doanh Thu &amp; Chi Phí",
+      "Ma Trận BCG Danh Mục Sản Phẩm (142 SKU)",
+      "Đóng Góp Hiệu Quả Đa Kênh (Omnichannel Unit Economics)",
+      "Vòng Đời Khách Hàng (Cohort &amp; LTV)",
+      "Trung Tâm Thực Thi Đề Xuất Chiến Lược (AI Strategic Action Hub)"
+    ],
+    "buttons": [
+      "notifications",
+      "smart_toyHỏi AI",
+      "Tháng này (T10/2024)",
+      "7 ngày qua",
+      "Quý 3/2024",
+      "YoY (Cùng kỳ)",
+      "file_download",
+      "share"
+    ],
+    "labels": [],
+    "length": 57940
+  },
+  {
+    "folder": "bo_08_ai_anomaly_detection_trung_t_m_c_nh_b_o_r_i_ro_th_i_gian_th_c",
+    "has_code": true,
+    "is_mobile": true,
+    "has_sidebar": true,
+    "h1": "Trung Tâm Cảnh Báo Rủi Ro Thời Gian Thực",
+    "h2_list": [],
+    "buttons": [
+      "arrow_back_ios_newAI Copilot",
+      "tune Cấu hình Ngưỡng AI",
+      "file_download Xuất Audit Trail (CSV)",
+      "sync Quét Lại Ngay",
+      "Tất cả (8)",
+      "Nghiêm trọng (3)",
+      "Cảnh báo (3)",
+      "Tích cực (2)"
+    ],
+    "labels": [],
+    "length": 49711
+  },
+  {
+    "folder": "bo_09_ai_demand_forecasting_replenishment_planning",
+    "has_code": true,
+    "is_mobile": true,
+    "has_sidebar": true,
+    "h1": "Dự Báo Nhu Cầu &amp; Kế Hoạch Nhập Hàng Tự Động",
+    "h2_list": [
+      "Đường Chạy Tồn Kho &amp; Đột Biến Cầu: Serum Bio-B5 Hydra Max (100ml)",
+      "Ma Trận Khuyến Nghị Đặt Hàng &amp; Phân Bổ Kho (EOQ Optimizer)"
+    ],
+    "buttons": [
+      "arrow_back_ios_newHỏi AI Copilot",
+      "tune Cấu hình Lead-time",
+      "download Xuất Kế Hoạch PO",
+      "14 Ngày Tới",
+      "30 Ngày (Mặc định)",
+      "60 Ngày Tới",
+      "Quý 4/2024",
+      "Xem kịch bản hoãn PO"
+    ],
+    "labels": [],
+    "length": 47920
+  },
+  {
+    "folder": "bo_09_ai_demand_forecasting_replenishment_planning_mobile_summary",
+    "has_code": true,
+    "is_mobile": true,
+    "has_sidebar": false,
+    "h1": "Dự Báo Nhu Cầu &amp; Nhập Hàng AI",
+    "h2_list": [
+      "Serum Phục Hồi Bio-B5 Hydra Max",
+      "Đề Xuất Đặt Hàng EOQ"
+    ],
+    "buttons": [
+      "notifications",
+      "file_download Xuất Kế Hoạch",
+      "add_shopping_cart Tạo Lô PO (3)",
+      "14 Ngày Tới",
+      "30 Ngày (Mặc định)",
+      "60 Ngày",
+      "Quý 4/2024",
+      "Kịch bản hoãn"
+    ],
+    "labels": [],
+    "length": 37624
+  },
+  {
+    "folder": "bo_10_m_ph_ng_k_ch_b_n_kinh_doanh_what_if_scenario_lab",
+    "has_code": true,
+    "is_mobile": false,
+    "has_sidebar": true,
+    "h1": "Phòng Thí Nghiệm Chiến Lược &amp; Stress-Test Rủi Ro biotech",
+    "h2_list": [
+      "Bảng Điều Khiển Biến Số (What-If Levers)"
+    ],
+    "buttons": [
+      "arrow_back_ios_newHỏi AI Copilot",
+      "notifications",
+      "bookmark_add Lưu Kịch Bản Mới",
+      "play_circle Chạy Mô Phỏng Lại",
+      "restart_alt Đặt Lại Mặc Định",
+      "Lưu Thành Kịch Bản Bản Quyền",
+      "inventory Chuyển Sang Lập PO BO-04"
+    ],
+    "labels": [
+      "Tăng trưởng doanh số mục tiêu",
+      "Chiết khấu / Voucher trợ giá TB",
+      "Ngân sách Ads (TikTok &amp; Meta)"
+    ],
+    "length": 43888
+  },
+  {
+    "folder": "bo_11_ai_business_advisor_tr_l_chi_n_l_c_c_level",
+    "has_code": true,
+    "is_mobile": false,
+    "has_sidebar": true,
+    "h1": "Trung Tâm Cố Vấn Chiến Lược Doanh Nghiệp",
+    "h2_list": [
+      "Hồ Sơ Quyết Sách Chiến Lược Đa Chiều"
+    ],
+    "buttons": [
+      "arrow_back_ios_newHỏi AI Copilot",
+      "notifications",
+      "tune Cấu hình Chỉ tiêu OKR/KPI",
+      "Xem Phân Tích Độ Nhạy",
+      "Điều Chỉnh Danh Mục BO-03",
+      "sync_alt Xem Kịch Bản Phối Hợp OMO",
+      "Gửi Chỉ Đạo Trưởng Kênh Bán",
+      "send"
+    ],
+    "labels": [],
+    "length": 47016
+  },
+  {
+    "folder": "bo_11_ai_business_advisor_tr_l_chi_n_l_c_c_level_mobile",
+    "has_code": true,
+    "is_mobile": true,
+    "has_sidebar": false,
+    "h1": "Trung Tâm Cố Vấn Chiến Lược AI",
+    "h2_list": [
+      "Hội Đồng Cố Vấn Ảo",
+      "Quyết Sách Trọng Điểm Chờ Duyệt",
+      "Ma Trận Rủi Ro Chiến Lược"
+    ],
+    "buttons": [
+      "Flagship Q.1expand_more",
+      "notifications",
+      "picture_as_pdf Xuất HĐQT (PDF)",
+      "add_circle Tham Vấn Mới",
+      "tune Xem Mô Phỏng Độ Nhạy Lãi Suất",
+      "visibility Kịch Bản OMO",
+      "send Chỉ Đạo Bán Lẻ",
+      "send"
+    ],
+    "labels": [],
+    "length": 33093
+  },
+  {
+    "folder": "c_i_t_ph_n_quy_n_qu_n_l_nh_n_vi_n",
+    "has_code": true,
+    "is_mobile": false,
+    "has_sidebar": true,
+    "h1": "Quản lý Nhân viên &amp; Ma trận Phân quyền (RBAC)",
+    "h2_list": [
+      "Danh sách Cán bộ Nhân viên &amp; Phân quyền Hoạt động",
+      "Ma trận Phân quyền Trực quan (Access Control Matrix)"
+    ],
+    "buttons": [
+      "arrow_back_ios_newHỏi AI",
+      "download Xuất Nhật ký Audit (.csv)",
+      "add_moderator + Thêm Vai trò mới",
+      "person_add + Thêm Nhân viên Mới",
+      "badge Danh sách Nhân sự (18)",
+      "history Nhật ký Audit Trail Live",
+      "tune",
+      "receipt_long"
+    ],
+    "labels": [],
+    "length": 70492
+  },
+  {
+    "folder": "c_ng_qu_n_tr_h_th_ng_to_n_n_ng_system_administrator_sa_console",
+    "has_code": true,
+    "is_mobile": false,
+    "has_sidebar": true,
+    "h1": "Trung Tâm Điều Hành Hệ Thống &amp; Quản Trị Nền Tảng (System Administrator Console)",
+    "h2_list": [
+      "SA-01 &amp; SA-02: Quản Lý Doanh Nghiệp (Tenant Fleet)",
+      "SA-05: Model &amp; Prompt Registry",
+      "SA-07: AI Tool Execution &amp; Frequency",
+      "SA-04 &amp; SA-08: Subscription Tiers",
+      "SA-09: Nhật Ký Audit Log Truy Vết Toàn Diện (Immutable Audit Trail)"
+    ],
+    "buttons": [
+      "tune",
+      "logout",
+      "auto_awesomeTrợ lý AI",
+      "notifications5",
+      "add_business + Thêm Doanh Nghiệp Mới",
+      "filter_list Lọc",
+      "settings",
+      "shield_person"
+    ],
+    "labels": [],
+    "length": 63454
+  },
+  {
+    "folder": "d_b_o_c_u_g_i_nh_p_h_ng_ai",
+    "has_code": true,
+    "is_mobile": false,
+    "has_sidebar": true,
+    "h1": "AI Forecasting &amp; Stock-out Risk Hub",
+    "h2_list": [
+      "Danh Sách Dự Báo Cầu &amp; Đề Xuất Tự Động"
+    ],
+    "buttons": [
+      "arrow_back_ios_newHỏi AI",
+      "tune Tùy chỉnh thuật toán",
+      "file_download Xuất Excel (.xlsx)",
+      "7 ngày tới (Gấp)",
+      "30 ngày tới (Mega 11.11 &amp; BF)",
+      "60 ngày (Mùa Lễ Hội / Tết)",
+      "Toàn bộ danh mục",
+      "Tất cả (86 SKU)"
+    ],
+    "labels": [],
+    "length": 60541
+  },
+  {
+    "folder": "i_so_t_chi_ti_t_v_s_n_shopee_tiktok_shop",
+    "has_code": true,
+    "is_mobile": false,
+    "has_sidebar": true,
+    "h1": "Đối Soát Chi Tiết Ví Sàn TMĐT",
+    "h2_list": [
+      "Cơ Cấu Bóc Tách Biểu Phí Sàn (Take-rate Waterfall)",
+      "Nhật Ký &amp; Chi Tiết Đối Soát Từng Đơn Hàng (Settlement Audit)"
+    ],
+    "buttons": [
+      "sync",
+      "logout",
+      "auto_awesomeHỏi AI",
+      "notifications4",
+      "help",
+      "file_download Tải file đối soát (.xlsx)",
+      "sync Đồng bộ API sàn",
+      "bolt Rút tiền về Vietcombank"
+    ],
+    "labels": [],
+    "length": 55288
+  },
+  {
+    "folder": "m_ph_ng_k_ch_b_n_kinh_doanh_what_if",
+    "has_code": true,
+    "is_mobile": false,
+    "has_sidebar": true,
+    "h1": "Phòng thí nghiệm Kịch bản Kinh doanh",
+    "h2_list": [
+      "Tham số đầu vào thử nghiệm"
+    ],
+    "buttons": [
+      "sync",
+      "logout",
+      "auto_awesomeHỏi AI",
+      "notifications4",
+      "help",
+      "bookmark_add Lưu kịch bản",
+      "compare_arrows So sánh với Cơ sở gốc",
+      "restart_alt Khôi phục gốc"
+    ],
+    "labels": [
+      "Phạm vi đối tượng mô phỏng 38 SKU đồng bộ",
+      "local_shipping Tài trợ Freeship đơn &gt; 500k Chi phí ước tính: 18.000 ₫/đơn",
+      "loyalty Tích lũy điểm VIP Bloom 5% Tăng tỷ lệ quay lại đơn hàng thêm 18%"
+    ],
+    "length": 56635
+  },
+  {
+    "folder": "m_ph_ng_k_ch_b_n_what_if_d_ng_ti_n_p_l_c_thanh_kho_n",
+    "has_code": true,
+    "is_mobile": false,
+    "has_sidebar": true,
+    "h1": "Phòng Thí Nghiệm What-If: Căng Thẳng Dòng Tiền &amp; Tối Ưu Thanh Khoản",
+    "h2_list": [],
+    "buttons": [
+      "sync",
+      "logout",
+      "auto_awesomeHỏi AI",
+      "notifications4",
+      "help",
+      "save Lưu kịch bản",
+      "compare_arrows So sánh Baseline Thực tế",
+      "restart_alt Khôi phục gốc"
+    ],
+    "labels": [
+      "bolt Auto-payout ví sàn tức thì (NAPAS 247) Rút tiền về tài khoản Techcombank ngay khi đủ điều kiện",
+      "schedule Tạm hoãn chi thưởng quý nếu Runway &lt; 20 ngày Bảo vệ quỹ khẩn cấp mặt bằng và lương cứng nhân sự"
+    ],
+    "length": 50785
+  },
+  {
+    "folder": "modal_chi_ti_t_xem_tr_c_n_t_h_ng_po_draft_preview_1",
+    "has_code": true,
+    "is_mobile": false,
+    "has_sidebar": true,
+    "h1": "Xem trước &amp; Phê duyệt Đơn Đặt Hàng (PO Draft) — Đợt Nhập Hàng Mega 11.11",
+    "h2_list": [
+      "Công ty TNHH Phân Phối Mỹ Phẩm Quốc Tế Klairs VN"
+    ],
+    "buttons": [
+      "arrow_back_ios_newHỏi AI",
+      "print In bản nháp",
+      "download Tải PDF",
+      "close",
+      "-",
+      "+",
+      "-",
+      "+"
+    ],
+    "labels": [
+      "Chính sách Công Nợ &amp; Điều Khoản Thanh Toán",
+      "Net 0 (Thanh toán ngay) Thêm 1.5% CK thanh toán sớm Trừ ngay: 86.945.000 ₫",
+      "Công nợ Net 15 ngày Khuyên dùng Đáo hạn: 13/11/2024 Sau đợt thu tiền Mega 11.11",
+      "edit_note Ghi chú giao dịch cho Nhà Cung Cấp Klairs VN",
+      "Gửi Email đơn đặt hàng kèm file PDF Đến: orders@klairs.vn &amp; cc kế toán kho",
+      "Thông báo Zalo OA / ZNS đến Giám đốc KD Trần Minh Quân (0912 345 678)",
+      "Lịch nhắc nhập kho Google Calendar Ngày 29/10/2024 (Thủ kho: Hưng Nguyễn)"
+    ],
+    "length": 48144
+  },
+  {
+    "folder": "modal_chi_ti_t_xem_tr_c_n_t_h_ng_po_draft_preview_2",
+    "has_code": true,
+    "is_mobile": false,
+    "has_sidebar": true,
+    "h1": "Dự báo Nhu Cầu &amp; Gợi Ý Nhập Hàng Mega 11.11",
+    "h2_list": [
+      "Công ty TNHH Phân Phối Mỹ Phẩm Quốc Tế Klairs VN"
+    ],
+    "buttons": [
+      "arrow_back_ios_newHỏi AI",
+      "print In bản nháp (Ctrl+P)",
+      "download Tải PDF báo giá",
+      "close",
+      "-",
+      "+",
+      "-",
+      "+"
+    ],
+    "labels": [
+      "Chọn Chính Sách Công Nợ &amp; Thanh Toán:",
+      "Trả trước Net 0 Thanh toán ngay nhận thêm 1.5% CK sớm Trả ngay: 86.945.000 ₫",
+      "Công nợ Net 15 ngày Khuyên dùng Hạn thanh toán: 13/11/2024 Sau đợt thu hồi tiền Mega Sale 11.11",
+      "edit_note Ghi chú giao dịch cho Nhà Cung Cấp Klairs VN",
+      "Gửi email PO chính thức kèm file PDF Đến: orders@klairs.vn",
+      "Gửi thông báo Zalo ZNS đến Giám đốc KD NCC Trần Minh Quân (0912 345 678)",
+      "Tự động lên lịch hẹn kiểm kho trên Google Calendar Ngày: 29/10/2024 (Thủ kho: Hưng Nguyễn)"
+    ],
+    "length": 46384
+  },
+  {
+    "folder": "modal_l_p_phi_u_chi_ti_n_qu_t_vietqr_b2b_cashflow_p_l",
+    "has_code": true,
+    "is_mobile": false,
+    "has_sidebar": true,
+    "h1": "Sổ Thu Chi &amp; Quản Trị Dòng Tiền Thực Tế",
+    "h2_list": [
+      "Diễn Biến Dòng Tiền Thu &amp; Chi Thực Tế (Tháng 10/2024)",
+      "Lập Phiếu Chi Tiền &amp; Thanh Toán Đối Tác (Voucher Payment)"
+    ],
+    "buttons": [
+      "sync",
+      "logout",
+      "auto_awesomeHỏi AI",
+      "notifications4",
+      "help",
+      "download Xuất P&amp;L (Excel/PDF)",
+      "sync Đối soát sao kê (Auto)",
+      "add_circle + Lập phiếu Thu"
+    ],
+    "labels": [
+      "1. Chọn đối tượng nhận tiền",
+      "2. Hạng mục chi phí &amp; Gắn kèm chứng từ PO",
+      "3. Phương thức thanh toán &amp; Nguồn trích tiền",
+      "4. Nội dung diễn giải chi tiền",
+      "Tự động ghi giảm công nợ NCC Klairs VN trên sổ phụ kế toán",
+      "Đính kèm hóa đơn VAT điện tử &amp; sinh giấy Ủy nhiệm chi (UNC)"
+    ],
+    "length": 77284
+  },
+  {
+    "folder": "modal_l_p_phi_u_thu_ti_n_b_n_s_i_t_c_i_l_cashflow_p_l",
+    "has_code": true,
+    "is_mobile": false,
+    "has_sidebar": true,
+    "h1": "Sổ Thu Chi &amp; Quản Trị Dòng Tiền Thực Tế",
+    "h2_list": [
+      "Lập Phiếu Thu Tiền Bán Sỉ &amp; Đối Tác Phân Phối (Receipt Voucher)"
+    ],
+    "buttons": [
+      "Đại lý / Bán sỉ B2B",
+      "Đối soát sàn TMĐT",
+      "Bán lẻ Showroom POS",
+      "Doanh thu khác",
+      "Thay đổi đối tác",
+      "VietQR Doanh Nghiệp (Tự động khớp)",
+      "Chuyển khoản thường Đối soát sao kê",
+      "Tiền mặt / COD Nhập quỹ vật lý"
+    ],
+    "labels": [
+      "1. Phân loại luồng tiền vào / Nguồn thu",
+      "2. Đối tác B2B &amp; Đại lý phân phối",
+      "3. Hạng mục thu &amp; Gắn kèm Đơn hàng xuất sỉ (Wholesale Order)",
+      "4. Phương thức thu tiền &amp; Tài khoản thụ hưởng",
+      "5. Nội dung diễn giải &amp; Tùy chọn tự động",
+      "Giảm trừ công nợ đại lý",
+      "Gửi e-VAT qua Zalo OA",
+      "Cập nhật P&amp;L &amp; Net Cashflow"
+    ],
+    "length": 28644
+  },
+  {
+    "folder": "modal_nh_p_kho_kh_i_t_o_l_date_po_1",
+    "has_code": true,
+    "is_mobile": false,
+    "has_sidebar": true,
+    "h1": "Kho &amp; Lô Date Mỹ Phẩm",
+    "h2_list": [
+      "Tạo Phiếu Nhập Kho &amp; Quản Lý Lô Hạn Dùng (PO)"
+    ],
+    "buttons": [
+      "sync",
+      "logout",
+      "auto_awesomeHỏi AI",
+      "notifications4",
+      "Xuất báo cáo FEFO",
+      "add Tạo phiếu nhập PO",
+      "close",
+      "barcode_scanner Quét"
+    ],
+    "labels": [
+      "edit_note Ghi chú đơn nhập &amp; Thanh toán"
+    ],
+    "length": 42608
+  },
+  {
+    "folder": "modal_nh_p_kho_kh_i_t_o_l_date_po_2",
+    "has_code": true,
+    "is_mobile": false,
+    "has_sidebar": true,
+    "h1": "Kho &amp; Lô Date Mỹ Phẩm",
+    "h2_list": [
+      "Tạo Phiếu Nhập Kho &amp; Quản Lý Lô Hạn Dùng (PO)"
+    ],
+    "buttons": [
+      "sync",
+      "logout",
+      "auto_awesomeHỏi AI",
+      "notifications4",
+      "Xuất báo cáo FEFO",
+      "add Tạo phiếu nhập PO",
+      "close",
+      "barcode_scanner Quét"
+    ],
+    "labels": [
+      "Nhà Cung Cấp Mỹ Phẩm",
+      "Chi nhánh nhập hàng",
+      "Ngày nhập kho",
+      "edit_note Ghi chú đơn nhập &amp; Thanh toán"
+    ],
+    "length": 45038
+  },
+  {
+    "folder": "modal_nh_p_kho_kh_i_t_o_l_date_po_3",
+    "has_code": true,
+    "is_mobile": false,
+    "has_sidebar": true,
+    "h1": "Kho &amp; Lô Date Mỹ Phẩm",
+    "h2_list": [
+      "Tạo Phiếu Nhập Kho &amp; Quản Lý Lô Hạn Dùng (PO)"
+    ],
+    "buttons": [
+      "sync",
+      "logout",
+      "auto_awesomeHỏi AI",
+      "notifications4",
+      "Xuất báo cáo FEFO",
+      "add Tạo phiếu nhập PO",
+      "close",
+      "barcode_scanner Quét"
+    ],
+    "labels": [
+      "Nhà Cung Cấp Mỹ Phẩm",
+      "Chi nhánh nhập hàng",
+      "Ngày nhập kho",
+      "edit_note Ghi chú nội bộ &amp; Kiểm soát kho"
+    ],
+    "length": 46709
+  },
+  {
+    "folder": "modal_th_m_nh_n_vi_n_m_i_g_n_ph_n_quy_n_rbac",
+    "has_code": true,
+    "is_mobile": false,
+    "has_sidebar": true,
+    "h1": "",
+    "h2_list": [
+      "Thêm Nhân Viên Mới &amp; Thiết Lập Quyền Hạn"
+    ],
+    "buttons": [
+      "arrow_back_ios_newHỏi AI",
+      "close",
+      "Hủy bỏ",
+      "Lưu bản nháp"
+    ],
+    "labels": [
+      "Họ và tên nhân viên * verified Hợp lệ",
+      "Mã nhân viên công vụ",
+      "Số điện thoại (Nhận OTP SMS / Zalo) *",
+      "Email đăng nhập công vụ *",
+      "Địa điểm làm việc chính *",
+      "Ngày bắt đầu công tác",
+      "Chỉ đăng nhập qua Wi-Fi Showroom Q.1",
+      "Bật bảo mật 2FA bắt buộc Zalo OTP"
+    ],
+    "length": 40416
+  },
+  {
+    "folder": "modal_thanh_to_n_c_ng_n_qu_t_vietqr_b2b_h_ng_lo_t",
+    "has_code": true,
+    "is_mobile": false,
+    "has_sidebar": true,
+    "h1": "Thanh Toán Công Nợ Đối Tác &amp; Lập Lệnh VietQR B2B",
+    "h2_list": [],
+    "buttons": [
+      "sync",
+      "logout",
+      "auto_awesomeHỏi AI",
+      "notifications4",
+      "close",
+      "layers Quét 1 mã gộp Smart-Batch",
+      "format_list_numbered Từng lệnh rời rạc",
+      "print In UNC (3 bản PDF)"
+    ],
+    "labels": [],
+    "length": 41585
+  },
+  {
+    "folder": "qu_n_l_n_h_ng_pos_b_n_l_a_k_nh",
+    "has_code": true,
+    "is_mobile": false,
+    "has_sidebar": true,
+    "h1": "Hub Đơn hàng &amp; POS Đa kênh",
+    "h2_list": [],
+    "buttons": [
+      "sync",
+      "logout",
+      "auto_awesomeHỏi AI",
+      "notifications4",
+      "help",
+      "file_download Xuất Excel (.xlsx)",
+      "sync Đồng bộ sàn (API)",
+      "domain_add + Tạo đơn B2B"
+    ],
+    "labels": [],
+    "length": 65887
+  },
+  {
+    "folder": "qu_n_l_nh_cung_c_p_c_ng_n_n_h_ng",
+    "has_code": true,
+    "is_mobile": false,
+    "has_sidebar": true,
+    "h1": "Quản lý Nhà Cung Cấp &amp; Công Nợ Đơn Hàng",
+    "h2_list": [],
+    "buttons": [
+      "sync",
+      "logout",
+      "auto_awesomeHỏi AI",
+      "notifications4",
+      "file_download Xuất sổ công nợ",
+      "fact_check Đối soát tự động",
+      "smart_toy AI Đàm phán &amp; Hạn mức",
+      "add_circle + Thêm Nhà Cung Cấp Mới"
+    ],
+    "labels": [],
+    "length": 58067
+  },
+  {
+    "folder": "qu_n_l_s_n_ph_m_bi_n_th_kho_l_m_ph_m",
+    "has_code": true,
+    "is_mobile": false,
+    "has_sidebar": true,
+    "h1": "Quản lý Sản phẩm, Biến thể &amp; Kho Lô Mỹ phẩm",
+    "h2_list": [
+      "Nguyên tắc xuất kho FEFO (First Expired, First Out)"
+    ],
+    "buttons": [
+      "sync",
+      "logout",
+      "auto_awesomeHỏi AI",
+      "notifications4",
+      "file_download Xuất Excel / Kiot",
+      "add_business Nhập kho / Lô Date (PO)",
+      "bolt AI Quét rủi ro hạn dùng",
+      "add_circle Thêm sản phẩm"
+    ],
+    "labels": [],
+    "length": 62806
+  },
+  {
+    "folder": "retail_intelligence_pulse",
+    "has_code": false
+  },
+  {
+    "folder": "s_thu_chi_d_ng_ti_n_th_c_t_cashflow_p_l",
+    "has_code": true,
+    "is_mobile": false,
+    "has_sidebar": true,
+    "h1": "Sổ Thu Chi &amp; Quản Trị Dòng Tiền Thực Tế",
+    "h2_list": [
+      "Diễn Biến Dòng Tiền Thu &amp; Chi Thực Tế (Tháng 10/2024)"
+    ],
+    "buttons": [
+      "sync",
+      "logout",
+      "auto_awesomeHỏi AI",
+      "notifications4",
+      "help",
+      "download Xuất P&amp;L (Excel/PDF)",
+      "sync Đối soát sao kê (Auto)",
+      "add_circle + Lập phiếu Thu"
+    ],
+    "labels": [],
+    "length": 61509
+  },
+  {
+    "folder": "sa_01_qu_n_l_t_i_kho_n_ph_n_quy_n_iam_rbac_console",
+    "has_code": true,
+    "is_mobile": false,
+    "has_sidebar": true,
+    "h1": "SA-01: Quản Lý Tài Khoản &amp; Phân Quyền (IAM &amp; RBAC Governance)",
+    "h2_list": [
+      "Ma Trận Phân Quyền Chi Tiết Theo Vai Trò (RBAC Governance Matrix)"
+    ],
+    "buttons": [
+      "notifications_active",
+      "verified Xuất Báo Cáo SOC2/ISO",
+      "hub Ma Trận RBAC",
+      "person_add + Tạo Tài Khoản Mới",
+      "restart_alt",
+      "chevron_left",
+      "chevron_right",
+      "history"
+    ],
+    "labels": [
+      "Họ &amp; Tên Nhân Viên *",
+      "Email Tập Đoàn (@maison.vn) *",
+      "Số Điện Thoại Di Động *",
+      "Mã Số Nhân Viên (Staff ID) *",
+      "Chi Nhánh Công Tác *",
+      "Vai Trò RBAC Gán Vào *"
+    ],
+    "length": 70891
+  },
+  {
+    "folder": "sa_01_qu_n_tr_h_th_ng_c_u_h_nh_n_n_t_ng_system_administrator_master_console",
+    "has_code": true,
+    "is_mobile": false,
+    "has_sidebar": true,
+    "h1": "",
+    "h2_list": [
+      "Cấu Hình Tham Số Nghiệp Vụ Toàn Cục",
+      "Quản Trị Cơ Sở Dữ Liệu &amp; Snapshot Sao Lưu",
+      "Chính Sách Bảo Mật &amp; Truy Cập",
+      "Sức Khỏe Cụm Dịch Vụ",
+      "Nhật Ký Cấu Hình (Audit Trail)"
+    ],
+    "buttons": [
+      "PROD",
+      "STG",
+      "SANDBOX",
+      "security",
+      "notifications",
+      "data_object Xuất JSON",
+      "history Phục Hồi Snapshot",
+      "bolt Hot Reload"
+    ],
+    "labels": [],
+    "length": 46497
+  },
+  {
+    "folder": "sa_02_qu_n_l_doanh_nghi_p_multi_tenant_governance_console",
+    "has_code": true,
+    "is_mobile": false,
+    "has_sidebar": true,
+    "h1": "Trung Tâm Quản Trị Khách Thuê &amp; Multi-Tenant",
+    "h2_list": [
+      "Yêu Cầu Hỗ Trợ Vận Hành",
+      "Cơ Chế Break-Glass &amp; Audit"
+    ],
+    "buttons": [
+      "Chi Tiết",
+      "Trạng Thái",
+      "history",
+      "Chi Tiết",
+      "Trạng Thái",
+      "history",
+      "Mở Khóa Tạm 48H",
+      "Chi Tiết"
+    ],
+    "labels": [],
+    "length": 53207
+  },
+  {
+    "folder": "sa_03_qu_n_l_c_u_h_nh_h_th_ng_ng_ng_an_ninh_v_n_h_nh",
+    "has_code": true,
+    "is_mobile": false,
+    "has_sidebar": true,
+    "h1": "SA-03: Cấu Hình Hệ Thống, Ngưỡng Cảnh Báo &amp; An Ninh Vận Hành",
+    "h2_list": [
+      "1. Cấu Hình Dùng Chung Toàn Nền Tảng (Global Shared Configurations)",
+      "2. Quản Lý Ngưỡng, Giới Hạn &amp; Tham Số Rủi Ro (Thresholds &amp; Risk Triggers)",
+      "3. Cấu Hình Vận Hành &amp; An Ninh Zero-Trust (Security Governance)"
+    ],
+    "buttons": [
+      "data_object Xuất Bản Snapshot (JSON)",
+      "history Lịch Sử Phiên Bản v4.8",
+      "add Thêm Tham Số Mới",
+      "Tất Cả 64",
+      "1. Cấu Hình Dùng Chung 14",
+      "2. Ngưỡng &amp; Giới Hạn 18",
+      "3. Vận Hành &amp; Bảo Mật 22",
+      "4. Tích Hợp &amp; API Quotas 10"
+    ],
+    "labels": [],
+    "length": 55288
+  },
+  {
+    "folder": "sa_04_nh_t_k_audit_trail_ki_m_to_n_b_o_m_t_truy_v_t_s_c",
+    "has_code": true,
+    "is_mobile": false,
+    "has_sidebar": true,
+    "h1": "Nhật Ký Kiểm Toán &amp; Điều Tra Pháp Y Bảo Mật",
+    "h2_list": [],
+    "buttons": [
+      "gavel Xác minh chuỗi Hash",
+      "biotech Truy vết sự cố Forensics",
+      "Ghi âm thao tác (Session Replay)",
+      "Ngắt phiên lập tức",
+      "1 Giờ",
+      "24 Giờ qua",
+      "7 Ngày",
+      "30 Ngày"
+    ],
+    "labels": [
+      "Nhóm Sự Kiện",
+      "Mức Độ Nghiêm Trọng",
+      "Doanh nghiệp / Khách Thuê",
+      "Trạng Thái Thực Thi"
+    ],
+    "length": 56496
+  },
+  {
+    "folder": "se_01_ghi_nh_n_giao_d_ch_b_n_h_ng_pos_store_employee_pos_terminal",
+    "has_code": true,
+    "is_mobile": false,
+    "has_sidebar": false,
+    "h1": "",
+    "h2_list": [
+      "Serum Bio-B5 Hydra Max (100ml)",
+      "Kem Phục Hồi Ceramide Bloom",
+      "Son Kem Velvet Touch #03",
+      "Nước Tẩy Trang Micellar 400ml",
+      "Kem SunShield Tone-Up SPF50+"
+    ],
+    "buttons": [
+      "pause_circleLưu Giỏ",
+      "auto_awesomeTrợ Lý AI",
+      "mic Voice Order [F2] AI",
+      "Tất cả (28)",
+      "star Bán chạy nhất",
+      "Serum &amp; Skincare",
+      "Son Môi &amp; Makeup",
+      "Kem Chống Nắng"
+    ],
+    "labels": [
+      "Áp dụng trừ 500 điểm tích lũy (-50.000 ₫)",
+      "In hóa đơn nhiệt K80 tự động [F9]",
+      "Xuất hóa đơn e-Invoice gửi Zalo KH",
+      "Trừ tồn tức thì (Kho Flagship Q.1)"
+    ],
+    "length": 47816
+  },
+  {
+    "folder": "se_02_ki_m_k_t_n_kho_qu_y_qu_n_l_l_h_n_d_ng_fefo",
+    "has_code": true,
+    "is_mobile": false,
+    "has_sidebar": true,
+    "h1": "",
+    "h2_list": [],
+    "buttons": [
+      "pause_circle Tạm dừng phiên",
+      "history Lịch sử ca trước",
+      "sync_alt Cân bằng tức thì",
+      "photo_camera",
+      "Đếm cộng dồn (+1)",
+      "Nhập số lượng",
+      "Kiểm Date FEFO",
+      "Tất cả SKU quầy 68"
+    ],
+    "labels": [],
+    "length": 55395
+  },
+  {
+    "folder": "se_03_ghi_nh_n_h_ng_nh_p_kho_qu_y_store_inward_goods_receiving_inventory_intake",
+    "has_code": true,
+    "is_mobile": false,
+    "has_sidebar": true,
+    "h1": "",
+    "h2_list": [],
+    "buttons": [
+      "qr_code_scanner Quét PO/TO",
+      "history Lịch sử ca",
+      "print In biên bản [F7]",
+      "Quét từng món (+1)",
+      "Nhập số kiện / lốc",
+      "+ Tạo Lô Date mới",
+      "-",
+      "+"
+    ],
+    "labels": [],
+    "length": 49417
+  },
+  {
+    "folder": "se_03_giao_ca_k_t_s_b_n_h_ng_cashier_shift_handover_drawer_settlement",
+    "has_code": true,
+    "is_mobile": false,
+    "has_sidebar": true,
+    "h1": "Giao Ca, Kiểm Tiền Két &amp; Kết Sổ Doanh Thu",
+    "h2_list": [
+      "Kiểm Đếm Từng Mệnh Giá Tiền Két"
+    ],
+    "buttons": [
+      "print In Tạm (F7)",
+      "history Lịch Sử Tuần",
+      "warning Báo Sai Lệch (F11)",
+      "more_vert",
+      "sync_alt Đồng bộ theo sổ sách",
+      "-",
+      "+",
+      "-"
+    ],
+    "labels": [
+      "Máy quét mã vạch Honeywell Xenon 1900G Pin 85% • Tốt",
+      "Máy in hóa đơn nhiệt K80 Còn 2 cuộn giấy sơ cua",
+      "Ngăn kéo đựng tiền &amp; chìa khóa két Đã giao tận tay ca sau",
+      "iPad POS Retina &amp; Chân đế xoay quầy Đang cắm sạc liên tục",
+      "Thiết bị quẹt thẻ di động Sunmi P2 Đã in Tổng kết ca"
+    ],
+    "length": 61021
+  },
+  {
+    "folder": "se_04_tra_c_u_xem_th_ng_tin_s_n_ph_m_b_n_h_ng_product_directory_sales_reference",
+    "has_code": true,
+    "is_mobile": false,
+    "has_sidebar": true,
+    "h1": "",
+    "h2_list": [
+      "Serum Bio-B5 Hydra Max 100ml"
+    ],
+    "buttons": [
+      "notifications",
+      "key Yêu Cầu SM Mở Khóa",
+      "help Quy định RBAC",
+      "barcode_scanner",
+      "tune Bộ lọc nâng cao",
+      "grid_view",
+      "Tất cả (142)",
+      "Serum &amp; Tinh chất (34)"
+    ],
+    "labels": [
+      "Còn hàng tại quầy (&gt;0)",
+      "Tồn thấp (&lt; 5)",
+      "science Có mẫu thử Tester",
+      "local_offer Có CTKM Đang Chạy"
+    ],
+    "length": 54891
+  },
+  {
+    "folder": "se_04_x_l_i_tr_h_ng_ho_n_ti_n_b_o_h_nh_t_i_qu_y_pos",
+    "has_code": true,
+    "is_mobile": false,
+    "has_sidebar": true,
+    "h1": "",
+    "h2_list": [
+      "Tra Cứu Hóa Đơn Gốc Mua Hàng",
+      "Sản Phẩm Trong Đơn Gốc &amp; Kiểm Định Nhập",
+      "Sản Phẩm Đổi Mới (Exchange Selection)",
+      "Phương Thức Quyết Toán",
+      "Trợ Lý Thẩm Định AI Inspection"
+    ],
+    "buttons": [
+      "notifications",
+      "settings",
+      "policy Chính Sách Đổi Trả (7 Ngày)",
+      "history Lịch Sử Ca Này",
+      "print In Biên Bản Đổi Trả [F7]",
+      "barcode_scanner Quét Lại",
+      "add Thêm sản phẩm khác [F4]",
+      "Thu Thêm"
+    ],
+    "labels": [
+      "Lý do đổi hàng thực tế:",
+      "Tình trạng kiểm tra tại quầy:",
+      "Đủ điều kiện: Tự động nhập lại quầy Flagship Q.1 (Bán tiếp)"
+    ],
+    "length": 44813
+  }
+]

@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SE-02: Kiểm Kê Tồn Kho Quầy & Quản Lý Lô Hạn Dùng FEFO — ABC Copilot</title>
+  <link rel="stylesheet" href="../tokens.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    .page-container {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: var(--space-4);
+    }
+
+    /* Session Top Header */
+    .session-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space-3);
+      margin-bottom: var(--space-3);
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-3) var(--space-4);
+      box-shadow: var(--shadow-card);
+      flex-wrap: wrap;
+    }
+
+    .session-info {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1);
+    }
+
+    .session-title-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+    }
+
+    .session-title-row h1 {
+      font-size: var(--font-title);
+      font-weight: 700;
+      color: var(--color-text);
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .badge-session {
+      background: #eff6ff;
+      color: var(--color-primary);
+      border: 1px solid #bfdbfe;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: monospace;
+    }
+
+    .session-meta {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      font-size: 13px;
+      color: var(--color-text-muted);
+      flex-wrap: wrap;
+    }
+
+    .session-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+    }
+
+    /* Progress bar */
+    .progress-box {
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .progress-track {
+      flex: 1;
+      height: 6px;
+      background: var(--color-border);
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--color-primary);
+      border-radius: 9999px;
+      width: 61.8%;
+    }
+
+    .progress-text {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      white-space: nowrap;
+    }
+
+    /* KPI Grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-3);
+      margin-bottom: var(--space-3);
+    }
+
+    @media (max-width: 900px) {
+      .kpi-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .kpi-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-3) var(--space-4);
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .kpi-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: var(--space-1);
+    }
+
+    .kpi-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .kpi-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--color-text);
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+
+    .kpi-subtext {
+      font-size: 12px;
+      margin-top: var(--space-1);
+    }
+
+    /* Search & Filter Toolbar */
+    .toolbar-box {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-3) var(--space-4);
+      margin-bottom: var(--space-3);
+      box-shadow: var(--shadow-card);
+    }
+
+    .search-row {
+      display: flex;
+      gap: var(--space-3);
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .search-input-wrap {
+      position: relative;
+      flex: 1;
+      min-width: 320px;
+    }
+
+    .search-input-wrap svg {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--color-text-muted);
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 9px 40px 9px 38px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      font-size: 14px;
+      outline: none;
+      box-sizing: border-box;
+      transition: border-color 0.15s;
+    }
+
+    .search-input:focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 2px rgba(43, 89, 195, 0.15);
+    }
+
+    .key-badge {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--color-text-muted);
+      font-family: monospace;
+    }
+
+    .filter-tabs {
+      display: flex;
+      gap: var(--space-1);
+      margin-top: var(--space-2);
+      padding-top: var(--space-2);
+      border-top: 1px solid var(--color-border);
+      flex-wrap: wrap;
+    }
+
+    .filter-tab {
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+    }
+
+    .filter-tab.active {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: #fff;
+    }
+
+    .filter-tab .badge-count {
+      padding: 1px 6px;
+      border-radius: 9999px;
+      font-size: 11px;
+      background: rgba(0, 0, 0, 0.08);
+    }
+
+    .filter-tab.active .badge-count {
+      background: rgba(255, 255, 255, 0.25);
+      color: #fff;
+    }
+
+    /* Table Container */
+    .table-container {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-card);
+      overflow-x: auto;
+      margin-bottom: var(--space-3);
+    }
+
+    .audit-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      text-align: left;
+    }
+
+    .audit-table th {
+      background: var(--color-bg);
+      color: var(--color-text-muted);
+      font-weight: 600;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--color-border);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+    }
+
+    .audit-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--color-border);
+      vertical-align: middle;
+    }
+
+    .audit-table tr:hover {
+      background: #fafbfd;
+    }
+
+    .product-cell {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .product-title {
+      font-weight: 600;
+      color: var(--color-text);
+    }
+
+    .sku-badge {
+      font-family: monospace;
+      font-size: 11px;
+      color: var(--color-text-muted);
+    }
+
+    .qty-counter {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--color-surface);
+    }
+
+    .qty-btn {
+      width: 28px;
+      height: 28px;
+      border: none;
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.1s;
+    }
+
+    .qty-btn:hover {
+      background: #e2e6ea;
+    }
+
+    .qty-input {
+      width: 44px;
+      height: 28px;
+      border: none;
+      border-left: 1px solid var(--color-border);
+      border-right: 1px solid var(--color-border);
+      text-align: center;
+      font-size: 13px;
+      font-weight: 700;
+      outline: none;
+      background: var(--color-surface);
+    }
+
+    /* Status Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .badge-success {
+      background: #e8f5e9;
+      color: var(--color-success);
+    }
+
+    .badge-warning {
+      background: #fef9c3;
+      color: var(--color-warning);
+    }
+
+    .badge-danger {
+      background: #fee2e2;
+      color: var(--color-danger);
+    }
+
+    /* Bottom Reconcile Bar */
+    .reconcile-footer {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-3) var(--space-4);
+      box-shadow: var(--shadow-card);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+    }
+
+    .summary-left {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+    }
+
+    .summary-stats {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: 13px;
+    }
+
+    .summary-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text);
+      transition: all 0.15s;
+      text-decoration: none;
+    }
+
+    .btn:hover {
+      background: var(--color-bg);
+    }
+
+    .btn-primary {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: #1e429f;
+    }
+
+    .btn-success {
+      background: var(--color-success);
+      border-color: var(--color-success);
+      color: #fff;
+    }
+
+    .btn-success:hover {
+      background: #178044;
+    }
+
+    .btn-danger {
+      background: var(--color-danger);
+      border-color: var(--color-danger);
+      color: #fff;
+    }
+
+    .btn-danger:hover {
+      background: #b91c1c;
+    }
+  </style>
+</head>
+<body data-screen="se-kiem-ke-ton-kho">
+  <div class="app-container">
+    <!-- Top Navigation Header (Injected dynamically by nav-employee.js) -->
+    <header id="app-topnav"></header>
+
+    <main class="page-container">
+      <!-- Session Top Header -->
+      <div class="session-header">
+        <div class="session-info">
+          <div class="session-title-row">
+            <h1>
+              <span style="color: var(--color-primary); display: inline-flex; align-items: center;">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.5 L10 3 L17.5 6.5 L10 10 Z"/><path d="M2.5 6.5 V14 L10 17.5 L17.5 14 V6.5"/><line x1="10" y1="10" x2="10" y2="17.5"/></svg>
+              </span>
+              SE-02: Kiểm Kê Tồn Kho Quầy & Quản Lý Lô Hạn Dùng FEFO
+            </h1>
+            <span class="badge-session">#KK-20241024-Q1</span>
+            <span class="badge badge-success">
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><polyline points="6.5,10.2 9,12.8 13.8,7.5"/></svg>
+              Đang kiểm kê thực địa
+            </span>
+          </div>
+
+          <div class="session-meta">
+            <span>Nhân viên kiểm kê: <strong>Nguyễn Thị Mai</strong> (Ca sáng 08:00 - 16:00)</span>
+            <span>•</span>
+            <span>Khu vực kiểm: <strong>Quầy Trưng Bày & Tủ Quầy</strong></span>
+          </div>
+
+          <div class="progress-box">
+            <div class="progress-track">
+              <div class="progress-fill"></div>
+            </div>
+            <span class="progress-text">Tiến độ đếm: <strong style="color: var(--color-primary);">42 / 68 SKU</strong> (61.8%)</span>
+          </div>
+        </div>
+
+        <div class="session-actions">
+          <button type="button" class="btn" onclick="alert('Đã đồng bộ số liệu kiểm kê ca trước!')">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10a6 6 0 0 1 10.3-4.2"/><polyline points="14,2.5 14.3,6 10.8,5.7"/><path d="M16 10a6 6 0 0 1-10.3 4.2"/><polyline points="6,17.5 5.7,14 9.2,14.3"/></svg>
+            Lịch sử ca trước
+          </button>
+          <button type="button" class="btn" onclick="alert('Đã xuất báo cáo kiểm kê quầy ra tệp CSV!')">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="10" y1="3" x2="10" y2="12.5"/><polyline points="6,9 10,13 14,9"/><line x1="4" y1="16.5" x2="16" y2="16.5"/></svg>
+            Xuất Excel [F6]
+          </button>
+          <button type="button" class="btn btn-primary" onclick="alert('Đang khởi tạo biên bản kiểm kê mới!')">
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="10" y1="4" x2="10" y2="16"/><line x1="4" y1="10" x2="16" y2="10"/></svg>
+            + Biên Bản Kiểm Kê [F8]
+          </button>
+        </div>
+      </div>
+
+      <!-- KPI Summary Cards -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-top">
+            <span class="kpi-label">Tồn Sổ Sách & Thực Đếm</span>
+            <span style="color: var(--color-primary); display: inline-flex; align-items: center;">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.5 L10 3 L17.5 6.5 L10 10 Z"/><path d="M2.5 6.5 V14 L10 17.5 L17.5 14 V6.5"/><line x1="10" y1="10" x2="10" y2="17.5"/></svg>
+            </span>
+          </div>
+          <div class="kpi-value">
+            268 <span style="font-size: 14px; font-weight: normal; color: var(--color-text-muted);">/ 412 món</span>
+          </div>
+          <div class="kpi-subtext" style="color: var(--color-danger); font-weight: 600;">
+            Chênh lệch hiện tại: -144 món cần quét nốt
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-top">
+            <span class="kpi-label">Giá Trị Tồn Quầy Quản Lý</span>
+            <span style="color: var(--color-primary); display: inline-flex; align-items: center;">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2.5" width="12" height="15" rx="1.5"/><line x1="7" y1="6.5" x2="13" y2="6.5"/><line x1="7" y1="9.5" x2="13" y2="9.5"/><line x1="7" y1="12.5" x2="10.5" y2="12.5"/></svg>
+            </span>
+          </div>
+          <div class="kpi-value">
+            168.450.000 ₫
+          </div>
+          <div class="kpi-subtext" style="color: var(--color-warning); font-weight: 600;">
+            Sai lệch tạm tính: -710.000 ₫ (hao hụt tester &amp; lỗi seal)
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-top">
+            <span class="kpi-label">Giám Sát Hạn Dùng Lô FEFO</span>
+            <span style="color: var(--color-warning); display: inline-flex; align-items: center;">
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3 L18 17 L2 17 Z"/><line x1="10" y1="8.5" x2="10" y2="12.5"/><circle cx="10" cy="14.5" r="0.9" fill="currentColor" stroke="none"/></svg>
+            </span>
+          </div>
+          <div class="kpi-value" style="color: var(--color-warning);">
+            02 <span style="font-size: 14px; font-weight: normal; color: var(--color-text-muted);">Lô Cận Hạn</span>
+          </div>
+          <div class="kpi-subtext" style="color: var(--color-text-muted);">
+            Ưu tiên kệ mặt tiền: Xuất bán trước <strong>15/11/2024</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Search & Filter Toolbar -->
+      <div class="toolbar-box">
+        <div class="search-row">
+          <div class="search-input-wrap">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="8.5" cy="8.5" r="5"/><line x1="12.3" y1="12.3" x2="17" y2="17"/></svg>
+            <input type="text" id="barcodeSearchInput" class="search-input" placeholder="Quét mã SKU sản phẩm hoặc nhập tên... [F1]" autofocus oninput="filterTable()">
+            <span class="key-badge">F1</span>
+          </div>
+
+          <div style="display: flex; gap: var(--space-2); align-items: center;">
+            <select id="reasonSelect" class="btn" style="font-weight: normal;" onchange="filterTable()">
+              <option value="">Lý do: Tất cả</option>
+              <option value="khop">Khớp chuẩn (100%)</option>
+              <option value="tester">Hao hụt Tester</option>
+              <option value="chuyen">Chưa nhận đơn chuyển</option>
+              <option value="thatthoat">Nghi ngờ thất thoát</option>
+            </select>
+            <button type="button" class="btn" title="Làm mới bảng" onclick="location.reload()">
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10a6 6 0 0 1 10.3-4.2"/><polyline points="14,2.5 14.3,6 10.8,5.7"/><path d="M16 10a6 6 0 0 1-10.3 4.2"/><polyline points="6,17.5 5.7,14 9.2,14.3"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="filter-tabs">
+          <button type="button" class="filter-tab active" onclick="setQuickFilter(this, 'all')">
+            Tất cả SKU quầy <span class="badge-count">6</span>
+          </button>
+          <button type="button" class="filter-tab" onclick="setQuickFilter(this, 'match')">
+            Khớp chuẩn <span class="badge-count">3</span>
+          </button>
+          <button type="button" class="filter-tab" onclick="setQuickFilter(this, 'diff')">
+            Lệch thiếu / thừa <span class="badge-count">3</span>
+          </button>
+          <button type="button" class="filter-tab" onclick="setQuickFilter(this, 'fefo')">
+            Cận Date FEFO <span class="badge-count">2</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Stock Audit Table -->
+      <div class="table-container">
+        <table class="audit-table" id="auditTable">
+          <thead>
+            <tr>
+              <th>Sản Phẩm &amp; SKU</th>
+              <th style="text-align: center;">Tồn Sổ</th>
+              <th style="text-align: center; min-width: 140px;">Thực Đếm</th>
+              <th style="text-align: center;">Chênh Lệch</th>
+              <th>Số Lô &amp; Hạn Dùng (FEFO)</th>
+              <th style="text-align: center;">Tạm Giữ / Min Stock</th>
+              <th>Lý Do / Ghi Chú Lệch</th>
+              <th style="text-align: right;">Thao Tác</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Row 1: Bio-B5 -->
+            <tr data-status="diff" data-reason="tester" data-fefo="safe">
+              <td>
+                <div class="product-cell">
+                  <span class="product-title">Serum Bio-B5 Hydra Max 100ml</span>
+                  <span class="sku-badge">MB-SER-B5-01 • Kệ A1-02</span>
+                </div>
+              </td>
+              <td style="text-align: center; font-weight: 700;">35</td>
+              <td style="text-align: center;">
+                <div class="qty-counter">
+                  <button type="button" class="qty-btn" onclick="updateQty(this, -1)">-</button>
+                  <input type="text" class="qty-input" value="34" data-book="35" onchange="manualQty(this)">
+                  <button type="button" class="qty-btn" onclick="updateQty(this, 1)">+</button>
+                </div>
+              </td>
+              <td style="text-align: center;">
+                <span class="badge badge-danger diff-badge">
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><line x1="7.3" y1="7.3" x2="12.7" y2="12.7"/><line x1="12.7" y1="7.3" x2="7.3" y2="12.7"/></svg>
+                  -1 (Thiếu)
+                </span>
+              </td>
+              <td>
+                <div style="display: flex; flex-direction: column;">
+                  <strong style="font-family: monospace;">LOT-202410-B5</strong>
+                  <span style="font-size: 11px; color: var(--color-success);">HSD: 10/2026 (Tồn lô: 34)</span>
+                </div>
+              </td>
+              <td style="text-align: center;">
+                <span style="font-size: 12px; color: var(--color-text-muted);">Giữ: <strong>2</strong> • Min: <strong>10</strong></span>
+              </td>
+              <td>
+                <select class="btn" style="padding: 4px 8px; font-size: 12px;">
+                  <option selected>Khách thử làm đổ / Tester</option>
+                  <option>Hàng hư hỏng vỡ seal</option>
+                  <option>Nghi ngờ thất thoát</option>
+                  <option>Chưa nhập đơn chuyển kho</option>
+                </select>
+              </td>
+              <td style="text-align: right;">
+                <button type="button" class="btn" style="padding: 4px 8px; font-size: 12px;" title="In lại nhãn kệ">
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2.5" width="10" height="5" rx="0.5"/><rect x="3" y="7.5" width="14" height="7" rx="1"/><rect x="6" y="12" width="8" height="5.5" rx="0.5"/></svg>
+                </button>
+              </td>
+            </tr>
+
+            <!-- Row 2: Ceramide Aura Care -->
+            <tr data-status="match" data-reason="khop" data-fefo="safe">
+              <td>
+                <div class="product-cell">
+                  <span class="product-title">Kem Phục Hồi Ceramide Aura Care</span>
+                  <span class="sku-badge">MB-CRM-02 • Kệ B2-01</span>
+                </div>
+              </td>
+              <td style="text-align: center; font-weight: 700;">18</td>
+              <td style="text-align: center;">
+                <div class="qty-counter">
+                  <button type="button" class="qty-btn" onclick="updateQty(this, -1)">-</button>
+                  <input type="text" class="qty-input" value="18" data-book="18" onchange="manualQty(this)">
+                  <button type="button" class="qty-btn" onclick="updateQty(this, 1)">+</button>
+                </div>
+              </td>
+              <td style="text-align: center;">
+                <span class="badge badge-success diff-badge">
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><polyline points="6.5,10.2 9,12.8 13.8,7.5"/></svg>
+                  Khớp 100%
+                </span>
+              </td>
+              <td>
+                <div style="display: flex; flex-direction: column;">
+                  <strong style="font-family: monospace;">LOT-202409-CR</strong>
+                  <span style="font-size: 11px; color: var(--color-success);">HSD: 09/2026 (Tồn lô: 18)</span>
+                </div>
+              </td>
+              <td style="text-align: center;">
+                <span style="font-size: 12px; color: var(--color-text-muted);">Giữ: <strong>0</strong> • Min: <strong>5</strong></span>
+              </td>
+              <td>
+                <span style="font-size: 12px; color: var(--color-success); font-weight: 600;">Số lượng thực tế khớp chuẩn</span>
+              </td>
+              <td style="text-align: right;">
+                <button type="button" class="btn" style="padding: 4px 8px; font-size: 12px;" title="In lại nhãn kệ">
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2.5" width="10" height="5" rx="0.5"/><rect x="3" y="7.5" width="14" height="7" rx="1"/><rect x="6" y="12" width="8" height="5.5" rx="0.5"/></svg>
+                </button>
+              </td>
+            </tr>
+
+            <!-- Row 3: Son Velvet Touch #03 (Cận FEFO) -->
+            <tr data-status="match" data-reason="khop" data-fefo="fefo">
+              <td>
+                <div class="product-cell">
+                  <div style="display: flex; align-items: center; gap: 6px;">
+                    <span class="product-title">Son Kem Velvet #03 Đỏ Gạch</span>
+                    <span class="badge badge-warning" style="font-size: 10px; padding: 1px 5px;">FEFO Cận Hạn</span>
+                  </div>
+                  <span class="sku-badge">MB-LIP-VL-03 • Kệ Mặt Tiền T1</span>
+                </div>
+              </td>
+              <td style="text-align: center; font-weight: 700;">42</td>
+              <td style="text-align: center;">
+                <div class="qty-counter">
+                  <button type="button" class="qty-btn" onclick="updateQty(this, -1)">-</button>
+                  <input type="text" class="qty-input" value="42" data-book="42" onchange="manualQty(this)">
+                  <button type="button" class="qty-btn" onclick="updateQty(this, 1)">+</button>
+                </div>
+              </td>
+              <td style="text-align: center;">
+                <span class="badge badge-success diff-badge">
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><polyline points="6.5,10.2 9,12.8 13.8,7.5"/></svg>
+                  Khớp 42/42
+                </span>
+              </td>
+              <td>
+                <div style="display: flex; flex-direction: column;">
+                  <strong style="font-family: monospace; color: var(--color-danger);">LOT-202311-VT</strong>
+                  <span style="font-size: 11px; color: var(--color-danger); font-weight: 600;">HSD: 11/2024 (Còn 21 ngày)</span>
+                </div>
+              </td>
+              <td style="text-align: center;">
+                <span style="font-size: 12px; color: var(--color-text-muted);">Giữ: <strong>4</strong> • Min: <strong>8</strong></span>
+              </td>
+              <td>
+                <span style="font-size: 12px; color: var(--color-warning); font-weight: 600;">Ưu tiên xả trước 15/11/2024</span>
+              </td>
+              <td style="text-align: right;">
+                <button type="button" class="btn" style="padding: 4px 8px; font-size: 12px;" title="In lại nhãn kệ">
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2.5" width="10" height="5" rx="0.5"/><rect x="3" y="7.5" width="14" height="7" rx="1"/><rect x="6" y="12" width="8" height="5.5" rx="0.5"/></svg>
+                </button>
+              </td>
+            </tr>
+
+            <!-- Row 4: Damask Rose 400ml -->
+            <tr data-status="match" data-reason="khop" data-fefo="safe">
+              <td>
+                <div class="product-cell">
+                  <span class="product-title">Nước Tẩy Trang Damask Rose 400ml</span>
+                  <span class="sku-badge">MB-CLEAN-01 • Kệ C1-04</span>
+                </div>
+              </td>
+              <td style="text-align: center; font-weight: 700;">24</td>
+              <td style="text-align: center;">
+                <div class="qty-counter">
+                  <button type="button" class="qty-btn" onclick="updateQty(this, -1)">-</button>
+                  <input type="text" class="qty-input" value="24" data-book="24" onchange="manualQty(this)">
+                  <button type="button" class="qty-btn" onclick="updateQty(this, 1)">+</button>
+                </div>
+              </td>
+              <td style="text-align: center;">
+                <span class="badge badge-success diff-badge">
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><polyline points="6.5,10.2 9,12.8 13.8,7.5"/></svg>
+                  Khớp 24/24
+                </span>
+              </td>
+              <td>
+                <div style="display: flex; flex-direction: column;">
+                  <strong style="font-family: monospace;">LOT-202408-MC</strong>
+                  <span style="font-size: 11px; color: var(--color-success);">HSD: 08/2026 (Tồn lô: 24)</span>
+                </div>
+              </td>
+              <td style="text-align: center;">
+                <span style="font-size: 12px; color: var(--color-text-muted);">Giữ: <strong>1</strong> • Min: <strong>6</strong></span>
+              </td>
+              <td>
+                <span style="font-size: 12px; color: var(--color-success); font-weight: 600;">Đã đồng bộ kiểm tra seal</span>
+              </td>
+              <td style="text-align: right;">
+                <button type="button" class="btn" style="padding: 4px 8px; font-size: 12px;" title="In lại nhãn kệ">
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2.5" width="10" height="5" rx="0.5"/><rect x="3" y="7.5" width="14" height="7" rx="1"/><rect x="6" y="12" width="8" height="5.5" rx="0.5"/></svg>
+                </button>
+              </td>
+            </tr>
+
+            <!-- Row 5: Phấn Nước Cushion -->
+            <tr data-status="diff" data-reason="thatthoat" data-fefo="safe">
+              <td>
+                <div class="product-cell">
+                  <span class="product-title">Phấn Nước Cushion SPF50+</span>
+                  <span class="sku-badge">MB-CUSH-21 • Tủ Kính VIP</span>
+                </div>
+              </td>
+              <td style="text-align: center; font-weight: 700;">15</td>
+              <td style="text-align: center;">
+                <div class="qty-counter">
+                  <button type="button" class="qty-btn" onclick="updateQty(this, -1)">-</button>
+                  <input type="text" class="qty-input" value="14" data-book="15" onchange="manualQty(this)">
+                  <button type="button" class="qty-btn" onclick="updateQty(this, 1)">+</button>
+                </div>
+              </td>
+              <td style="text-align: center;">
+                <span class="badge badge-danger diff-badge">
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><line x1="7.3" y1="7.3" x2="12.7" y2="12.7"/><line x1="12.7" y1="7.3" x2="7.3" y2="12.7"/></svg>
+                  -1 (Thiếu)
+                </span>
+              </td>
+              <td>
+                <div style="display: flex; flex-direction: column;">
+                  <strong style="font-family: monospace;">LOT-202406-CU</strong>
+                  <span style="font-size: 11px; color: var(--color-success);">HSD: 06/2026 (Tồn lô: 14)</span>
+                </div>
+              </td>
+              <td style="text-align: center;">
+                <span style="font-size: 12px; color: var(--color-text-muted);">Giữ: <strong>0</strong> • Min: <strong>5</strong></span>
+              </td>
+              <td>
+                <select class="btn" style="padding: 4px 8px; font-size: 12px;">
+                  <option>Khách thử làm đổ / Tester</option>
+                  <option>Hàng hư hỏng vỡ seal</option>
+                  <option selected>Nghi ngờ thất thoát</option>
+                  <option>Chưa nhập đơn chuyển kho</option>
+                </select>
+              </td>
+              <td style="text-align: right;">
+                <button type="button" class="btn" style="padding: 4px 8px; font-size: 12px;" title="In lại nhãn kệ">
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2.5" width="10" height="5" rx="0.5"/><rect x="3" y="7.5" width="14" height="7" rx="1"/><rect x="6" y="12" width="8" height="5.5" rx="0.5"/></svg>
+                </button>
+              </td>
+            </tr>
+
+            <!-- Row 6: SunShield 50ml -->
+            <tr data-status="diff" data-reason="chuyen" data-fefo="safe">
+              <td>
+                <div class="product-cell">
+                  <span class="product-title">Kem Chống Nắng SunShield 50ml</span>
+                  <span class="sku-badge">MB-SUN-04 • Kệ A2-01</span>
+                </div>
+              </td>
+              <td style="text-align: center; font-weight: 700;">29</td>
+              <td style="text-align: center;">
+                <div class="qty-counter">
+                  <button type="button" class="qty-btn" onclick="updateQty(this, -1)">-</button>
+                  <input type="text" class="qty-input" value="31" data-book="29" onchange="manualQty(this)">
+                  <button type="button" class="qty-btn" onclick="updateQty(this, 1)">+</button>
+                </div>
+              </td>
+              <td style="text-align: center;">
+                <span class="badge badge-warning diff-badge">
+                  <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="10" y1="4" x2="10" y2="16"/><line x1="4" y1="10" x2="16" y2="10"/></svg>
+                  +2 (Thừa)
+                </span>
+              </td>
+              <td>
+                <div style="display: flex; flex-direction: column;">
+                  <strong style="font-family: monospace;">LOT-202410-SU</strong>
+                  <span style="font-size: 11px; color: var(--color-success);">HSD: 10/2026 (Tồn lô: 31)</span>
+                </div>
+              </td>
+              <td style="text-align: center;">
+                <span style="font-size: 12px; color: var(--color-text-muted);">Giữ: <strong>3</strong> • Min: <strong>8</strong></span>
+              </td>
+              <td>
+                <select class="btn" style="padding: 4px 8px; font-size: 12px;">
+                  <option>Khách thử làm đổ / Tester</option>
+                  <option>Hàng hư hỏng vỡ seal</option>
+                  <option>Nghi ngờ thất thoát</option>
+                  <option selected>Chưa nhập đơn chuyển kho</option>
+                </select>
+              </td>
+              <td style="text-align: right;">
+                <button type="button" class="btn" style="padding: 4px 8px; font-size: 12px;" title="In lại nhãn kệ">
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2.5" width="10" height="5" rx="0.5"/><rect x="3" y="7.5" width="14" height="7" rx="1"/><rect x="6" y="12" width="8" height="5.5" rx="0.5"/></svg>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Bottom Reconcile Bar -->
+      <div class="reconcile-footer">
+        <div class="summary-left">
+          <div class="summary-stats">
+            <span>Tổng kết kiểm kê hiện thời:</span>
+            <span class="badge badge-success">42 SKU đã kiểm</span>
+            <span class="badge badge-danger">4 Lệch thiếu</span>
+            <span class="badge badge-warning">2 Lệch thừa</span>
+            <span>|</span>
+            <span>Hao hụt ròng ước tính: <strong style="color: var(--color-danger);">-710.000 ₫</strong></span>
+          </div>
+        </div>
+
+        <div class="summary-actions">
+          <button type="button" class="btn" onclick="if(confirm('Bạn có chắc muốn hủy phiên kiểm kê này?')) location.reload()">
+            Hủy phiên
+          </button>
+          <button type="button" class="btn btn-success" onclick="alert('Đã hoàn tất kiểm kê phiên #KK-20241024-Q1 và chuyển biên bản điều chỉnh kho lên Quản lý duyệt!')">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><polyline points="6.5,10.2 9,12.8 13.8,7.5"/></svg>
+            HOÀN TẤT KIỂM KÊ &amp; GỬI QUẢN LÝ DUYỆT [F9]
+          </button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Shared Top Navigation Script for Store Employee -->
+  <script src="../_shared/nav-employee.js"></script>
+
+  <script>
+    // F1 autofocus listener & F8 / F9 shortcuts
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'F1') {
+        e.preventDefault();
+        const inp = document.getElementById('barcodeSearchInput');
+        if (inp) inp.focus();
+      } else if (e.key === 'F8') {
+        e.preventDefault();
+        alert('Khởi tạo biên bản kiểm kê mới [F8]!');
+      } else if (e.key === 'F9') {
+        e.preventDefault();
+        alert('Đã hoàn tất kiểm kê và gửi biên bản lên Quản lý duyệt [F9]!');
+      }
+    });
+
+    // Update quantity counter
+    function updateQty(btn, delta) {
+      const container = btn.closest('.qty-counter');
+      const input = container.querySelector('.qty-input');
+      let val = parseInt(input.value, 10) || 0;
+      val = Math.max(0, val + delta);
+      input.value = val;
+      recalculateRow(input);
+    }
+
+    function manualQty(input) {
+      let val = parseInt(input.value, 10) || 0;
+      val = Math.max(0, val);
+      input.value = val;
+      recalculateRow(input);
+    }
+
+    function recalculateRow(input) {
+      const row = input.closest('tr');
+      const bookQty = parseInt(input.getAttribute('data-book'), 10) || 0;
+      const countQty = parseInt(input.value, 10) || 0;
+      const diff = countQty - bookQty;
+      const badgeContainer = row.querySelector('.diff-badge');
+
+      if (diff === 0) {
+        row.setAttribute('data-status', 'match');
+        badgeContainer.className = 'badge badge-success diff-badge';
+        badgeContainer.innerHTML = '<svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><polyline points="6.5,10.2 9,12.8 13.8,7.5"/></svg> Khớp chuẩn';
+      } else if (diff < 0) {
+        row.setAttribute('data-status', 'diff');
+        badgeContainer.className = 'badge badge-danger diff-badge';
+        badgeContainer.innerHTML = '<svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><line x1="7.3" y1="7.3" x2="12.7" y2="12.7"/><line x1="12.7" y1="7.3" x2="7.3" y2="12.7"/></svg> ' + diff + ' (Thiếu)';
+      } else {
+        row.setAttribute('data-status', 'diff');
+        badgeContainer.className = 'badge badge-warning diff-badge';
+        badgeContainer.innerHTML = '<svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="10" y1="4" x2="10" y2="16"/><line x1="4" y1="10" x2="16" y2="10"/></svg> +' + diff + ' (Thừa)';
+      }
+    }
+
+    // Filter table by quick filter buttons & search text
+    let activeQuickFilter = 'all';
+
+    function setQuickFilter(btn, filter) {
+      document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+      activeQuickFilter = filter;
+      filterTable();
+    }
+
+    function filterTable() {
+      const query = (document.getElementById('barcodeSearchInput').value || '').toLowerCase().trim();
+      const reasonVal = (document.getElementById('reasonSelect').value || '').toLowerCase().trim();
+      const rows = document.querySelectorAll('#auditTable tbody tr');
+
+      rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        const status = row.getAttribute('data-status');
+        const fefo = row.getAttribute('data-fefo');
+        const reason = row.getAttribute('data-reason');
+
+        let matchSearch = !query || text.includes(query);
+        let matchReason = !reasonVal || (reason === reasonVal);
+        let matchQuick = true;
+
+        if (activeQuickFilter === 'match') {
+          matchQuick = (status === 'match');
+        } else if (activeQuickFilter === 'diff') {
+          matchQuick = (status === 'diff');
+        } else if (activeQuickFilter === 'fefo') {
+          matchQuick = (fefo === 'fefo');
+        }
+
+        if (matchSearch && matchReason && matchQuick) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    }
+  </script>
+</body>
+</html>

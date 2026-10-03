@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BO-AI: Trung Tâm AI Insights & Phát Hiện Bất Thường Real-time — ABC Copilot</title>
+  <link rel="stylesheet" href="../tokens.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    .page-container {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: var(--space-4);
+    }
+
+    /* Top Header */
+    .anomaly-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space-3);
+      margin-bottom: var(--space-3);
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-3) var(--space-4);
+      box-shadow: var(--shadow-card);
+      flex-wrap: wrap;
+    }
+
+    .header-info {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1);
+    }
+
+    .header-title-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+    }
+
+    .header-title-row h1 {
+      font-size: var(--font-title);
+      font-weight: 700;
+      color: var(--color-text);
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .badge-live {
+      background: #eff6ff;
+      color: var(--color-primary);
+      border: 1px solid #bfdbfe;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pulse-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 9999px;
+      background: #22c55e;
+      box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.25);
+    }
+
+    .header-meta {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      font-size: 13px;
+      color: var(--color-text-muted);
+      flex-wrap: wrap;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: 7px 14px;
+      border-radius: var(--radius);
+      font-size: var(--font-base);
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text);
+      transition: all 0.15s ease;
+    }
+
+    .btn:hover {
+      background: #f1f3f5;
+    }
+
+    .btn-primary {
+      background: var(--color-primary);
+      color: #ffffff;
+      border-color: var(--color-primary);
+    }
+
+    .btn-primary:hover {
+      background: #2348a0;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border-color: var(--color-border);
+      color: var(--color-text);
+    }
+
+    .btn-outline:hover {
+      background: #f8fafc;
+    }
+
+    /* KPI Summary Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-3);
+      margin-bottom: var(--space-3);
+    }
+
+    .kpi-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-3) var(--space-4);
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1);
+    }
+
+    .kpi-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--color-text-muted);
+    }
+
+    .kpi-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--color-text);
+      line-height: 1.2;
+    }
+
+    .kpi-subtext {
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: var(--color-text-muted);
+    }
+
+    .kpi-subtext.success { color: var(--color-success); font-weight: 600; }
+    .kpi-subtext.warning { color: var(--color-warning); font-weight: 600; }
+    .kpi-subtext.danger { color: var(--color-danger); font-weight: 600; }
+
+    /* AI Insight Strip */
+    .ai-insight-strip {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: var(--radius);
+      padding: var(--space-2) var(--space-3);
+      margin-bottom: var(--space-3);
+      font-size: 13px;
+      color: #1e40af;
+    }
+
+    .ai-insight-strip svg {
+      flex-shrink: 0;
+      color: var(--color-primary);
+    }
+
+    .insight-text {
+      flex: 1;
+      line-height: 1.4;
+    }
+
+    .insight-link {
+      color: var(--color-primary);
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+    }
+
+    .insight-link:hover {
+      text-decoration: underline;
+    }
+
+    /* Filter Bar */
+    .filter-panel {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-2) var(--space-3);
+      margin-bottom: var(--space-3);
+      box-shadow: var(--shadow-card);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+    }
+
+    .category-tabs {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      overflow-x: auto;
+    }
+
+    .cat-tab {
+      padding: 6px 12px;
+      border: none;
+      background: transparent;
+      border-radius: 4px;
+      color: var(--color-text-muted);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+
+    .cat-tab.active {
+      background: #eff6ff;
+      color: var(--color-primary);
+      font-weight: 600;
+    }
+
+    /* Main 2-Column Workspace Grid */
+    .workspace-grid {
+      display: grid;
+      grid-template-columns: 1.6fr 1fr;
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+    }
+
+    /* Anomaly Incident Cards List */
+    .incident-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .incident-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-left: 4px solid var(--color-primary);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-card);
+      padding: var(--space-3) var(--space-4);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      transition: transform 0.1s ease;
+    }
+
+    .incident-card.danger {
+      border-left-color: var(--color-danger);
+    }
+
+    .incident-card.warning {
+      border-left-color: var(--color-warning);
+    }
+
+    .incident-card.success {
+      border-left-color: var(--color-success);
+    }
+
+    .incident-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: var(--space-2);
+    }
+
+    .incident-title-box {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .incident-tag {
+      font-size: 11px;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      color: var(--color-text-muted);
+    }
+
+    .incident-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--color-text);
+      line-height: 1.3;
+      margin: 0;
+    }
+
+    .incident-impact {
+      font-size: 15px;
+      font-weight: 700;
+      font-family: monospace;
+      white-space: nowrap;
+    }
+
+    .incident-desc {
+      font-size: 12.5px;
+      color: #374151;
+      line-height: 1.5;
+      background: #f8fafc;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-2) var(--space-3);
+    }
+
+    .incident-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-2);
+      margin-top: 4px;
+      flex-wrap: wrap;
+    }
+
+    .action-group {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    /* Right Side Analytics Panels */
+    .right-panels {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .panel-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-card);
+      padding: var(--space-3) var(--space-4);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--color-border);
+      padding-bottom: var(--space-2);
+    }
+
+    .panel-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--color-text);
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    /* Weekly Frequency Chart Bar simulation */
+    .week-chart {
+      display: flex;
+      align-items: flex-end;
+      gap: var(--space-2);
+      height: 110px;
+      padding-top: var(--space-2);
+    }
+
+    .chart-bar-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      height: 100%;
+      justify-content: flex-end;
+    }
+
+    .bar-fill {
+      width: 100%;
+      border-radius: 3px 3px 0 0;
+      background: var(--color-border);
+      transition: height 0.3s;
+    }
+
+    .bar-fill.high {
+      background: var(--color-danger);
+    }
+
+    .bar-fill.medium {
+      background: var(--color-warning);
+    }
+
+    .bar-label {
+      font-size: 10px;
+      color: var(--color-text-muted);
+    }
+
+    /* Risk Breakdown list */
+    .risk-breakdown-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      font-size: 12px;
+    }
+
+    .risk-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .risk-item-row {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .risk-track {
+      height: 5px;
+      background: var(--color-border);
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+
+    .risk-bar {
+      height: 100%;
+      border-radius: 9999px;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .badge-success {
+      background: #ecfdf5;
+      color: var(--color-success);
+      border: 1px solid #a7f3d0;
+    }
+
+    .badge-warning {
+      background: #fffbeb;
+      color: var(--color-warning);
+      border: 1px solid #fde68a;
+    }
+
+    .badge-danger {
+      background: #fef2f2;
+      color: var(--color-danger);
+      border: 1px solid #fecaca;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      background: #111827;
+      color: #ffffff;
+      padding: 12px 20px;
+      border-radius: var(--radius);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      font-size: 13px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      z-index: 999;
+      transform: translateY(-20px);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+  </style>
+</head>
+<body data-screen="bo-ai-canh-bao-realtime">
+  <div class="app-container">
+    <!-- Top Navigation Header (Injected dynamically by nav-owner.js) -->
+    <header id="app-topnav"></header>
+
+    <main class="page-container">
+      <!-- Top Header -->
+      <div class="anomaly-header">
+        <div class="header-info">
+          <div class="header-title-row">
+            <h1>
+              <span style="color: var(--color-danger); display: inline-flex; align-items: center;">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3 L18 17 L2 17 Z"/><line x1="10" y1="8.5" x2="10" y2="12.5"/><circle cx="10" cy="14.5" r="0.9" fill="currentColor" stroke="none"/></svg>
+              </span>
+              Trung Tâm AI Insights & Phát Hiện Bất Thường Engine v4.2
+            </h1>
+            <span class="badge-live">
+              <span class="pulse-dot"></span>
+              Real-time Sentinel Active
+            </span>
+          </div>
+          <div class="header-meta">
+            <span>Dữ liệu giám sát: <strong>Bán hàng POS, Kho Lô Date, Đối soát ví sàn & Chi phí Ads</strong></span>
+            <span>•</span>
+            <span>Tần suất quét: <strong>Mỗi 60 giây</strong></span>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-outline" onclick="showToast('Mở hộp thoại cấu hình ngưỡng cảnh báo...')">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="4" y1="6" x2="16" y2="6"/><circle cx="12" cy="6" r="1.4" fill="currentColor" stroke="none"/><line x1="4" y1="10" x2="16" y2="10"/><circle cx="7" cy="10" r="1.4" fill="currentColor" stroke="none"/><line x1="4" y1="14" x2="16" y2="14"/><circle cx="14" cy="14" r="1.4" fill="currentColor" stroke="none"/></svg>
+            Cấu hình ngưỡng
+          </button>
+          <button class="btn btn-outline" onclick="forceScan()">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10a6 6 0 0 1 10.3-4.2"/><polyline points="14,2.5 14.3,6 10.8,5.7"/><path d="M16 10a6 6 0 0 1-10.3 4.2"/><polyline points="6,17.5 5.7,14 9.2,14.3"/></svg>
+            Quét cưỡng bức [F5]
+          </button>
+          <button class="btn btn-primary" onclick="showToast('Đang xuất báo cáo kiểm toán rủi ro toàn diện...')">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="10" y1="3" x2="10" y2="12.5"/><polyline points="6,9 10,13 14,9"/><line x1="4" y1="16.5" x2="16" y2="16.5"/></svg>
+            Xuất Báo Cáo
+          </button>
+        </div>
+      </div>
+
+      <!-- KPI Summary Cards -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label">Tổng Phát Hiện Bất Thường</div>
+          <div class="kpi-value" style="color: var(--color-danger);">08 <span style="font-size: 13px; font-weight: normal; color: var(--color-text-muted);">sự kiện</span></div>
+          <div class="kpi-subtext danger">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3 L18 17 L2 17 Z"/><line x1="10" y1="8.5" x2="10" y2="12.5"/><circle cx="10" cy="14.5" r="0.9" fill="currentColor" stroke="none"/></svg>
+            02 Khẩn cấp • 04 Cảnh báo • 02 Cơ hội
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Thất Thoát Ước Tính Cần Chặn</div>
+          <div class="kpi-value" style="color: var(--color-danger);">-12.460.000 ₫</div>
+          <div class="kpi-subtext">
+            <span>Rò rỉ quảng cáo Ads & đối soát ví sàn</span>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Giá Trị Lô Cận Hạn Nguy Hiểm</div>
+          <div class="kpi-value" style="color: var(--color-warning);">3.120.000 ₫</div>
+          <div class="kpi-subtext warning">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3 L18 17 L2 17 Z"/><line x1="10" y1="8.5" x2="10" y2="12.5"/><circle cx="10" cy="14.5" r="0.9" fill="currentColor" stroke="none"/></svg>
+            45 hộp kem còn 42 ngày hết hạn
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Doanh Thu Tiềm Năng Chờ Đón</div>
+          <div class="kpi-value" style="color: var(--color-success);">+80.000.000 ₫</div>
+          <div class="kpi-subtext success">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><polyline points="6.5,10.2 9,12.8 13.8,7.5"/></svg>
+            Viral organic SKU Đầm Maxi
+          </div>
+        </div>
+      </div>
+
+      <!-- AI Insight Strip -->
+      <div class="ai-insight-strip">
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="6" width="12" height="9" rx="2"/><line x1="10" y1="6" x2="10" y2="3"/><circle cx="10" cy="2.3" r="0.8" fill="currentColor" stroke="none"/><circle cx="7.3" cy="10.5" r="1" fill="currentColor" stroke="none"/><circle cx="12.7" cy="10.5" r="1" fill="currentColor" stroke="none"/></svg>
+        <div class="insight-text">
+          <strong>Trọng tâm xử lý khẩn cấp:</strong> Cần thực hiện ngay 2 hành động: Tạm dừng chiến dịch quảng cáo trỏ vào SKU đứt hàng để chặn rò rỉ 1.2M/ngày, và kích hoạt Flash Sale xả 45 hộp kem Phyto Calming cận date 42 ngày để thu hồi vốn.
+        </div>
+        <a href="bo-ai-phan-tich.html" class="insight-link">
+          Xem phân tích rủi ro đầy đủ
+          <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="10" x2="15" y2="10"/><polyline points="11,6 15,10 11,14"/></svg>
+        </a>
+      </div>
+
+      <!-- Category Filter Tabs -->
+      <div class="filter-panel">
+        <div class="category-tabs">
+          <button class="cat-tab active" onclick="filterCat(this, 'all')">Tất cả bất thường (8)</button>
+          <button class="cat-tab" onclick="filterCat(this, 'marketing')">Marketing & Chi phí vận hành (2)</button>
+          <button class="cat-tab" onclick="filterCat(this, 'stock')">Tồn kho & Lô Hạn dùng (2)</button>
+          <button class="cat-tab" onclick="filterCat(this, 'wallet')">Doanh thu & Đối soát ví sàn (2)</button>
+          <button class="cat-tab" onclick="filterCat(this, 'shipping')">Vận hành & Giao nhận (2)</button>
+        </div>
+        <button class="btn btn-primary" style="font-size: 12px; padding: 4px 10px;" onclick="executeAllTop()">
+          <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><polyline points="6.5,10.2 9,12.8 13.8,7.5"/></svg>
+          Duyệt 1-Chạm 3 Đề Xuất Khẩn Cấp
+        </button>
+      </div>
+
+      <!-- Main Workspace 2-Column Grid -->
+      <div class="workspace-grid">
+        <!-- Left: Incident Cards -->
+        <div class="incident-list" id="incidentList">
+          <!-- Card 1: Marketing Leak -->
+          <div class="incident-card danger" data-cat="marketing">
+            <div class="incident-top">
+              <div class="incident-title-box">
+                <span class="incident-tag" style="color: var(--color-danger);">Nguy cấp • Marketing & Ads</span>
+                <h3 class="incident-title">Rò Rỉ Ngân Sách Quảng Cáo: ROAS lao dốc xuống 1.1x (Hòa vốn &gt; 2.5x)</h3>
+              </div>
+              <span class="incident-impact" style="color: var(--color-danger);">-8.500.000 ₫</span>
+            </div>
+            <div class="incident-desc">
+              Chiến dịch quảng cáo vẫn liên tục tiêu 3.100.000 ₫ trong 3 ngày qua để điều hướng lượt click vào trang chi tiết Serum Bio-B5 đã hết hàng tại kho quầy, dẫn tới tỷ lệ thoát trang (bounce rate) lên tới 91%.
+            </div>
+            <div class="incident-actions">
+              <span style="font-size: 11px; color: var(--color-text-muted);">Phát hiện: 15 phút trước</span>
+              <div class="action-group">
+                <button class="btn btn-outline" style="font-size: 12px; padding: 4px 8px;" onclick="showToast('Đã giảm 30% ngân sách chiến dịch.')">
+                  Giảm 30% Budget
+                </button>
+                <button class="btn btn-primary" style="font-size: 12px; padding: 4px 10px;" onclick="resolveIncident(this, 'Đã tạm dừng chiến dịch quảng cáo trỏ vào SKU hết hàng!')">
+                  Tắt Chiến Dịch Ngay (1-chạm)
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2: Shopee Wallet Mismatch -->
+          <div class="incident-card danger" data-cat="wallet">
+            <div class="incident-top">
+              <div class="incident-title-box">
+                <span class="incident-tag" style="color: var(--color-danger);">Nguy cấp • Đối soát ví sàn</span>
+                <h3 class="incident-title">Lệch Pha Đối Soát Ví Sàn TMĐT: Phát hiện 6 đơn hoàn hàng bị trừ kép phí vận chuyển</h3>
+              </div>
+              <span class="incident-impact" style="color: var(--color-danger);">-840.000 ₫</span>
+            </div>
+            <div class="incident-desc">
+              Chứng cứ kiểm toán tự động: Kỳ đối soát ngày 20-23/10, đơn vị vận chuyển đã xác nhận bưu phẩm hoàn về kho thành công cho 6 mã đơn #ORD-SP-091 đến #ORD-SP-096 nhưng sao kê ví sàn vẫn cấn trừ 2 lần cước giao - nhận.
+            </div>
+            <div class="incident-actions">
+              <span style="font-size: 11px; color: var(--color-text-muted);">Phát hiện: 42 phút trước</span>
+              <div class="action-group">
+                <button class="btn btn-outline" style="font-size: 12px; padding: 4px 8px;" onclick="showToast('Đã tạm hoãn ghi nhận khoản lệch vào Sổ Thu Chi.')">
+                  Tạm Hoãn Sổ Thu Chi
+                </button>
+                <button class="btn btn-primary" style="font-size: 12px; padding: 4px 10px;" onclick="resolveIncident(this, 'Đã gửi hồ sơ khiếu nại cấn trừ phí kèm bằng chứng tự động!')">
+                  Gửi Khiếu Nại Tự Động
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3: FEFO Near Expiry -->
+          <div class="incident-card warning" data-cat="stock">
+            <div class="incident-top">
+              <div class="incident-title-box">
+                <span class="incident-tag" style="color: var(--color-warning);">Cảnh báo • Tồn kho & Lô Date</span>
+                <h3 class="incident-title">Lô Hàng Cận Hạn Nguy Hiểm: 45 Hộp Phyto Calming Cream Lô LOT-202305 còn 42 ngày hết hạn</h3>
+              </div>
+              <span class="incident-impact" style="color: var(--color-warning);">3.120.000 ₫ rủi ro</span>
+            </div>
+            <div class="incident-desc">
+              Dự báo tốc độ bán hiện tại chỉ đạt 0.3 hộp/ngày. Nếu không kích cầu, cửa hàng sẽ phải hủy tiêu hủy 32 hộp khi hết hạn vào ngày 05/12/2024. Đề xuất: Giảm giá 25% hoặc gộp combo quà tặng tại quầy POS.
+            </div>
+            <div class="incident-actions">
+              <span style="font-size: 11px; color: var(--color-text-muted);">Phát hiện: 1 giờ trước</span>
+              <div class="action-group">
+                <a href="bo-kho-ton-kho.html" class="btn btn-outline" style="font-size: 12px; padding: 4px 8px;">
+                  Xem Thẻ Lô Kho
+                </a>
+                <button class="btn btn-primary" style="font-size: 12px; padding: 4px 10px;" onclick="resolveIncident(this, 'Đã kích hoạt chương trình Flash Sale xả hàng cận date trên POS!')">
+                  Bật Flash Sale Xả Kho
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 4: Delivery Delay -->
+          <div class="incident-card warning" data-cat="shipping">
+            <div class="incident-top">
+              <div class="incident-title-box">
+                <span class="incident-tag" style="color: var(--color-warning);">Cảnh báo • Giao vận đơn hàng</span>
+                <h3 class="incident-title">Bất Thường Giao Hàng: Tỷ lệ trễ SLA tăng +18% khu vực Đà Nẵng - Quảng Nam</h3>
+              </div>
+              <span class="incident-impact" style="color: var(--color-warning);">14 Đơn kẹt kho</span>
+            </div>
+            <div class="incident-desc">
+              14 đơn hàng COD đang bị giữ tại bưu cục trung chuyển quá 48 giờ do ảnh hưởng bão lũ. Nguy cơ khách hàng từ chối nhận (Return to Origin) tăng lên 35% nếu không có thông báo chủ động giải thích trước.
+            </div>
+            <div class="incident-actions">
+              <span style="font-size: 11px; color: var(--color-text-muted);">Phát hiện: 2 giờ trước</span>
+              <div class="action-group">
+                <button class="btn btn-outline" style="font-size: 12px; padding: 4px 8px;" onclick="showToast('Đã tạm thời đổi đơn vị vận chuyển mới cho các đơn phát sinh tiếp theo.')">
+                  Đổi Kênh Giao Vận
+                </button>
+                <button class="btn btn-primary" style="font-size: 12px; padding: 4px 10px;" onclick="resolveIncident(this, 'Đã gửi tin nhắn thông báo trấn an 14 khách hàng!')">
+                  Gửi Thông Báo Trấn An
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 5: Revenue Opportunity -->
+          <div class="incident-card success" data-cat="marketing">
+            <div class="incident-top">
+              <div class="incident-title-box">
+                <span class="incident-tag" style="color: var(--color-success);">Cơ hội • Bùng nổ doanh thu</span>
+                <h3 class="incident-title">Viral Organic: "Đầm Lụa Maxi Ruby" bất ngờ tăng vọt lượt tìm kiếm sau clip review</h3>
+              </div>
+              <span class="incident-impact" style="color: var(--color-success);">+80.000.000 ₫ tiềm năng</span>
+            </div>
+            <div class="incident-desc">
+              Lượt tìm kiếm SKU <code>DR-RUBY-MAXI</code> tăng +420% trong 6 tiếng. Tồn kho quầy chỉ còn 8 chiếc Size S, Size M đã cạn kiệt. Đã có 42 lượt thêm giỏ hàng nhưng chưa thể hoàn tất thanh toán do thiếu biến thể.
+            </div>
+            <div class="incident-actions">
+              <span style="font-size: 11px; color: var(--color-text-muted);">Phát hiện: 30 phút trước</span>
+              <div class="action-group">
+                <button class="btn btn-outline" style="font-size: 12px; padding: 4px 8px;" onclick="showToast('Đã kích hoạt chế độ Pre-Order giữ khách trên kênh online.')">
+                  Bật Pre-Order Giữ Khách
+                </button>
+                <button class="btn btn-primary" style="font-size: 12px; padding: 4px 10px;" onclick="resolveIncident(this, 'Đã tạo lệnh nhập khẩn cấp PO-02 gửi nhà xưởng may gia công!')">
+                  Lệnh Nhập Khẩn PO-02
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Side: Analytics Panels -->
+        <div class="right-panels">
+          <!-- Frequency Chart Panel -->
+          <div class="panel-card">
+            <div class="panel-header">
+              <h2 class="panel-title">
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2.5" width="12" height="15" rx="1.5"/><line x1="7" y1="6.5" x2="13" y2="6.5"/><line x1="7" y1="9.5" x2="13" y2="9.5"/><line x1="7" y1="12.5" x2="10.5" y2="12.5"/></svg>
+                Tần Suất Bất Thường (7 Ngày Qua)
+              </h2>
+              <span style="font-size: 11px; color: var(--color-text-muted);">Tổng: 24 phát hiện</span>
+            </div>
+            <div class="week-chart">
+              <div class="chart-bar-col">
+                <div class="bar-fill" style="height: 35%;"></div>
+                <span class="bar-label">T2</span>
+              </div>
+              <div class="chart-bar-col">
+                <div class="bar-fill high" style="height: 85%;"></div>
+                <span class="bar-label">T3</span>
+              </div>
+              <div class="chart-bar-col">
+                <div class="bar-fill medium" style="height: 55%;"></div>
+                <span class="bar-label">T4</span>
+              </div>
+              <div class="chart-bar-col">
+                <div class="bar-fill medium" style="height: 60%;"></div>
+                <span class="bar-label">T5</span>
+              </div>
+              <div class="chart-bar-col">
+                <div class="bar-fill high" style="height: 95%;"></div>
+                <span class="bar-label">T6</span>
+              </div>
+              <div class="chart-bar-col">
+                <div class="bar-fill" style="height: 25%;"></div>
+                <span class="bar-label">T7</span>
+              </div>
+              <div class="chart-bar-col">
+                <div class="bar-fill" style="height: 20%;"></div>
+                <span class="bar-label">CN</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Risk Source Breakdown -->
+          <div class="panel-card">
+            <div class="panel-header">
+              <h2 class="panel-title">
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="10" cy="10" r="7.5"/><line x1="10" y1="9" x2="10" y2="14"/><circle cx="10" cy="6" r="0.9" fill="currentColor" stroke="none"/></svg>
+                Cơ Cấu Nguồn Gốc Rủi Ro
+              </h2>
+            </div>
+            <div class="risk-breakdown-list">
+              <div class="risk-item">
+                <div class="risk-item-row">
+                  <span>Chi phí Marketing & Ads</span>
+                  <strong>45% (8.5M)</strong>
+                </div>
+                <div class="risk-track">
+                  <div class="risk-bar" style="width: 45%; background: var(--color-danger);"></div>
+                </div>
+              </div>
+
+              <div class="risk-item">
+                <div class="risk-item-row">
+                  <span>Tồn kho cận hạn & đứt hàng</span>
+                  <strong>25% (3.1M)</strong>
+                </div>
+                <div class="risk-track">
+                  <div class="risk-bar" style="width: 25%; background: var(--color-warning);"></div>
+                </div>
+              </div>
+
+              <div class="risk-item">
+                <div class="risk-item-row">
+                  <span>Lệch pha đối soát ví sàn</span>
+                  <strong>18% (840k)</strong>
+                </div>
+                <div class="risk-track">
+                  <div class="risk-bar" style="width: 18%; background: var(--color-primary);"></div>
+                </div>
+              </div>
+
+              <div class="risk-item">
+                <div class="risk-item-row">
+                  <span>Giao vận trễ SLA bão lũ</span>
+                  <strong>12% (14 đơn)</strong>
+                </div>
+                <div class="risk-track">
+                  <div class="risk-bar" style="width: 12%; background: #64748b;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Automated Recommendation Summary -->
+          <div class="panel-card" style="background: #eff6ff; border-color: #bfdbfe;">
+            <div class="panel-header" style="border-color: #bfdbfe;">
+              <h2 class="panel-title" style="color: #1e3a8a;">
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="6" width="12" height="9" rx="2"/><line x1="10" y1="6" x2="10" y2="3"/><circle cx="10" cy="2.3" r="0.8" fill="currentColor" stroke="none"/><circle cx="7.3" cy="10.5" r="1" fill="currentColor" stroke="none"/><circle cx="12.7" cy="10.5" r="1" fill="currentColor" stroke="none"/></svg>
+                Khuyến Nghị Copilot Tự Động
+              </h2>
+            </div>
+            <div style="font-size: 13px; color: #1e40af; line-height: 1.5;">
+              Thực thi cả 3 đề xuất hàng đầu sẽ giúp cửa hàng ngăn chặn ngay <strong>-9.340.000 ₫</strong> thất thoát dòng tiền thực tế và kích hoạt kịp thời đợt hàng mới đón đầu nhu cầu mua sắm cuối tuần.
+            </div>
+            <button class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: var(--space-2);" onclick="executeAllTop()">
+              Tự Động Thực Thi Cả 3 Đề Xuất
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast">
+    <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="#22c55e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><polyline points="6.5,10.2 9,12.8 13.8,7.5"/></svg>
+    <span id="toastMsg">Thao tác thành công</span>
+  </div>
+
+  <script src="../_shared/nav-owner.js"></script>
+  <script>
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toastMsg');
+      toastMsg.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3500);
+    }
+
+    // Force scan
+    function forceScan() {
+      showToast('Đang thực hiện quét cưỡng bức toàn hệ thống (Real-time Scan)...');
+      setTimeout(() => {
+        showToast('QUÉT HOÀN TẤT: Toàn bộ 8 chỉ số đã được đối soát đồng bộ thời gian thực.');
+      }, 1000);
+    }
+
+    // Filter categories
+    function filterCat(btn, cat) {
+      document.querySelectorAll('.cat-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const cards = document.querySelectorAll('#incidentList .incident-card');
+      cards.forEach(card => {
+        const itemCat = card.getAttribute('data-cat');
+        if (cat === 'all' || itemCat === cat) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    // Resolve individual incident
+    function resolveIncident(btn, successMsg) {
+      const card = btn.closest('.incident-card');
+      card.style.opacity = '0.5';
+      btn.disabled = true;
+      btn.textContent = 'Đã xử lý';
+      showToast(successMsg);
+    }
+
+    // Execute top 3 recommendations
+    function executeAllTop() {
+      if (confirm('BẠN CÓ CHẮC CHẮN MUỐN DUYỆT 1-CHẠM:\n\n1. Tắt chiến dịch TikTok Ads trỏ vào SKU hết hàng (-8.5M thất thoát)\n2. Gửi khiếu nại cấn trừ phí 6 đơn Shopee Mall (-840k)\n3. Kích hoạt Flash Sale xả 45 hộp kem Phyto Calming cận hạn (3.12M)\n\nHệ thống sẽ tự động gửi lệnh tới các phân hệ tương ứng.')) {
+        document.querySelectorAll('.incident-card').forEach((card, idx) => {
+          if (idx < 3) {
+            card.style.opacity = '0.5';
+            const btn = card.querySelector('.btn-primary');
+            if (btn) {
+              btn.disabled = true;
+              btn.textContent = 'Đã xử lý';
+            }
+          }
+        });
+        showToast('THỰC THI THÀNH CÔNG! Đã kích hoạt 3 đề xuất khẩn cấp.');
+      }
+    }
+  </script>
+</body>
+</html>

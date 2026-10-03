@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BO-03: Danh Sách Sản Phẩm — ABC Prototype</title>
+  <link rel="stylesheet" href="../tokens.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+</head>
+<body data-screen="bo-san-pham-danh-sach">
+  <div class="app-container">
+    <!-- Top Navigation Header placeholder (Rendered by nav-owner.js) -->
+    <header id="app-topnav"></header>
+
+    <!-- Main Content Area -->
+    <main class="main-area">
+      <!-- Page Header & Action Buttons -->
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Danh Sách Sản Phẩm & Bảng Giá</h1>
+          <p class="page-subtitle">Quản lý phân loại danh mục, giá bán và theo dõi tồn kho theo từng SKU sản phẩm.</p>
+        </div>
+        <div style="display: flex; gap: var(--space-2);">
+          <button class="btn btn-secondary" type="button">Xuất Excel</button>
+          <button class="btn btn-primary" type="button" onclick="openDrawer('Tạo sản phẩm mới')">+ Thêm Sản Phẩm Mới</button>
+        </div>
+      </div>
+
+      <!-- 4 KPI Cards (Component Contract) -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label">Tổng SKU Đang Kinh Doanh</div>
+          <div class="kpi-value">142 <span style="font-size: 13px; font-weight: normal; color: var(--color-text-muted);">SKU</span></div>
+          <div class="kpi-subtext">98 sản phẩm gốc • 44 biến thể</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Biên Lợi Nhuận Gộp TB</div>
+          <div class="kpi-value" style="color: var(--color-success);">47.45%</div>
+          <div class="kpi-subtext">Đạt mục tiêu đề ra (45.0%)</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Doanh Thu Tiềm Năng</div>
+          <div class="kpi-value">2.450.000.000 ₫</div>
+          <div class="kpi-subtext">Tính theo giá niêm yết tồn kho</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Cảnh Báo Tồn Kho</div>
+          <div class="kpi-value" style="color: var(--color-danger);">6 <span style="font-size: 13px; font-weight: normal;">SKU</span></div>
+          <div class="kpi-subtext"><span class="badge badge-danger">4 mã sắp hết hàng</span></div>
+        </div>
+      </div>
+
+      <!-- AI Insight Strip (Component Contract: design-system.md) -->
+      <div class="ai-insight-strip">
+        <div class="ai-insight-strip-content">
+          <span class="ai-insight-strip-icon" style="display: inline-flex; align-items: center; gap: 4px;"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="6" width="12" height="9" rx="2"/><line x1="10" y1="6" x2="10" y2="3"/><circle cx="10" cy="2.3" r="0.8" fill="currentColor" stroke="none"/><circle cx="7.3" cy="10.5" r="1" fill="currentColor" stroke="none"/><circle cx="12.7" cy="10.5" r="1" fill="currentColor" stroke="none"/></svg> AI Insight:</span>
+          <span>4 SKU có nguy cơ đứt hàng trong 7 ngày tới (bao gồm Kem Dưỡng Rosa Damascena). Tăng giá Bio-B5 thêm +5% dự kiến giữ nguyên 97% lượng bán.</span>
+        </div>
+        <a href="bo-ai-phan-tich.html" class="ai-insight-strip-link">Xem phân tích đầy đủ →</a>
+      </div>
+
+      <!-- Component Contract: List View (Primary Fields Only - Rule: content-density.md) -->
+      <div class="card">
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+          <div class="filter-group">
+            <input type="text" class="input-search" placeholder="Tìm theo tên sản phẩm, mã SKU...">
+            <select class="select-filter">
+              <option value="">Danh mục: Tất cả</option>
+              <option value="skincare">Skincare & Serum</option>
+              <option value="cream">Kem dưỡng & Phục hồi</option>
+              <option value="lipstick">Son & Trang điểm</option>
+              <option value="accessory">Phụ kiện cá nhân</option>
+            </select>
+            <select class="select-filter">
+              <option value="">Trạng thái: Tất cả</option>
+              <option value="active">Đang bán</option>
+              <option value="lowstock">Sắp hết hàng</option>
+              <option value="inactive">Tạm ẩn</option>
+            </select>
+          </div>
+          <div style="font-size: 12px; color: var(--color-text-muted);">
+            Hiển thị <strong>1 - 6</strong> trên <strong>142</strong> SKU
+          </div>
+        </div>
+
+        <!-- Data Table (Primary Fields Only: Name, SKU, Category, Selling Price, Quantity, Status) -->
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Tên Sản Phẩm</th>
+                <th>Mã SKU</th>
+                <th>Danh Mục</th>
+                <th class="text-right">Giá Bán</th>
+                <th class="text-center">Số Lượng Tồn Kho</th>
+                <th class="text-center">Trạng Thái</th>
+                <th class="text-center">Thao Tác</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Row 1 -->
+              <tr onclick="showDetail('Serum Phục Hồi Bio-B5 Hydra Max', 'SKU-SKN-001', 'Skincare Cao Cấp', '650.000 ₫', '280.000 ₫', '56.9%', '85', '5', '30', 'Lot #24A', 'Dung tích: 50ml')">
+                <td style="font-weight: 600;">Serum Phục Hồi Bio-B5 Hydra Max</td>
+                <td style="font-weight: 600; color: var(--color-primary);">SKU-SKN-001</td>
+                <td>Skincare Cao Cấp</td>
+                <td class="text-right" style="font-weight: 700;">650.000 ₫</td>
+                <td class="text-center" style="font-weight: 600;">85 sản phẩm</td>
+                <td class="text-center"><span class="badge badge-success">Đang bán</span></td>
+                <td class="text-center">
+                  <button class="btn btn-secondary" style="height: 26px; padding: 0 8px; font-size: 11px;" type="button">Chi tiết</button>
+                </td>
+              </tr>
+
+              <!-- Row 2 -->
+              <tr onclick="showDetail('Kem Dưỡng Tái Sinh Rosa Damascena', 'SKU-CRM-012', 'Kem Dưỡng & Phục Hồi', '720.000 ₫', '340.000 ₫', '52.8%', '8', '0', '25', 'Lot #24B', 'Trọng lượng: 60g')">
+                <td style="font-weight: 600;">Kem Dưỡng Tái Sinh Rosa Damascena</td>
+                <td style="font-weight: 600; color: var(--color-primary);">SKU-CRM-012</td>
+                <td>Kem Dưỡng & Phục Hồi</td>
+                <td class="text-right" style="font-weight: 700;">720.000 ₫</td>
+                <td class="text-center" style="font-weight: 600; color: var(--color-danger);">8 sản phẩm</td>
+                <td class="text-center"><span class="badge badge-danger">Sắp hết hàng</span></td>
+                <td class="text-center">
+                  <button class="btn btn-secondary" style="height: 26px; padding: 0 8px; font-size: 11px;" type="button">Chi tiết</button>
+                </td>
+              </tr>
+
+              <!-- Row 3 -->
+              <tr onclick="showDetail('Son Lụa Dưỡng Ẩm Velvet Bloom', 'SKU-LIP-004', 'Son & Trang Điểm', '290.000 ₫', '160.000 ₫', '44.8%', '42', '2', '20', 'Lot #24C', 'Màu sắc: #04 Đỏ Ruby')">
+                <td style="font-weight: 600;">Son Lụa Dưỡng Ẩm Velvet Bloom</td>
+                <td style="font-weight: 600; color: var(--color-primary);">SKU-LIP-004</td>
+                <td>Son & Trang Điểm</td>
+                <td class="text-right" style="font-weight: 700;">290.000 ₫</td>
+                <td class="text-center" style="font-weight: 600;">42 sản phẩm</td>
+                <td class="text-center"><span class="badge badge-success">Đang bán</span></td>
+                <td class="text-center">
+                  <button class="btn btn-secondary" style="height: 26px; padding: 0 8px; font-size: 11px;" type="button">Chi tiết</button>
+                </td>
+              </tr>
+
+              <!-- Row 4 -->
+              <tr onclick="showDetail('Tinh Chất Kháng Viêm Tea Tree SOS', 'SKU-SKN-009', 'Skincare Cao Cấp', '420.000 ₫', '185.000 ₫', '55.9%', '58', '3', '20', 'Lot #24A', 'Dung tích: 30ml')">
+                <td style="font-weight: 600;">Tinh Chất Kháng Viêm Tea Tree SOS</td>
+                <td style="font-weight: 600; color: var(--color-primary);">SKU-SKN-009</td>
+                <td>Skincare Cao Cấp</td>
+                <td class="text-right" style="font-weight: 700;">420.000 ₫</td>
+                <td class="text-center" style="font-weight: 600;">58 sản phẩm</td>
+                <td class="text-center"><span class="badge badge-success">Đang bán</span></td>
+                <td class="text-center">
+                  <button class="btn btn-secondary" style="height: 26px; padding: 0 8px; font-size: 11px;" type="button">Chi tiết</button>
+                </td>
+              </tr>
+
+              <!-- Row 5 -->
+              <tr onclick="showDetail('Bông Tẩy Trang Pure Cotton Bloom', 'SKU-ACC-021', 'Phụ Kiện Cá Nhân', '45.000 ₫', '38.000 ₫', '15.5%', '140', '0', '50', 'Lot #24D', 'Quy cách: Hộp 120 miếng')">
+                <td style="font-weight: 600;">Bông Tẩy Trang Pure Cotton Bloom</td>
+                <td style="font-weight: 600; color: var(--color-primary);">SKU-ACC-021</td>
+                <td>Phụ Kiện Cá Nhân</td>
+                <td class="text-right" style="font-weight: 700;">45.000 ₫</td>
+                <td class="text-center" style="font-weight: 600;">140 sản phẩm</td>
+                <td class="text-center"><span class="badge badge-success">Đang bán</span></td>
+                <td class="text-center">
+                  <button class="btn btn-secondary" style="height: 26px; padding: 0 8px; font-size: 11px;" type="button">Chi tiết</button>
+                </td>
+              </tr>
+
+              <!-- Row 6 -->
+              <tr style="opacity: 0.7;" onclick="showDetail('Xịt Khoáng Cúc La Mã Calming Mist', 'SKU-OLD-003', 'Skincare Cao Cấp', '180.000 ₫', '110.000 ₫', '38.8%', '0', '0', '0', 'Bao bì 2023', 'Dung tích: 100ml')">
+                <td style="font-weight: 600; color: var(--color-text-muted);">Xịt Khoáng Cúc La Mã Calming Mist</td>
+                <td style="font-weight: 600; color: var(--color-text-muted);">SKU-OLD-003</td>
+                <td>Skincare Cao Cấp</td>
+                <td class="text-right" style="font-weight: 700;">180.000 ₫</td>
+                <td class="text-center" style="font-weight: 600; color: var(--color-text-muted);">0 sản phẩm</td>
+                <td class="text-center"><span class="badge badge-warning">Tạm ẩn</span></td>
+                <td class="text-center">
+                  <button class="btn btn-secondary" style="height: 26px; padding: 0 8px; font-size: 11px;" type="button">Chi tiết</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination Bar -->
+        <div class="pagination-bar">
+          <div>Hiển thị 1 - 6 trên 142 sản phẩm</div>
+          <div class="pagination-controls">
+            <button class="page-btn" disabled>«</button>
+            <button class="page-btn active">1</button>
+            <button class="page-btn">2</button>
+            <button class="page-btn">3</button>
+            <span>...</span>
+            <button class="page-btn">15</button>
+            <button class="page-btn">»</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Form Panel / Slide-Over Drawer (Secondary Fields - Rule: content-density.md) -->
+  <div class="drawer-backdrop" id="drawerBackdrop" onclick="closeDrawer()"></div>
+  <div class="drawer-panel" id="drawerPanel">
+    <div class="drawer-header">
+      <div class="drawer-title" id="drawerTitle">Chi Tiết Sản Phẩm & Bảng Giá</div>
+      <button class="drawer-close" type="button" onclick="closeDrawer()">✕</button>
+    </div>
+    <div class="drawer-body">
+      <form id="productForm">
+        <div style="margin-bottom: var(--space-3);">
+          <label style="font-size: 12px; font-weight: 600; color: var(--color-text-muted); display: block; margin-bottom: 4px;">Tên sản phẩm</label>
+          <input type="text" id="detailName" class="input-search" style="width: 100%;" value="Serum Phục Hồi Bio-B5 Hydra Max">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); margin-bottom: var(--space-3);">
+          <div>
+            <label style="font-size: 12px; font-weight: 600; color: var(--color-text-muted); display: block; margin-bottom: 4px;">Mã SKU</label>
+            <input type="text" id="detailSku" class="input-search" style="width: 100%;" value="SKU-SKN-001">
+          </div>
+          <div>
+            <label style="font-size: 12px; font-weight: 600; color: var(--color-text-muted); display: block; margin-bottom: 4px;">Danh mục</label>
+            <select id="detailCategory" class="select-filter" style="width: 100%;">
+              <option>Skincare Cao Cấp</option>
+              <option>Kem Dưỡng & Phục Hồi</option>
+              <option>Son & Trang Điểm</option>
+              <option>Phụ Kiện Cá Nhân</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); margin-bottom: var(--space-3);">
+          <div>
+            <label style="font-size: 12px; font-weight: 600; color: var(--color-text-muted); display: block; margin-bottom: 4px;">Giá bán</label>
+            <input type="text" id="detailPrice" class="input-search" style="width: 100%; font-weight: 700;" value="650.000 ₫">
+          </div>
+          <div>
+            <label style="font-size: 12px; font-weight: 600; color: var(--color-text-muted); display: block; margin-bottom: 4px;">Giá vốn (COGS)</label>
+            <input type="text" id="detailCost" class="input-search" style="width: 100%;" value="280.000 ₫">
+          </div>
+        </div>
+
+        <div style="background: var(--color-primary-light); border: 1px solid #c7d7fe; border-radius: var(--radius-sm); padding: var(--space-2); margin-bottom: var(--space-3);">
+          <div style="font-size: 12px; color: var(--color-primary); font-weight: 600;">Biên lợi nhuận gộp tính toán: <span id="detailMargin">56.9%</span></div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--space-2); margin-bottom: var(--space-3);">
+          <div>
+            <label style="font-size: 12px; color: var(--color-text-muted); display: block; margin-bottom: 4px;">Tồn thực tế</label>
+            <input type="text" id="detailQty" class="input-search" style="width: 100%;" value="85">
+          </div>
+          <div>
+            <label style="font-size: 12px; color: var(--color-text-muted); display: block; margin-bottom: 4px;">Tạm giữ</label>
+            <input type="text" id="detailReserved" class="input-search" style="width: 100%;" value="5">
+          </div>
+          <div>
+            <label style="font-size: 12px; color: var(--color-text-muted); display: block; margin-bottom: 4px;">Ngưỡng tồn thấp</label>
+            <input type="text" id="detailThreshold" class="input-search" style="width: 100%;" value="30">
+          </div>
+        </div>
+
+        <div style="margin-bottom: var(--space-3);">
+          <label style="font-size: 12px; font-weight: 600; color: var(--color-text-muted); display: block; margin-bottom: 4px;">Thuộc tính cấu hình (Dung tích / Kích thước / Màu sắc)</label>
+          <input type="text" id="detailAttr" class="input-search" style="width: 100%;" value="Dung tích: 50ml">
+        </div>
+
+        <div style="margin-bottom: var(--space-3);">
+          <label style="font-size: 12px; font-weight: 600; color: var(--color-text-muted); display: block; margin-bottom: 4px;">Lô hàng nhập gần nhất (FIFO Lot)</label>
+          <input type="text" id="detailBatch" class="input-search" style="width: 100%;" value="Lot #24A">
+        </div>
+      </form>
+    </div>
+    <div class="drawer-footer">
+      <button class="btn btn-secondary" type="button" onclick="closeDrawer()">Hủy bỏ</button>
+      <button class="btn btn-primary" type="button" onclick="closeDrawer()">Lưu Thay Đổi</button>
+    </div>
+  </div>
+
+  <!-- Shared Nav JS for Business Owner Portal -->
+  <script src="../_shared/nav-owner.js"></script>
+
+  <!-- Interactive script for Form Drawer -->
+  <script>
+    function openDrawer(title) {
+      document.getElementById('drawerTitle').textContent = title || 'Chi Tiết Sản Phẩm & Bảng Giá';
+      document.getElementById('drawerBackdrop').classList.add('open');
+      document.getElementById('drawerPanel').classList.add('open');
+    }
+
+    function closeDrawer() {
+      document.getElementById('drawerBackdrop').classList.remove('open');
+      document.getElementById('drawerPanel').classList.remove('open');
+    }
+
+    function showDetail(name, sku, cat, price, cost, margin, qty, reserved, threshold, batch, attr) {
+      document.getElementById('detailName').value = name;
+      document.getElementById('detailSku').value = sku;
+      document.getElementById('detailCategory').value = cat;
+      document.getElementById('detailPrice').value = price;
+      document.getElementById('detailCost').value = cost;
+      document.getElementById('detailMargin').textContent = margin;
+      document.getElementById('detailQty').value = qty;
+      document.getElementById('detailReserved').value = reserved;
+      document.getElementById('detailThreshold').value = threshold;
+      document.getElementById('detailBatch').value = batch;
+      document.getElementById('detailAttr').value = attr;
+      openDrawer('Chi Tiết Sản Phẩm: ' + name);
+    }
+  </script>
+</body>
+</html>

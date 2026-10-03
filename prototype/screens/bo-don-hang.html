@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản lý Đơn hàng & POS - ABC Copilot</title>
+  <link rel="stylesheet" href="../tokens.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    /* Custom Layout Styles using Design Tokens */
+    .page-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: var(--space-4);
+    }
+
+    /* Page Header */
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: var(--space-4);
+      flex-wrap: wrap;
+      gap: var(--space-3);
+    }
+
+    .title-area h1 {
+      font-size: var(--font-title);
+      font-weight: 700;
+      color: var(--color-text);
+      margin-bottom: var(--space-1);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .title-area p {
+      color: var(--color-text-muted);
+      font-size: 13px;
+      margin: 0;
+    }
+
+    .action-area {
+      display: flex;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+    }
+
+    /* KPI Grid - 4 Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+    }
+
+    .kpi-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-3);
+      box-shadow: var(--shadow-card);
+    }
+
+    .kpi-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--color-text-muted);
+      font-weight: 600;
+      margin-bottom: var(--space-1);
+    }
+
+    .kpi-num {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--color-text);
+      margin-bottom: 2px;
+    }
+
+    .kpi-sub {
+      font-size: 12px;
+      color: var(--color-text-muted);
+    }
+
+    /* AI Insight Strip (Component Contract) */
+    .ai-insight-strip {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: var(--radius-sm);
+      padding: 10px 16px;
+      margin-bottom: var(--space-4);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--color-text);
+    }
+
+    .ai-insight-strip-link {
+      color: var(--color-primary);
+      font-weight: 600;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .ai-insight-strip-link:hover { text-decoration: underline; }
+
+    /* Order Lifecycle Tabs & Filter Bar */
+    .filter-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-3);
+      margin-bottom: var(--space-3);
+      box-shadow: var(--shadow-card);
+    }
+
+    .lifecycle-tabs {
+      display: flex;
+      gap: var(--space-1);
+      border-bottom: 1px solid var(--color-border);
+      padding-bottom: var(--space-2);
+      margin-bottom: var(--space-3);
+      overflow-x: auto;
+    }
+
+    .tab-item {
+      padding: 6px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      border: none;
+      background: transparent;
+      color: var(--color-text-muted);
+      cursor: pointer;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tab-item.active {
+      background: var(--color-primary-light);
+      color: var(--color-primary);
+    }
+
+    .tab-count {
+      padding: 2px 6px;
+      border-radius: 10px;
+      font-size: 11px;
+      background: #e2e8f0;
+      color: var(--color-text);
+    }
+
+    .tab-item.active .tab-count {
+      background: var(--color-primary);
+      color: #ffffff;
+    }
+
+    .filter-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+    }
+
+    .search-input {
+      position: relative;
+      flex: 1;
+      min-width: 260px;
+    }
+
+    .search-input input {
+      width: 100%;
+      padding: 8px 12px 8px 36px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      outline: none;
+    }
+
+    .search-input svg {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--color-text-muted);
+    }
+
+    .select-input {
+      padding: 8px 12px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      background: var(--color-surface);
+      color: var(--color-text);
+      outline: none;
+      cursor: pointer;
+    }
+
+    /* Table Container (6 Primary Columns) */
+    .table-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+      margin-bottom: var(--space-4);
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      text-align: left;
+    }
+
+    .data-table th {
+      background: #f8fafc;
+      padding: 12px 16px;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      border-bottom: 1px solid var(--color-border);
+      white-space: nowrap;
+    }
+
+    .data-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--color-border);
+      vertical-align: top;
+    }
+
+    .data-table tr:hover {
+      background-color: #f8fafc;
+    }
+
+    .order-code {
+      font-weight: 700;
+      color: var(--color-primary);
+      text-decoration: none;
+    }
+
+    .order-code:hover { text-decoration: underline; }
+
+    .channel-badge {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+    .channel-tiktok { background: #000000; color: #ffffff; }
+    .channel-pos { background: #e0e7ff; color: #3730a3; }
+    .channel-shopee { background: #ffedd5; color: #c2410c; }
+    .channel-b2b { background: #f1f5f9; color: #475569; }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .badge-success { background: var(--color-success-bg); color: var(--color-success); }
+    .badge-warning { background: var(--color-warning-bg); color: var(--color-warning); }
+    .badge-danger { background: var(--color-danger-bg); color: var(--color-danger); }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text);
+      transition: all 0.15s ease;
+      text-decoration: none;
+    }
+
+    .btn:hover { background: #f1f5f9; }
+    .btn-primary { background: var(--color-primary); color: #ffffff; border-color: var(--color-primary); }
+    .btn-primary:hover { background: #2147a3; }
+    .btn-sm { padding: 4px 8px; font-size: 12px; }
+
+    /* Slide-Over Form Drawer */
+    .drawer-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: 2000;
+      display: none;
+    }
+
+    .drawer-backdrop.open { display: block; }
+
+    .drawer-panel {
+      position: fixed;
+      top: 0;
+      right: -520px;
+      width: 500px;
+      max-width: 100%;
+      height: 100vh;
+      background: #ffffff;
+      box-shadow: -4px 0 20px rgba(0,0,0,0.15);
+      z-index: 2010;
+      transition: right 0.25s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .drawer-panel.open { right: 0; }
+
+    .drawer-header {
+      padding: var(--space-3) var(--space-4);
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f8fafc;
+    }
+
+    .drawer-header h3 { margin: 0; font-size: 16px; font-weight: 700; }
+    .drawer-close-btn { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--color-text-muted); }
+
+    .drawer-body { padding: var(--space-4); flex: 1; overflow-y: auto; }
+    .form-group { margin-bottom: var(--space-3); }
+    .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--color-text-muted); margin-bottom: 4px; }
+    .form-control { width: 100%; padding: 8px 12px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); font-size: 13px; box-sizing: border-box; outline: none; }
+    .form-control:focus { border-color: var(--color-primary); }
+
+    .drawer-footer {
+      padding: var(--space-3) var(--space-4);
+      border-top: 1px solid var(--color-border);
+      display: flex;
+      justify-content: flex-end;
+      gap: var(--space-2);
+      background: #f8fafc;
+    }
+  </style>
+</head>
+<body data-screen="bo-don-hang">
+
+  <!-- Header Page Shell -->
+  <header id="app-topnav"></header>
+
+  <main class="page-container">
+
+    <!-- Top Title & Action Bar -->
+    <div class="page-header">
+      <div class="title-area">
+        <h1>
+          <span style="color: var(--color-primary); display: inline-flex; align-items: center;"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2.5" width="12" height="15" rx="1.5"/><line x1="7" y1="6.5" x2="13" y2="6.5"/><line x1="7" y1="9.5" x2="13" y2="9.5"/><line x1="7" y1="12.5" x2="10.5" y2="12.5"/></svg></span>
+          Quản lý Đơn Hàng & Vận Hành Đa Kênh
+        </h1>
+        <p>Theo dõi vòng đời đơn hàng, tự động giữ chỗ kho (`reservedQty`), xuất kho và đối soát thanh toán đa kênh.</p>
+      </div>
+
+      <div class="action-area">
+        <button type="button" class="btn" onclick="alert('Đang đồng bộ số liệu đơn hàng từ Shopee & TikTok Shop...')">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10a6 6 0 0 1 10.3-4.2"/><polyline points="14,2.5 14.3,6 10.8,5.7"/><path d="M16 10a6 6 0 0 1-10.3 4.2"/><polyline points="6,17.5 5.7,14 9.2,14.3"/></svg> Đồng bộ Sàn
+        </button>
+        <button type="button" class="btn" onclick="alert('Xuất danh sách đơn hàng ra file Excel...')">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="10" y1="3" x2="10" y2="12.5"/><polyline points="6,9 10,13 14,9"/><line x1="4" y1="16.5" x2="16" y2="16.5"/></svg> Xuất Excel
+        </button>
+        <button type="button" class="btn" onclick="alert('Đang khởi tạo lệnh in phiếu đóng gói hàng loạt...')">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2.5" width="10" height="5" rx="0.5"/><rect x="3" y="7.5" width="14" height="7" rx="1"/><rect x="6" y="12" width="8" height="5.5" rx="0.5"/></svg> In Phiếu Đóng Gói
+        </button>
+        <button type="button" class="btn btn-primary" onclick="openOrderDrawer('create')">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="10" y1="4" x2="10" y2="16"/><line x1="4" y1="10" x2="16" y2="10"/></svg> + Tạo Đơn Hàng Mới
+        </button>
+      </div>
+    </div>
+
+    <!-- 4 Real-time Order Pulse Cards -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span>TỔNG ĐƠN HÀNG (THÁNG 10)</span>
+          <span style="display: inline-flex; align-items: center;"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.5 L10 3 L17.5 6.5 L10 10 Z"/><path d="M2.5 6.5 V14 L10 17.5 L17.5 14 V6.5"/><line x1="10" y1="10" x2="10" y2="17.5"/></svg></span>
+        </div>
+        <div class="kpi-num">4.280 đơn</div>
+        <div class="kpi-sub">TikTok: 43.2% • POS Q.1: 33.2% • Shopee: 23.6%</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span>DOANH THU THỰC NHẬN</span>
+          <span style="display: inline-flex; align-items: center;"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2.5" width="12" height="15" rx="1.5"/><line x1="7" y1="6.5" x2="13" y2="6.5"/><line x1="7" y1="9.5" x2="13" y2="9.5"/><line x1="7" y1="12.5" x2="10.5" y2="12.5"/></svg></span>
+        </div>
+        <div class="kpi-num">1.845.200.000 ₫</div>
+        <div class="kpi-sub">AOV: <strong>431.120 ₫</strong> • Tỷ lệ hoàn COD: 1.8%</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span>CHỜ ĐÓNG GÓI & XUẤT KHO</span>
+          <span style="display: inline-flex; align-items: center; color: var(--color-warning);"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3 L18 17 L2 17 Z"/><line x1="10" y1="8.5" x2="10" y2="12.5"/><circle cx="10" cy="14.5" r="0.9" fill="currentColor" stroke="none"/></svg></span>
+        </div>
+        <div class="kpi-num" style="color: var(--color-warning);">34 đơn</div>
+        <div class="kpi-sub">Cần xử lý trước 14:00 (TikTok: 22, Shopee: 12)</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <span>HỦY & ĐỔI TRẢ HOÀN KHO</span>
+          <span style="display: inline-flex; align-items: center;"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10a6 6 0 0 1 10.3-4.2"/><polyline points="14,2.5 14.3,6 10.8,5.7"/><path d="M16 10a6 6 0 0 1-10.3 4.2"/><polyline points="6,17.5 5.7,14 9.2,14.3"/></svg></span>
+        </div>
+        <div class="kpi-num">18 đơn</div>
+        <div class="kpi-sub"><strong>100% SKU</strong> đã đối soát QC và cộng hoàn kho</div>
+      </div>
+    </div>
+
+    <!-- AI Insight Strip (Component Contract) -->
+    <div class="ai-insight-strip">
+      <div style="display: flex; align-items: center; gap: var(--space-2);">
+        <span style="color: var(--color-primary); display: inline-flex; align-items: center;"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="6" width="12" height="9" rx="2"/><line x1="10" y1="6" x2="10" y2="3"/><circle cx="10" cy="2.3" r="0.8" fill="currentColor" stroke="none"/><circle cx="7.3" cy="10.5" r="1" fill="currentColor" stroke="none"/><circle cx="12.7" cy="10.5" r="1" fill="currentColor" stroke="none"/></svg></span>
+        <span><strong>AI Order Intelligence:</strong> Đơn hàng TikTok Shop tăng 43.2% trong đợt Livestream 20/10, tỷ lệ hoàn trả COD duy trì mức rất thấp 1.8%.</span>
+      </div>
+      <a href="bo-ai-phan-tich.html" class="ai-insight-strip-link">Xem phân tích đầy đủ →</a>
+    </div>
+
+    <!-- Order Lifecycle Tabs & Filter Bar -->
+    <div class="filter-card">
+      <div class="lifecycle-tabs">
+        <button class="tab-item active" onclick="switchTab(this)">Tất cả đơn hàng <span class="tab-count">4.280</span></button>
+        <button class="tab-item" onclick="switchTab(this)">Chờ xác nhận <span class="tab-count">12</span></button>
+        <button class="tab-item" onclick="switchTab(this)">Chờ đóng gói <span class="tab-count">34</span></button>
+        <button class="tab-item" onclick="switchTab(this)">Đang giao hàng <span class="tab-count">156</span></button>
+        <button class="tab-item" onclick="switchTab(this)">Hoàn thành <span class="tab-count">4.060</span></button>
+        <button class="tab-item" onclick="switchTab(this)">Đã hủy <span class="tab-count">18</span></button>
+      </div>
+
+      <div class="filter-controls">
+        <div class="search-input">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="8.5" cy="8.5" r="5"/><line x1="12.3" y1="12.3" x2="17" y2="17"/></svg>
+          <input type="text" placeholder="Tìm theo mã đơn (ORD-...), tên khách, SĐT, mã SKU...">
+        </div>
+
+        <div style="display: flex; gap: var(--space-2); align-items: center;">
+          <select class="select-input">
+            <option>Kênh: Tất cả</option>
+            <option>POS Showroom Q.1</option>
+            <option>TikTok Shop Mall</option>
+            <option>Shopee Official Store</option>
+            <option>Bán sỉ đại lý</option>
+          </select>
+          <select class="select-input">
+            <option>Thanh toán: Tất cả</option>
+            <option>VietQR Động (MBBank)</option>
+            <option>Tiền mặt tại quầy</option>
+            <option>Ví ShopeePay / TikTok</option>
+            <option>Chuyển khoản B2B</option>
+          </select>
+          <button type="button" class="btn" title="Làm mới" onclick="location.reload()">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10a6 6 0 0 1 10.3-4.2"/><polyline points="14,2.5 14.3,6 10.8,5.7"/><path d="M16 10a6 6 0 0 1-10.3 4.2"/><polyline points="6,17.5 5.7,14 9.2,14.3"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Master Order Data Table (6 Primary Columns) -->
+    <div class="table-card">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Mã Đơn & Kênh bán (`orderNumber`)</th>
+            <th>Khách Hàng & Vận Chuyển</th>
+            <th>Sản Phẩm & Chi Tiết SKU</th>
+            <th style="text-align: right;">Tổng Tiền (`total`)</th>
+            <th style="text-align: center;">Tác Động Tồn Kho (`reservedQty`)</th>
+            <th style="text-align: center;">Trạng Thái (`status`)</th>
+            <th style="text-align: center;">Thao Tác</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Row 1 -->
+          <tr>
+            <td>
+              <a href="#" class="order-code" onclick="openOrderDrawer('view', 'ORD-2024-9982')">ORD-2024-9982</a>
+              <div><span class="channel-badge channel-tiktok">TikTok Shop</span></div>
+              <div style="font-size: 11px; color: var(--color-text-muted); margin-top: 2px;">15/10 • 11:20 SA</div>
+            </td>
+            <td>
+              <div><strong>Trần Ngọc Ánh</strong></div>
+              <div style="font-size: 11px; color: var(--color-text-muted);">0912.***.456 • Q. Đống Đa, Hà Nội</div>
+              <div style="font-size: 11px; color: var(--color-primary); font-weight: 600; margin-top: 2px;">J&T Express</div>
+            </td>
+            <td>
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <img src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=100&auto=format&fit=crop&q=80" style="width: 32px; height: 32px; border-radius: 4px;" alt="Serum">
+                <div>
+                  <div style="font-weight: 600;">Serum Bio-B5 Hydra Max</div>
+                  <div style="font-size: 11px; color: var(--color-text-muted);">SKU: B5-HYD-100 • <strong>x2 chai</strong></div>
+                </div>
+              </div>
+            </td>
+            <td style="text-align: right;">
+              <div style="font-weight: 700; color: var(--color-text);">1.300.000 ₫</div>
+              <div style="font-size: 11px; color: var(--color-success); font-weight: 600;">Ví TikTok Shop</div>
+            </td>
+            <td style="text-align: center;">
+              <span class="badge badge-warning">Đã giữ chỗ kho (-2)</span>
+            </td>
+            <td style="text-align: center;">
+              <span class="badge badge-warning">Chờ đóng gói</span>
+            </td>
+            <td style="text-align: center;">
+              <button type="button" class="btn btn-sm" onclick="openOrderDrawer('view', 'ORD-2024-9982')">Chi tiết</button>
+            </td>
+          </tr>
+
+          <!-- Row 2 -->
+          <tr>
+            <td>
+              <a href="#" class="order-code" onclick="openOrderDrawer('view', 'ORD-2024-9980')">ORD-2024-9980</a>
+              <div><span class="channel-badge channel-pos">Showroom Q.1</span></div>
+              <div style="font-size: 11px; color: var(--color-text-muted); margin-top: 2px;">15/10 • 10:45 SA</div>
+            </td>
+            <td>
+              <div><strong>Lê Hoàng Nam</strong> <span style="font-size: 10px; background: #fef08a; color: #854d0e; padding: 1px 4px; border-radius: 4px; font-weight: 700;">VIP GOLD</span></div>
+              <div style="font-size: 11px; color: var(--color-text-muted);">0988.***.789 • Mua tại quầy</div>
+              <div style="font-size: 11px; color: var(--color-success); font-weight: 600; margin-top: 2px;">Nhận hàng trực tiếp</div>
+            </td>
+            <td>
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <img src="https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?w=100&auto=format&fit=crop&q=80" style="width: 32px; height: 32px; border-radius: 4px;" alt="Kem Rosa">
+                <div>
+                  <div style="font-weight: 600;">Kem Rosa + Son Velvet Bloom</div>
+                  <div style="font-size: 11px; color: var(--color-text-muted);">Combo 2 món • <strong>x1 bộ</strong></div>
+                </div>
+              </div>
+            </td>
+            <td style="text-align: right;">
+              <div style="font-weight: 700; color: var(--color-text);">1.010.000 ₫</div>
+              <div style="font-size: 11px; color: var(--color-primary); font-weight: 600;">VietQR MBBank</div>
+            </td>
+            <td style="text-align: center;">
+              <span class="badge badge-success">Đã trừ kho tự động</span>
+            </td>
+            <td style="text-align: center;">
+              <span class="badge badge-success">Hoàn thành</span>
+            </td>
+            <td style="text-align: center;">
+              <button type="button" class="btn btn-sm" onclick="openOrderDrawer('view', 'ORD-2024-9980')">Chi tiết</button>
+            </td>
+          </tr>
+
+          <!-- Row 3 -->
+          <tr>
+            <td>
+              <a href="#" class="order-code" onclick="openOrderDrawer('view', 'ORD-2024-9975')">ORD-2024-9975</a>
+              <div><span class="channel-badge channel-shopee">Shopee Mall</span></div>
+              <div style="font-size: 11px; color: var(--color-text-muted); margin-top: 2px;">15/10 • 09:15 SA</div>
+            </td>
+            <td>
+              <div><strong>Nguyễn Minh Thảo</strong></div>
+              <div style="font-size: 11px; color: var(--color-text-muted);">0903.***.112 • Q.7, TP.HCM</div>
+              <div style="font-size: 11px; color: var(--color-primary); font-weight: 600; margin-top: 2px;">GHTK Express</div>
+            </td>
+            <td>
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <img src="https://images.unsplash.com/photo-1556228720-195a672e8a03?w=100&auto=format&fit=crop&q=80" style="width: 32px; height: 32px; border-radius: 4px;" alt="Toner">
+                <div>
+                  <div style="font-weight: 600;">Nước Hoa Hồng Centella Toner</div>
+                  <div style="font-size: 11px; color: var(--color-text-muted);">SKU: TNR-008 • <strong>x1 chai</strong></div>
+                </div>
+              </div>
+            </td>
+            <td style="text-align: right;">
+              <div style="font-weight: 700; color: var(--color-text);">420.000 ₫</div>
+              <div style="font-size: 11px; color: #ea580c; font-weight: 600;">Ví ShopeePay</div>
+            </td>
+            <td style="text-align: center;">
+              <span class="badge badge-success">Đã trừ kho xuất đi</span>
+            </td>
+            <td style="text-align: center;">
+              <span class="badge badge-success">Đang giao hàng</span>
+            </td>
+            <td style="text-align: center;">
+              <button type="button" class="btn btn-sm" onclick="openOrderDrawer('view', 'ORD-2024-9975')">Chi tiết</button>
+            </td>
+          </tr>
+
+          <!-- Row 4 -->
+          <tr>
+            <td>
+              <a href="#" class="order-code" onclick="openOrderDrawer('view', 'ORD-2024-9968')">ORD-2024-9968</a>
+              <div><span class="channel-badge channel-b2b">Bán sỉ Đại lý</span></div>
+              <div style="font-size: 11px; color: var(--color-text-muted); margin-top: 2px;">14/10 • 16:30 CH</div>
+            </td>
+            <td>
+              <div><strong>Đại lý Mỹ phẩm An Nhiên</strong></div>
+              <div style="font-size: 11px; color: var(--color-text-muted);">MST: 0109823xxx • Hà Nội</div>
+              <div style="font-size: 11px; color: var(--color-primary); font-weight: 600; margin-top: 2px;">Chành xe Phương Trang</div>
+            </td>
+            <td>
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <div style="width: 32px; height: 32px; border-radius: 4px; background: #e2e8f0; display: flex; align-items: center; justify-content: center; font-weight: 700;">35x</div>
+                <div>
+                  <div style="font-weight: 600;">Combo Sỉ: 20x B5 + 15x Rosa</div>
+                  <div style="font-size: 11px; color: var(--color-text-muted);">2 kiện carton niêm phong</div>
+                </div>
+              </div>
+            </td>
+            <td style="text-align: right;">
+              <div style="font-weight: 700; color: var(--color-text);">12.800.000 ₫</div>
+              <div style="font-size: 11px; color: var(--color-primary); font-weight: 600;">Chuyển khoản B2B</div>
+            </td>
+            <td style="text-align: center;">
+              <span class="badge badge-success">Đã trừ kho tổng</span>
+            </td>
+            <td style="text-align: center;">
+              <span class="badge badge-success">Hoàn thành</span>
+            </td>
+            <td style="text-align: center;">
+              <button type="button" class="btn btn-sm" onclick="openOrderDrawer('view', 'ORD-2024-9968')">Chi tiết</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Pagination -->
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; font-size: 13px; color: var(--color-text-muted);">
+        <span>Hiển thị 1 - 4 trong tổng số 4.280 đơn hàng</span>
+        <div style="display: flex; gap: 4px;">
+          <button type="button" class="btn btn-sm" disabled>Trước</button>
+          <button type="button" class="btn btn-primary btn-sm">1</button>
+          <button type="button" class="btn btn-sm">2</button>
+          <button type="button" class="btn btn-sm">Sau</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Slide-Over Drawer Component (z-index 2000+) -->
+  <div class="drawer-backdrop" id="orderDrawerBackdrop" onclick="closeOrderDrawer()"></div>
+  
+  <div class="drawer-panel" id="orderDrawerPanel">
+    <div class="drawer-header">
+      <h3 id="drawerTitleText">Chi Tiết Đơn Hàng</h3>
+      <button type="button" class="drawer-close-btn" onclick="closeOrderDrawer()">&times;</button>
+    </div>
+
+    <div class="drawer-body">
+      <form id="orderForm" onsubmit="event.preventDefault(); saveOrderForm();">
+        <div class="form-group">
+          <label>Mã đơn hàng (`orderNumber`)</label>
+          <input type="text" class="form-control" id="orderNumInput" value="ORD-2024-9982" readonly style="background: #f1f5f9;">
+        </div>
+
+        <div class="form-group">
+          <label>Tên khách hàng (`customers.name`)</label>
+          <input type="text" class="form-control" value="Trần Ngọc Ánh">
+        </div>
+
+        <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2);">
+          <div>
+            <label>Số điện thoại (`customers.phone`)</label>
+            <input type="text" class="form-control" value="0912.***.456">
+          </div>
+          <div>
+            <label>Kênh bán (`orders.channel`)</label>
+            <select class="form-control">
+              <option>TikTok Shop Mall</option>
+              <option>POS Showroom Q.1</option>
+              <option>Shopee Official Store</option>
+              <option>Bán sỉ đại lý</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2);">
+          <div>
+            <label>Tổng tiền (`orders.total`)</label>
+            <input type="number" class="form-control" value="1300000">
+          </div>
+          <div>
+            <label>Phương thức thanh toán (`payments.method`)</label>
+            <select class="form-control">
+              <option>Ví TikTok Shop</option>
+              <option>VietQR Động (MBBank)</option>
+              <option>Tiền mặt tại quầy</option>
+              <option>Chuyển khoản B2B</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2);">
+          <div>
+            <label>Tồn kho giữ chỗ (`inventory.reservedQty`)</label>
+            <input type="number" class="form-control" value="2" readonly style="background: #f1f5f9;">
+          </div>
+          <div>
+            <label>Trạng thái đơn (`orders.status`)</label>
+            <select class="form-control">
+              <option value="PACKING">Chờ đóng gói (PACKING)</option>
+              <option value="SHIPPING">Đang giao hàng (SHIPPING)</option>
+              <option value="COMPLETED">Hoàn thành (COMPLETED)</option>
+              <option value="CANCELLED">Đã hủy (CANCELLED)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Lý do hủy đơn nếu có (`orders.cancellationReason`)</label>
+          <textarea class="form-control" rows="2" placeholder="Nhập lý do nếu hủy đơn..."></textarea>
+        </div>
+      </form>
+    </div>
+
+    <div class="drawer-footer">
+      <button type="button" class="btn" onclick="closeOrderDrawer()">Đóng</button>
+      <button type="button" class="btn btn-primary" onclick="saveOrderForm()">Lưu Thay Đổi</button>
+    </div>
+  </div>
+
+  <!-- Shared Top Navigation Dynamic Script -->
+  <script src="../_shared/nav-owner.js"></script>
+
+  <!-- Interactive Drawer Script -->
+  <script>
+    function openOrderDrawer(mode, orderCode) {
+      const backdrop = document.getElementById('orderDrawerBackdrop');
+      const panel = document.getElementById('orderDrawerPanel');
+      const title = document.getElementById('drawerTitleText');
+      const input = document.getElementById('orderNumInput');
+
+      if (mode === 'create') {
+        title.innerText = 'Tạo Đơn Hàng Mới';
+        input.value = 'ORD-2024-NEW';
+      } else {
+        title.innerText = 'Chi Tiết Đơn Hàng - ' + (orderCode || '');
+        input.value = orderCode || 'ORD-2024-9982';
+      }
+
+      backdrop.classList.add('open');
+      panel.classList.add('open');
+    }
+
+    function closeOrderDrawer() {
+      const backdrop = document.getElementById('orderDrawerBackdrop');
+      const panel = document.getElementById('orderDrawerPanel');
+      backdrop.classList.remove('open');
+      panel.classList.remove('open');
+    }
+
+    function saveOrderForm() {
+      alert('Đã cập nhật thông tin đơn hàng thành công!');
+      closeOrderDrawer();
+    }
+
+    function switchTab(btn) {
+      document.querySelectorAll('.tab-item').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+  </script>
+
+</body>
+</html>

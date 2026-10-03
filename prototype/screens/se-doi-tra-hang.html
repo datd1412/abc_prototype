@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SE-04: Xử Lý Đổi Trả Hàng, Hoàn Tiền & Bảo Hành Tại Quầy POS — ABC Copilot</title>
+  <link rel="stylesheet" href="../tokens.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    .page-container {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: var(--space-4);
+      padding-bottom: 90px;
+    }
+
+    /* Session Header */
+    .session-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space-3);
+      margin-bottom: var(--space-3);
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-3) var(--space-4);
+      box-shadow: var(--shadow-card);
+      flex-wrap: wrap;
+    }
+
+    .session-info {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1);
+    }
+
+    .session-title-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+    }
+
+    .session-title-row h1 {
+      font-size: var(--font-title);
+      font-weight: 700;
+      color: var(--color-text);
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .badge-session {
+      background: #eff6ff;
+      color: var(--color-primary);
+      border: 1px solid #bfdbfe;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: monospace;
+    }
+
+    .session-meta {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      font-size: 13px;
+      color: var(--color-text-muted);
+      flex-wrap: wrap;
+    }
+
+    .session-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: 7px 14px;
+      border-radius: var(--radius);
+      font-size: var(--font-base);
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text);
+      transition: all 0.15s ease;
+    }
+
+    .btn:hover {
+      background: #f1f3f5;
+    }
+
+    .btn-primary {
+      background: var(--color-primary);
+      color: #ffffff;
+      border-color: var(--color-primary);
+    }
+
+    .btn-primary:hover {
+      background: #2348a0;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border-color: var(--color-border);
+      color: var(--color-text);
+    }
+
+    .btn-outline:hover {
+      background: #f8fafc;
+    }
+
+    /* KPI Summary Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-3);
+      margin-bottom: var(--space-3);
+    }
+
+    .kpi-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-3) var(--space-4);
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1);
+    }
+
+    .kpi-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--color-text-muted);
+    }
+
+    .kpi-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--color-text);
+      line-height: 1.2;
+    }
+
+    .kpi-subtext {
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: var(--color-text-muted);
+    }
+
+    .kpi-subtext.success { color: var(--color-success); font-weight: 600; }
+    .kpi-subtext.warning { color: var(--color-warning); font-weight: 600; }
+    .kpi-subtext.danger { color: var(--color-danger); font-weight: 600; }
+
+    /* AI Insight Strip */
+    .ai-insight-strip {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: var(--radius);
+      padding: var(--space-2) var(--space-3);
+      margin-bottom: var(--space-3);
+      font-size: 13px;
+      color: #1e40af;
+    }
+
+    .ai-insight-strip svg {
+      flex-shrink: 0;
+      color: var(--color-primary);
+    }
+
+    .insight-text {
+      flex: 1;
+      line-height: 1.4;
+    }
+
+    .insight-link {
+      color: var(--color-primary);
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+    }
+
+    .insight-link:hover {
+      text-decoration: underline;
+    }
+
+    /* Main 2-Column Workspace Grid */
+    .workspace-grid {
+      display: grid;
+      grid-template-columns: 1.25fr 1fr;
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+    }
+
+    .panel-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-card);
+      padding: var(--space-3) var(--space-4);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--color-border);
+      padding-bottom: var(--space-2);
+    }
+
+    .panel-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--color-text);
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    /* Search Input Group */
+    .search-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .input-group {
+      position: relative;
+      flex: 1;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 10px;
+      color: var(--color-text-muted);
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-text {
+      width: 100%;
+      height: 38px;
+      padding: 0 12px 0 34px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      font-size: var(--font-base);
+      font-family: inherit;
+      color: var(--color-text);
+      background: var(--color-bg);
+      transition: all 0.15s ease;
+    }
+
+    .input-text:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      background: #ffffff;
+      box-shadow: 0 0 0 2px rgba(43, 89, 195, 0.15);
+    }
+
+    /* Info Strip */
+    .cust-info-strip {
+      background: #f8fafc;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-2) var(--space-3);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+    }
+
+    /* Items Table */
+    .table-container {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      text-align: left;
+    }
+
+    thead {
+      background: #f8fafc;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    th {
+      padding: 8px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    td {
+      padding: 10px;
+      color: var(--color-text);
+      vertical-align: middle;
+    }
+
+    .sku-code {
+      font-family: monospace;
+      font-size: 11px;
+      background: #f1f3f5;
+      padding: 1px 5px;
+      border-radius: 4px;
+      color: #374151;
+    }
+
+    .select-reason {
+      width: 100%;
+      height: 30px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      font-size: 12px;
+      padding: 0 6px;
+      background: #ffffff;
+      color: var(--color-text);
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .badge-success {
+      background: #ecfdf5;
+      color: var(--color-success);
+      border: 1px solid #a7f3d0;
+    }
+
+    .badge-warning {
+      background: #fffbeb;
+      color: var(--color-warning);
+      border: 1px solid #fde68a;
+    }
+
+    .badge-danger {
+      background: #fef2f2;
+      color: var(--color-danger);
+      border: 1px solid #fecaca;
+    }
+
+    /* Settlement Right Column */
+    .settlement-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-card);
+      padding: var(--space-3) var(--space-4);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .calc-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      font-size: 13px;
+    }
+
+    .calc-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .calc-item.highlight {
+      border-top: 1px dashed var(--color-border);
+      padding-top: var(--space-2);
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .mode-tabs {
+      display: flex;
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: 2px;
+      gap: 2px;
+    }
+
+    .mode-tab {
+      flex: 1;
+      padding: 6px;
+      border: none;
+      background: transparent;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--color-text-muted);
+      text-align: center;
+    }
+
+    .mode-tab.active {
+      background: #ffffff;
+      color: var(--color-primary);
+      font-weight: 700;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+    }
+
+    /* Inventory balance list */
+    .stock-balance-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      font-size: 12px;
+      background: #f8fafc;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-2) var(--space-3);
+    }
+
+    .stock-balance-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Sticky Bottom Bar */
+    .sticky-execution-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 64px;
+      background: var(--color-surface);
+      border-top: 1px solid var(--color-border);
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--space-4);
+      z-index: 100;
+    }
+
+    .bar-stats {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      font-size: 13px;
+    }
+
+    .bar-stat {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .bar-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .btn-lg {
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      background: #111827;
+      color: #ffffff;
+      padding: 12px 20px;
+      border-radius: var(--radius);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      font-size: 13px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      z-index: 999;
+      transform: translateY(-20px);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+  </style>
+</head>
+<body data-screen="se-doi-tra-hang">
+  <div class="app-container">
+    <!-- Top Navigation Header (Injected dynamically by nav-employee.js) -->
+    <header id="app-topnav"></header>
+
+    <main class="page-container">
+      <!-- Session Header -->
+      <div class="session-header">
+        <div class="session-info">
+          <div class="session-title-row">
+            <h1>
+              <span style="color: var(--color-primary); display: inline-flex; align-items: center;">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10a6 6 0 0 1 10.3-4.2"/><polyline points="14,2.5 14.3,6 10.8,5.7"/><path d="M16 10a6 6 0 0 1-10.3 4.2"/><polyline points="6,17.5 5.7,14 9.2,14.3"/></svg>
+              </span>
+              Xử Lý Đổi Trả Hàng, Hoàn Tiền & Bảo Hành Tại Quầy POS
+            </h1>
+            <span class="badge-session">#RET-20241024-001</span>
+            <span class="badge badge-success">
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><polyline points="6.5,10.2 9,12.8 13.8,7.5"/></svg>
+              Hóa đơn hợp lệ (Còn hạn 7 ngày)
+            </span>
+          </div>
+          <div class="session-meta">
+            <span>Đơn gốc: <strong>#POS-20241023-042</strong></span>
+            <span>•</span>
+            <span>Ngày mua: <strong>23/10/2024 15:30 (23 giờ trước)</strong></span>
+            <span>•</span>
+            <span>Thu ngân xử lý: <strong>Nguyễn Thị Mai (#02)</strong></span>
+          </div>
+        </div>
+        <div class="session-actions">
+          <button class="btn btn-outline" onclick="showToast('Đang tạo phiếu tạm tính đổi hàng [F3]...')">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="5" y="2.5" width="10" height="5" rx="0.5"/><rect x="3" y="7.5" width="14" height="7" rx="1"/><rect x="6" y="12" width="8" height="5.5" rx="0.5"/></svg>
+            In Tạm [F3]
+          </button>
+          <button class="btn btn-outline" onclick="showToast('Tải biên bản đổi trả hàng có xác nhận của khách...')">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="10" y1="3" x2="10" y2="12.5"/><polyline points="6,9 10,13 14,9"/><line x1="4" y1="16.5" x2="16" y2="16.5"/></svg>
+            In Biên Bản [F7]
+          </button>
+        </div>
+      </div>
+
+      <!-- KPI Summary Cards -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label">Tổng Giá Trị Hóa Đơn Gốc</div>
+          <div class="kpi-value">680.000 ₫</div>
+          <div class="kpi-subtext">
+            <span>2 mặt hàng • Thanh toán VietQR</span>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Giá Trị Sản Phẩm Trả Lại</div>
+          <div class="kpi-value" style="color: var(--color-primary);" id="kpiReturnVal">420.000 ₫</div>
+          <div class="kpi-subtext success">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><polyline points="6.5,10.2 9,12.8 13.8,7.5"/></svg>
+            01 Serum Bio-B5 (Nguyên seal)
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Giá Trị Sản Phẩm Đổi Mới</div>
+          <div class="kpi-value" id="kpiExchangeVal">485.000 ₫</div>
+          <div class="kpi-subtext">
+            <span>01 Kem Phục Hồi Ceramide Aura Care</span>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Quyết Toán Chênh Lệch</div>
+          <div class="kpi-value" style="color: var(--color-success);" id="kpiDiffVal">+65.000 ₫</div>
+          <div class="kpi-subtext success" id="kpiDiffSub">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><polyline points="6.5,10.2 9,12.8 13.8,7.5"/></svg>
+            Thu thêm từ khách hàng
+          </div>
+        </div>
+      </div>
+
+      <!-- AI Insight Strip -->
+      <div class="ai-insight-strip">
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="6" width="12" height="9" rx="2"/><line x1="10" y1="6" x2="10" y2="3"/><circle cx="10" cy="2.3" r="0.8" fill="currentColor" stroke="none"/><circle cx="7.3" cy="10.5" r="1" fill="currentColor" stroke="none"/><circle cx="12.7" cy="10.5" r="1" fill="currentColor" stroke="none"/></svg>
+        <div class="insight-text">
+          <strong>Thẩm định chính sách AI:</strong> Hóa đơn mua hàng hợp lệ phát hành 23 giờ trước. Sản phẩm Serum Bio-B5 được trả lại với bao bì nguyên vẹn, đủ điều kiện nhập lại kho quầy để xuất bán tiếp. Sản phẩm Kem Ceramide đổi mới có sẵn 18 hũ tại kệ B2-01.
+        </div>
+        <a href="bo-ai-phan-tich.html" class="insight-link">
+          Xem chính sách đổi trả
+          <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="10" x2="15" y2="10"/><polyline points="11,6 15,10 11,14"/></svg>
+        </a>
+      </div>
+
+      <!-- Main Workspace 2-Column Grid -->
+      <div class="workspace-grid">
+        <!-- Left Column: Tra cứu đơn gốc & Sản phẩm trả/đổi -->
+        <div style="display: flex; flex-direction: column; gap: var(--space-3);">
+          <!-- Panel Tra cứu đơn hàng gốc -->
+          <div class="panel-card">
+            <div class="panel-header">
+              <h2 class="panel-title">
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="8.5" cy="8.5" r="5"/><line x1="12.3" y1="12.3" x2="17" y2="17"/></svg>
+                Tra Cứu Hóa Đơn Gốc Mua Hàng
+              </h2>
+              <span class="badge badge-success">Khớp đơn Cloud</span>
+            </div>
+
+            <div class="search-row">
+              <div class="input-group">
+                <span class="input-icon">
+                  <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="8.5" cy="8.5" r="5"/><line x1="12.3" y1="12.3" x2="17" y2="17"/></svg>
+                </span>
+                <input type="text" id="orderSearchInput" class="input-text" value="#POS-20241023-042" placeholder="Quét mã vạch hóa đơn [F1] hoặc nhập SĐT khách hàng...">
+              </div>
+              <button class="btn btn-primary" onclick="showToast('Đã tải thông tin hóa đơn #POS-20241023-042')">
+                Tra Cứu
+              </button>
+            </div>
+
+            <div class="cust-info-strip">
+              <div>
+                <span>Khách hàng: <strong>Chị Lê Thu Thảo</strong> (0909 123 456)</span>
+                <span style="margin: 0 6px;">•</span>
+                <span>Hạng: <strong>VIP Thân thiết</strong></span>
+              </div>
+              <span class="badge badge-success">Hạn đổi còn: 06 ngày</span>
+            </div>
+          </div>
+
+          <!-- Panel Mặt hàng trong đơn gốc & Chọn trả -->
+          <div class="panel-card">
+            <div class="panel-header">
+              <h2 class="panel-title">
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2.5" width="12" height="15" rx="1.5"/><line x1="7" y1="6.5" x2="13" y2="6.5"/><line x1="7" y1="9.5" x2="13" y2="9.5"/><line x1="7" y1="12.5" x2="10.5" y2="12.5"/></svg>
+                Sản Phẩm Trong Đơn Gốc (Chọn món trả)
+              </h2>
+            </div>
+
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th style="width: 36px; text-align: center;">Chọn</th>
+                    <th>Tên sản phẩm & SKU</th>
+                    <th style="text-align: right;">Đơn giá</th>
+                    <th>Lý do đổi trả</th>
+                    <th style="text-align: center;">Tình trạng</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr style="background: #f8fafc;">
+                    <td style="text-align: center;">
+                      <input type="checkbox" id="chkItem1" checked onchange="recalcReturn()">
+                    </td>
+                    <td>
+                      <div style="font-weight: 600;">Serum Bio-B5 Hydra Max 100ml</div>
+                      <span class="sku-code">MB-SER-B5-01</span>
+                    </td>
+                    <td style="text-align: right; font-family: monospace; font-weight: 600;">420.000 ₫</td>
+                    <td style="min-width: 170px;">
+                      <select class="select-reason">
+                        <option selected>Đổi sang dòng kem phục hồi</option>
+                        <option>Lỗi nhà sản xuất (vòi xịt)</option>
+                        <option>Dị ứng kích ứng da</option>
+                        <option>Khách đổi ý muốn lấy món khác</option>
+                      </select>
+                    </td>
+                    <td style="text-align: center;">
+                      <span class="badge badge-success">Nguyên seal</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="text-align: center;">
+                      <input type="checkbox" id="chkItem2" onchange="recalcReturn()">
+                    </td>
+                    <td>
+                      <div style="font-weight: 600;">Son Kem Nhung Lì Velvet #03 Đỏ Gạch</div>
+                      <span class="sku-code">MB-LIP-VL-03</span>
+                    </td>
+                    <td style="text-align: right; font-family: monospace; font-weight: 600;">260.000 ₫</td>
+                    <td>
+                      <span style="color: var(--color-text-muted); font-size: 12px;">Khách giữ lại dùng</span>
+                    </td>
+                    <td style="text-align: center;">
+                      <span class="badge badge-warning">Không trả</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Panel Sản phẩm đổi mới -->
+          <div class="panel-card">
+            <div class="panel-header">
+              <h2 class="panel-title">
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="10" y1="4" x2="10" y2="16"/><line x1="4" y1="10" x2="16" y2="10"/></svg>
+                Sản Phẩm Đổi Mới (Exchange Selection)
+              </h2>
+              <button class="btn btn-outline" style="font-size: 12px; padding: 4px 8px;" onclick="showToast('Mở danh mục chọn sản phẩm đổi mới [F4]...')">
+                + Thêm sản phẩm khác [F4]
+              </button>
+            </div>
+
+            <div class="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Mặt hàng đổi</th>
+                    <th>Vị trí kệ</th>
+                    <th style="text-align: center;">SL</th>
+                    <th style="text-align: right;">Đơn giá</th>
+                    <th style="text-align: right;">Thành tiền</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <div style="font-weight: 600;">Kem Phục Hồi Ceramide Aura Care 50ml</div>
+                      <span class="sku-code">MB-CRM-02</span>
+                    </td>
+                    <td>Kệ B2-01 (Tồn: 18)</td>
+                    <td style="text-align: center; font-weight: 700;">01</td>
+                    <td style="text-align: right; font-family: monospace;">485.000 ₫</td>
+                    <td style="text-align: right; font-family: monospace; font-weight: 700; color: var(--color-primary);">485.000 ₫</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Quyết toán chênh lệch & Cân bằng kho -->
+        <div style="display: flex; flex-direction: column; gap: var(--space-3);">
+          <!-- Panel Quyết toán -->
+          <div class="settlement-card">
+            <div class="panel-header">
+              <h2 class="panel-title">
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2.5" width="12" height="15" rx="1.5"/><line x1="7" y1="6.5" x2="13" y2="6.5"/><line x1="7" y1="9.5" x2="13" y2="9.5"/><line x1="7" y1="12.5" x2="10.5" y2="12.5"/></svg>
+                Quyết Toán Chênh Lệch Tài Chính
+              </h2>
+            </div>
+
+            <div class="mode-tabs">
+              <button class="mode-tab active" id="tabModeCollect" onclick="setMode('collect')">Thu Thêm (+65k)</button>
+              <button class="mode-tab" id="tabModeRefund" onclick="setMode('refund')">Hoàn Tiền</button>
+              <button class="mode-tab" id="tabMode1to1" onclick="setMode('1to1')">Đổi 1-1 Lỗi NSX</button>
+            </div>
+
+            <div class="calc-list">
+              <div class="calc-item">
+                <span style="color: var(--color-text-muted);">Giá trị hàng trả lại (Credit):</span>
+                <strong style="font-family: monospace;" id="calcReturn">-420.000 ₫</strong>
+              </div>
+              <div class="calc-item">
+                <span style="color: var(--color-text-muted);">Giá trị hàng đổi mới (Debit):</span>
+                <strong style="font-family: monospace;" id="calcExchange">+485.000 ₫</strong>
+              </div>
+              <div class="calc-item">
+                <span style="color: var(--color-text-muted);">Phí dịch vụ đổi trả (Chính sách 7 ngày):</span>
+                <strong style="font-family: monospace; color: var(--color-success);">0 ₫ (Miễn phí)</strong>
+              </div>
+              <div class="calc-item highlight">
+                <span>Số tiền khách cần thanh toán thêm:</span>
+                <strong style="font-family: monospace; color: var(--color-primary); font-size: 18px;" id="calcDiff">+65.000 ₫</strong>
+              </div>
+            </div>
+
+            <!-- Payment method selection for the difference -->
+            <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: var(--radius); padding: var(--space-3); display: flex; flex-direction: column; gap: var(--space-2);">
+              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px;">
+                <span style="font-weight: 600; color: #1e3a8a;">Hình thức thanh toán chênh lệch:</span>
+                <span class="badge badge-success">VietQR Pro</span>
+              </div>
+              <div style="font-size: 12px; color: #1e40af; line-height: 1.4;">
+                Quét mã VietQR động thu đúng <strong>65.000 ₫</strong>. Hệ thống tự động xác nhận sau 2 giây.
+              </div>
+              <div style="display: flex; gap: var(--space-2); margin-top: 4px;">
+                <button class="btn btn-outline" style="font-size: 12px; padding: 4px 10px; background: #ffffff;" onclick="showToast('Đã chuyển phương thức thu sang Tiền Mặt tại két.')">
+                  Thu Tiền Mặt Tại Két
+                </button>
+                <button class="btn btn-outline" style="font-size: 12px; padding: 4px 10px; background: #ffffff;" onclick="showToast('Tạo mã VietQR động 65.000 ₫ thành công.')">
+                  Hiện Mã VietQR
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel Cân bằng kho tự động -->
+          <div class="panel-card">
+            <div class="panel-header">
+              <h2 class="panel-title">
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 6.5 L10 3 L17.5 6.5 L10 10 Z"/><path d="M2.5 6.5 V14 L10 17.5 L17.5 14 V6.5"/><line x1="10" y1="10" x2="10" y2="17.5"/></svg>
+                Cân Bằng Tồn Kho Quầy Tự Động
+              </h2>
+              <span class="badge badge-success">Real-time</span>
+            </div>
+
+            <div class="stock-balance-list">
+              <div class="stock-balance-item">
+                <span>Serum Bio-B5 100ml (Hàng trả):</span>
+                <strong style="color: var(--color-success);">+1 nhập quầy (35 → 36)</strong>
+              </div>
+              <div class="stock-balance-item">
+                <span>Kem Ceramide 50ml (Hàng đổi):</span>
+                <strong style="color: var(--color-primary);">-1 xuất quầy (18 → 17)</strong>
+              </div>
+              <div style="font-size: 11px; color: var(--color-text-muted); border-top: 1px solid var(--color-border); padding-top: 4px;">
+                Tự động ghi nhận transaction loại [in/out] kèm lý do: "Đổi trả hàng đơn #POS-20241023-042"
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Sticky Bottom Execution Bar -->
+    <div class="sticky-execution-bar">
+      <div class="bar-stats">
+        <div class="bar-stat">
+          <span style="color: var(--color-text-muted);">Mã đổi trả:</span>
+          <strong>#RET-20241024-001</strong>
+        </div>
+        <div class="bar-stat">
+          <span style="color: var(--color-text-muted);">Đơn mới phát sinh:</span>
+          <strong style="font-family: monospace; color: var(--color-primary);">#POS-EX-20241024-001</strong>
+        </div>
+        <div class="bar-stat">
+          <span style="color: var(--color-text-muted);">Số tiền quyết toán:</span>
+          <strong id="barDiffVal" style="color: var(--color-success); font-family: monospace; font-size: 16px;">Thu thêm: +65.000 ₫</strong>
+        </div>
+      </div>
+      <div class="bar-actions">
+        <button class="btn btn-outline" onclick="showToast('Đã hủy bỏ thao tác đổi trả.')">
+          Hủy Bỏ [Esc]
+        </button>
+        <button class="btn btn-outline" onclick="showToast('Đang in biên bản đổi trả hàng [F7]...')">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2.5" width="10" height="5" rx="0.5"/><rect x="3" y="7.5" width="14" height="7" rx="1"/><rect x="6" y="12" width="8" height="5.5" rx="0.5"/></svg>
+          In Biên Bản [F7]
+        </button>
+        <button class="btn btn-primary btn-lg" onclick="confirmReturnExchange()">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><polyline points="6.5,10.2 9,12.8 13.8,7.5"/></svg>
+          HOÀN TẤT ĐỔI TRẢ & XUẤT HÓA ĐƠN MỚI [F9]
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast">
+    <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="#22c55e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><polyline points="6.5,10.2 9,12.8 13.8,7.5"/></svg>
+    <span id="toastMsg">Thao tác thành công</span>
+  </div>
+
+  <script src="../_shared/nav-employee.js"></script>
+  <script>
+    let currentReturnVal = 420000;
+    let currentExchangeVal = 485000;
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toastMsg');
+      toastMsg.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3500);
+    }
+
+    // Hotkey listener
+    window.addEventListener('keydown', function(e) {
+      if (e.key === 'F1') {
+        e.preventDefault();
+        document.getElementById('orderSearchInput').focus();
+        showToast('Kích hoạt ô tra cứu hóa đơn [F1]');
+      } else if (e.key === 'F3') {
+        e.preventDefault();
+        showToast('Đang tạo phiếu tạm tính đổi hàng [F3]...');
+      } else if (e.key === 'F7') {
+        e.preventDefault();
+        showToast('Đang gửi lệnh in biên bản đổi trả [F7]...');
+      } else if (e.key === 'F9') {
+        e.preventDefault();
+        confirmReturnExchange();
+      } else if (e.key === 'Escape') {
+        showToast('Hủy bỏ thao tác.');
+      }
+    });
+
+    function recalcReturn() {
+      const chk1 = document.getElementById('chkItem1').checked;
+      const chk2 = document.getElementById('chkItem2').checked;
+
+      let ret = 0;
+      if (chk1) ret += 420000;
+      if (chk2) ret += 260000;
+
+      currentReturnVal = ret;
+      updateSettlement();
+    }
+
+    function setMode(mode) {
+      document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
+      if (mode === 'collect') {
+        document.getElementById('tabModeCollect').classList.add('active');
+        currentExchangeVal = 485000;
+      } else if (mode === 'refund') {
+        document.getElementById('tabModeRefund').classList.add('active');
+        currentExchangeVal = 260000; // lower price
+      } else if (mode === '1to1') {
+        document.getElementById('tabMode1to1').classList.add('active');
+        currentExchangeVal = currentReturnVal; // equal price
+      }
+      updateSettlement();
+    }
+
+    function updateSettlement() {
+      const diff = currentExchangeVal - currentReturnVal;
+
+      document.getElementById('kpiReturnVal').textContent = currentReturnVal.toLocaleString('vi-VN') + ' ₫';
+      document.getElementById('kpiExchangeVal').textContent = currentExchangeVal.toLocaleString('vi-VN') + ' ₫';
+      document.getElementById('calcReturn').textContent = '-' + currentReturnVal.toLocaleString('vi-VN') + ' ₫';
+      document.getElementById('calcExchange').textContent = '+' + currentExchangeVal.toLocaleString('vi-VN') + ' ₫';
+
+      const kpiDiffVal = document.getElementById('kpiDiffVal');
+      const kpiDiffSub = document.getElementById('kpiDiffSub');
+      const calcDiff = document.getElementById('calcDiff');
+      const barDiffVal = document.getElementById('barDiffVal');
+
+      if (diff > 0) {
+        kpiDiffVal.textContent = '+' + diff.toLocaleString('vi-VN') + ' ₫';
+        kpiDiffVal.style.color = 'var(--color-success)';
+        kpiDiffSub.textContent = 'Thu thêm từ khách hàng';
+        calcDiff.textContent = '+' + diff.toLocaleString('vi-VN') + ' ₫';
+        calcDiff.style.color = 'var(--color-primary)';
+        barDiffVal.textContent = 'Thu thêm: +' + diff.toLocaleString('vi-VN') + ' ₫';
+      } else if (diff < 0) {
+        const absDiff = Math.abs(diff);
+        kpiDiffVal.textContent = '-' + absDiff.toLocaleString('vi-VN') + ' ₫';
+        kpiDiffVal.style.color = 'var(--color-danger)';
+        kpiDiffSub.textContent = 'Hoàn trả lại khách';
+        calcDiff.textContent = '-' + absDiff.toLocaleString('vi-VN') + ' ₫';
+        calcDiff.style.color = 'var(--color-danger)';
+        barDiffVal.textContent = 'Hoàn tiền: -' + absDiff.toLocaleString('vi-VN') + ' ₫';
+      } else {
+        kpiDiffVal.textContent = '0 ₫';
+        kpiDiffVal.style.color = 'var(--color-text)';
+        kpiDiffSub.textContent = 'Đổi ngang giá (Đổi 1-1)';
+        calcDiff.textContent = '0 ₫';
+        calcDiff.style.color = 'var(--color-text)';
+        barDiffVal.textContent = 'Đổi ngang giá: 0 ₫';
+      }
+    }
+
+    function confirmReturnExchange() {
+      const diff = currentExchangeVal - currentReturnVal;
+      let actionText = '';
+      if (diff > 0) actionText = `Thu thêm: +${diff.toLocaleString('vi-VN')} ₫`;
+      else if (diff < 0) actionText = `Hoàn trả: -${Math.abs(diff).toLocaleString('vi-VN')} ₫`;
+      else actionText = 'Đổi ngang giá: 0 ₫';
+
+      const msg = `XÁC NHẬN HOÀN TẤT ĐỔI TRẢ & XUẤT HÓA ĐƠN MỚI:\n\n- Đơn gốc: #POS-20241023-042 (Chị Lê Thu Thảo)\n- Trả lại kho: 01 Serum Bio-B5 (+1 tồn quầy)\n- Xuất hàng đổi: 01 Kem Ceramide (-1 tồn quầy)\n- Quyết toán: ${actionText}\n- Hóa đơn mới phát sinh: #POS-EX-20241024-001\n\nBạn có chắc chắn muốn hoàn tất giao dịch đổi trả?`;
+
+      if (confirm(msg)) {
+        showToast('ĐỔI TRẢ THÀNH CÔNG! Đã xuất hóa đơn mới #POS-EX-20241024-001 và cân bằng tồn kho quầy.');
+      }
+    }
+  </script>
+</body>
+</html>

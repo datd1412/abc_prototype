@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản Lý Nhà Cung Cấp & Công Nợ Đơn Hàng - ABC Backoffice</title>
+  <link rel="stylesheet" href="../tokens.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-family);
+      font-size: var(--font-base);
+      color: var(--color-text);
+      background-color: var(--color-bg);
+      line-height: 1.5;
+    }
+
+    .page-container {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: var(--space-4);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    /* Page Header */
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-3) var(--space-4);
+      box-shadow: var(--shadow-card);
+      flex-wrap: wrap;
+      gap: var(--space-3);
+    }
+    .header-title-box h1 {
+      font-size: var(--font-title);
+      font-weight: 700;
+      color: var(--color-text);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      margin-bottom: 2px;
+    }
+    .header-desc {
+      font-size: 13px;
+      color: var(--color-text-muted);
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      border-radius: var(--radius);
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text);
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.15s;
+    }
+    .btn:hover { background: #f8fafc; }
+    .btn-primary {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: #fff;
+    }
+    .btn-primary:hover { background: #1e429f; }
+
+    /* KPI Grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-3);
+    }
+    .kpi-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-3) var(--space-4);
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: var(--space-2);
+    }
+    .kpi-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .kpi-value {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--color-text);
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-2);
+    }
+    .kpi-sub {
+      font-size: 12px;
+      color: var(--color-text-muted);
+    }
+
+    /* AI Insight Strip */
+    .ai-insight-strip {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-3);
+      font-size: 13px;
+      color: #1e40af;
+    }
+    .ai-insight-content {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    .ai-insight-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-weight: 600;
+      color: var(--color-primary);
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    /* Channel / Category Tabs */
+    .channel-tabs {
+      display: flex;
+      gap: 4px;
+      border-bottom: 1px solid var(--color-border);
+      background: var(--color-surface);
+      border-radius: var(--radius) var(--radius) 0 0;
+      padding: var(--space-2) var(--space-3) 0;
+    }
+    .tab-btn {
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .tab-btn.active {
+      color: var(--color-primary);
+      border-bottom-color: var(--color-primary);
+    }
+    .tab-count {
+      background: #f1f5f9;
+      color: var(--color-text-muted);
+      padding: 1px 6px;
+      border-radius: 10px;
+      font-size: 11px;
+    }
+    .tab-btn.active .tab-count {
+      background: #e0e7ff;
+      color: var(--color-primary);
+    }
+
+    /* Filter Bar */
+    .filter-bar {
+      background: var(--color-surface);
+      border-left: 1px solid var(--color-border);
+      border-right: 1px solid var(--color-border);
+      padding: var(--space-2) var(--space-3);
+      display: flex;
+      gap: var(--space-3);
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .filter-input {
+      height: 34px;
+      padding: 0 10px;
+      font-size: 13px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      outline: none;
+      background: #fff;
+      font-family: inherit;
+    }
+
+    /* Table Container */
+    .table-container {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 0 0 var(--radius) var(--radius);
+      box-shadow: var(--shadow-card);
+      overflow-x: auto;
+    }
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      text-align: left;
+    }
+    .data-table th {
+      background: #f8fafc;
+      padding: 10px 14px;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      border-bottom: 1px solid var(--color-border);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .data-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--color-border);
+      vertical-align: middle;
+    }
+    .data-table tr:hover { background: #fafbfc; }
+
+    /* Badges */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .badge-success { background: #dcfce7; color: var(--color-success); }
+    .badge-warning { background: #fef9c3; color: var(--color-warning); }
+    .badge-danger { background: #fee2e2; color: var(--color-danger); }
+
+    .rank-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: #f1f5f9;
+      color: #334155;
+    }
+    .rank-a-plus { background: #dbeafe; color: #1e40af; }
+
+    /* Pagination */
+    .pagination-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      font-size: 12px;
+      color: var(--color-text-muted);
+      border-top: 1px solid var(--color-border);
+    }
+  </style>
+</head>
+<body data-screen="bo-nha-cung-cap-cong-no">
+  <!-- Shared Top Navigation Header -->
+  <header id="app-topnav"></header>
+
+  <div class="page-container">
+    <!-- Header -->
+    <div class="page-header">
+      <div class="header-title-box">
+        <h1>
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2.5" width="12" height="15" rx="1.5"/><line x1="7" y1="6.5" x2="13" y2="6.5"/><line x1="7" y1="9.5" x2="13" y2="9.5"/><line x1="7" y1="12.5" x2="10.5" y2="12.5"/></svg>
+          Quản Lý Nhà Cung Cấp & Công Nợ Đơn Hàng
+        </h1>
+        <div class="header-desc">
+          Theo dõi hạn mức tín dụng, chu kỳ thanh toán PO, hiệu suất giao hàng và đàm phán chiết khấu NCC.
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="btn">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="10" y1="3" x2="10" y2="12.5"/><polyline points="6,9 10,13 14,9"/><line x1="4" y1="16.5" x2="16" y2="16.5"/></svg>
+          Xuất sổ công nợ
+        </button>
+        <button class="btn">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10a6 6 0 0 1 10.3-4.2"/><polyline points="14,2.5 14.3,6 10.8,5.7"/><path d="M16 10a6 6 0 0 1-10.3 4.2"/><polyline points="6,17.5 5.7,14 9.2,14.3"/></svg>
+          Đối soát tự động
+        </button>
+        <a href="bo-modal-thanh-toan-cong-no-vietqr.html" class="btn btn-primary">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="10" y1="4" x2="10" y2="16"/><line x1="4" y1="10" x2="16" y2="10"/></svg>
+          Thanh toán VietQR B2B
+        </a>
+      </div>
+    </div>
+
+    <!-- 4 Financial KPI Cards -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Tổng công nợ phải trả NCC</div>
+        <div class="kpi-value" style="color: var(--color-primary);">
+          148.650.000 ₫
+        </div>
+        <div class="kpi-sub">
+          12 đơn PO đang nợ • <span style="color: var(--color-success); font-weight: 600;">-8.2% vs tháng trước</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-label">Đến hạn thanh toán &lt; 7 ngày</div>
+        <div class="kpi-value" style="color: var(--color-danger);">
+          42.800.000 ₫
+        </div>
+        <div class="kpi-sub" style="color: var(--color-danger);">
+          3 nhà cung cấp • Hạn chót 31/10
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-label">Giá trị nhập hàng tháng 10</div>
+        <div class="kpi-value">
+          215.400.000 ₫
+        </div>
+        <div class="kpi-sub">
+          <span style="color: var(--color-primary); font-weight: 600;">+14.5% gom Mega 11.11</span> • 96.4% đúng hẹn
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-label">Chiết khấu tích lũy đạt được</div>
+        <div class="kpi-value" style="color: var(--color-success);">
+          12.850.000 ₫
+        </div>
+        <div class="kpi-sub">
+          Tiết kiệm 5.6% COGS • 2 NCC đủ chuẩn nâng hạn mức
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Insight Strip -->
+    <div class="ai-insight-strip">
+      <div class="ai-insight-content">
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="6" width="12" height="9" rx="2"/><line x1="10" y1="6" x2="10" y2="3"/><circle cx="10" cy="2.3" r="0.8" fill="currentColor" stroke="none"/><circle cx="7.3" cy="10.5" r="1" fill="currentColor" stroke="none"/><circle cx="12.7" cy="10.5" r="1" fill="currentColor" stroke="none"/></svg>
+        <span>
+          <strong>AI Supplier Intelligence:</strong> NCC Klairs VN có chính sách chiết khấu thêm 2.5% (tiết kiệm ~3.200.000 ₫) nếu thanh toán trước 5 ngày cho PO-088. Quỹ MB Bank hiện thặng dư đủ điều kiện chi trả an toàn.
+        </span>
+      </div>
+      <a href="bo-modal-thanh-toan-cong-no-vietqr.html" class="ai-insight-link">
+        Thanh toán nhận chiết khấu
+        <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="10" x2="15" y2="10"/><polyline points="11,6 15,10 11,14"/></svg>
+      </a>
+    </div>
+
+    <!-- Tabs & Filter Bar -->
+    <div>
+      <div class="channel-tabs">
+        <button class="tab-btn active">Tất cả Nhà Cung Cấp <span class="tab-count">18</span></button>
+        <button class="tab-btn">Có công nợ cần trả <span class="tab-count">8</span></button>
+        <button class="tab-btn">Đến hạn &lt; 7 ngày <span class="tab-count">3</span></button>
+        <button class="tab-btn">Đối tác chiến lược VIP <span class="tab-count">5</span></button>
+      </div>
+
+      <div class="filter-bar">
+        <div style="position: relative; flex: 1; max-width: 320px;">
+          <input type="text" class="filter-input" placeholder="Tìm theo tên NCC, MST, mã NCC..." style="width: 100%; padding-left: 28px;">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" style="position: absolute; left: 8px; top: 9px; color: var(--color-text-muted);"><circle cx="8.5" cy="8.5" r="5"/><line x1="12.3" y1="12.3" x2="17" y2="17"/></svg>
+        </div>
+        <select class="filter-input">
+          <option selected>Tất cả ngành hàng</option>
+          <option>Mỹ phẩm Skincare</option>
+          <option>Son môi & Make-up</option>
+          <option>Thời trang & Phụ kiện</option>
+          <option>Bao bì & Đóng gói</option>
+        </select>
+        <select class="filter-input">
+          <option selected>Sắp xếp: Công nợ giảm dần</option>
+          <option>Hạn thanh toán gần nhất</option>
+          <option>Uy tín cao nhất</option>
+        </select>
+      </div>
+
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Nhà Cung Cấp & Đầu Mối</th>
+              <th>Ngành Hàng & SKU Chủ Lực</th>
+              <th>Uy Tín & Hiệu Suất</th>
+              <th style="text-align: right;">Giao Dịch Lũy Kế</th>
+              <th style="text-align: right;">Công Nợ & Kỳ Hạn</th>
+              <th>Hạn Mức & Điều Khoản</th>
+              <th style="text-align: right;">Thao Tác</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Row 1: Klairs -->
+            <tr>
+              <td>
+                <div style="font-weight: 700; color: var(--color-text);">Cty TNHH Mỹ phẩm Quốc tế Klairs VN</div>
+                <div style="font-size: 11px; color: var(--color-text-muted);">Mã: NCC-KLAIRS-01 • 0912.834.xxx • Hà Nội</div>
+              </td>
+              <td>
+                <div>Mỹ phẩm Skincare Hàn Quốc</div>
+                <div style="font-size: 11px; color: var(--color-text-muted);">Serum Midnight Blue, Toner B5</div>
+              </td>
+              <td>
+                <span class="rank-badge rank-a-plus">Hạng A+</span>
+                <div style="font-size: 11px; color: var(--color-success); margin-top: 2px;">98% đúng hẹn</div>
+              </td>
+              <td style="text-align: right; font-weight: 700;">485.200.000 ₫</td>
+              <td style="text-align: right;">
+                <div style="font-weight: 700; color: var(--color-primary); font-size: 14px;">35.400.000 ₫</div>
+                <div style="font-size: 11px; color: var(--color-text-muted);">Net 30 • Còn 12 ngày</div>
+              </td>
+              <td>
+                <div>Hạn mức: <strong>80.000.000 ₫</strong></div>
+                <div style="font-size: 11px; color: var(--color-success);">CK 2.5% nếu trả sớm</div>
+              </td>
+              <td style="text-align: right;">
+                <a href="bo-modal-thanh-toan-cong-no-vietqr.html" class="btn" style="padding: 4px 10px; font-size: 11px; color: var(--color-primary); font-weight: 600;">
+                  Thanh toán VietQR
+                </a>
+              </td>
+            </tr>
+
+            <!-- Row 2: Merzy -->
+            <tr>
+              <td>
+                <div style="font-weight: 700; color: var(--color-text);">NPP Độc Quyền Merzy Cosmetic VN</div>
+                <div style="font-size: 11px; color: var(--color-text-muted);">Mã: NCC-MERZY-02 • 0988.456.xxx • TP.HCM</div>
+              </td>
+              <td>
+                <div>Son môi & Make-up Trendy</div>
+                <div style="font-size: 11px; color: var(--color-text-muted);">Son kem lì The First Velvet Tint</div>
+              </td>
+              <td>
+                <span class="rank-badge">Hạng A</span>
+                <div style="font-size: 11px; color: var(--color-success); margin-top: 2px;">95% đúng hẹn</div>
+              </td>
+              <td style="text-align: right; font-weight: 700;">198.600.000 ₫</td>
+              <td style="text-align: right;">
+                <div style="font-weight: 700; color: var(--color-text); font-size: 14px;">18.250.000 ₫</div>
+                <div style="font-size: 11px; color: var(--color-warning);">Net 15 • Còn 6 ngày</div>
+              </td>
+              <td>
+                <div>Hạn mức: <strong>40.000.000 ₫</strong></div>
+                <div style="font-size: 11px; color: var(--color-text-muted);">Chiết khấu 1.5%</div>
+              </td>
+              <td style="text-align: right;">
+                <a href="bo-modal-thanh-toan-cong-no-vietqr.html" class="btn" style="padding: 4px 10px; font-size: 11px;">
+                  Thanh toán
+                </a>
+              </td>
+            </tr>
+
+            <!-- Row 3: Bloom Studio (Late delivery alert) -->
+            <tr style="background: #fffdfc;">
+              <td>
+                <div style="font-weight: 700; color: var(--color-text);">Xưởng May Thiết Kế Bloom Studio</div>
+                <div style="font-size: 11px; color: var(--color-text-muted);">Mã: NCC-BLOOM-03 • 0903.112.xxx • Tân Bình</div>
+              </td>
+              <td>
+                <div>Thời trang & Phụ kiện Bloom</div>
+                <div style="font-size: 11px; color: var(--color-text-muted);">Áo Blazer Satin Nữ Thu Đông</div>
+              </td>
+              <td>
+                <span class="rank-badge" style="background: #fee2e2; color: var(--color-danger);">Hạng B</span>
+                <div style="font-size: 11px; color: var(--color-danger); margin-top: 2px;">Trễ 3 ngày đợt 2</div>
+              </td>
+              <td style="text-align: right; font-weight: 700;">312.000.000 ₫</td>
+              <td style="text-align: right;">
+                <div style="font-weight: 700; color: var(--color-danger); font-size: 14px;">45.000.000 ₫</div>
+                <div style="font-size: 11px; color: var(--color-warning); font-weight: 600;">Giữ cọc 30% (15M)</div>
+              </td>
+              <td>
+                <div>Hạn mức: <strong>60.000.000 ₫</strong></div>
+                <div style="font-size: 11px; color: var(--color-danger);">Đang tạm khóa cấp nợ mới</div>
+              </td>
+              <td style="text-align: right;">
+                <button class="btn" style="padding: 4px 10px; font-size: 11px; color: var(--color-danger);">
+                  Đôn đốc & Đối soát
+                </button>
+              </td>
+            </tr>
+
+            <!-- Row 4: Phyto -->
+            <tr>
+              <td>
+                <div style="font-weight: 700; color: var(--color-text);">Dược Mỹ Phẩm Phyto Calming VN</div>
+                <div style="font-size: 11px; color: var(--color-text-muted);">Mã: NCC-PHYTO-04 • 0934.789.xxx • Q.10</div>
+              </td>
+              <td>
+                <div>Dược mỹ phẩm đặc trị phục hồi</div>
+                <div style="font-size: 11px; color: var(--color-text-muted);">Kem Dưỡng Phyto Calming Cream</div>
+              </td>
+              <td>
+                <span class="rank-badge">Hạng A</span>
+                <div style="font-size: 11px; color: var(--color-success); margin-top: 2px;">96% đúng hẹn</div>
+              </td>
+              <td style="text-align: right; font-weight: 700;">154.000.000 ₫</td>
+              <td style="text-align: right;">
+                <div style="font-weight: 700; color: var(--color-text); font-size: 14px;">21.000.000 ₫</div>
+                <div style="font-size: 11px; color: var(--color-warning);">Còn 4 ngày đến hạn</div>
+              </td>
+              <td>
+                <div>Hạn mức: <strong>50.000.000 ₫</strong></div>
+                <div style="font-size: 11px; color: var(--color-text-muted);">Net 30</div>
+              </td>
+              <td style="text-align: right;">
+                <a href="bo-modal-thanh-toan-cong-no-vietqr.html" class="btn" style="padding: 4px 10px; font-size: 11px;">
+                  Thanh toán
+                </a>
+              </td>
+            </tr>
+
+            <!-- Row 5: EcoPack -->
+            <tr>
+              <td>
+                <div style="font-weight: 700; color: var(--color-text);">Xưởng Bao Bì EcoPack Sài Gòn</div>
+                <div style="font-size: 11px; color: var(--color-text-muted);">Mã: NCC-ECO-05 • 0971.223.xxx • Bình Chánh</div>
+              </td>
+              <td>
+                <div>Túi Giấy & Hộp đóng gói</div>
+                <div style="font-size: 11px; color: var(--color-text-muted);">Túi Kraft Maison Logo ép kim</div>
+              </td>
+              <td>
+                <span class="rank-badge">Hạng A</span>
+                <div style="font-size: 11px; color: var(--color-success); margin-top: 2px;">100% đúng hẹn</div>
+              </td>
+              <td style="text-align: right; font-weight: 700;">42.000.000 ₫</td>
+              <td style="text-align: right;">
+                <div style="font-weight: 700; color: var(--color-danger); font-size: 14px;">7.200.000 ₫</div>
+                <div style="font-size: 11px; color: var(--color-danger); font-weight: 600;">Hạn chót hôm nay</div>
+              </td>
+              <td>
+                <div>Hạn mức: <strong>20.000.000 ₫</strong></div>
+                <div style="font-size: 11px; color: var(--color-text-muted);">Net 7 ngày</div>
+              </td>
+              <td style="text-align: right;">
+                <a href="bo-modal-thanh-toan-cong-no-vietqr.html" class="btn btn-primary" style="padding: 4px 10px; font-size: 11px;">
+                  Chi trả ngay
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <div class="pagination-bar">
+          <div>Hiển thị 5 / 18 nhà cung cấp</div>
+          <div style="display: flex; gap: 4px;">
+            <button class="btn" style="padding: 2px 8px; font-size: 11px;" disabled>‹ Trước</button>
+            <button class="btn btn-primary" style="padding: 2px 8px; font-size: 11px;">1</button>
+            <button class="btn" style="padding: 2px 8px; font-size: 11px;">2</button>
+            <button class="btn" style="padding: 2px 8px; font-size: 11px;">Sau ›</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shared Top Navigation Script -->
+  <script src="../_shared/nav-owner.js"></script>
+</body>
+</html>

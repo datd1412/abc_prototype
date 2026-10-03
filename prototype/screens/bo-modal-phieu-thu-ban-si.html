@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lập Phiếu Thu Tiền Bán Sỉ & Đại Lý - ABC Backoffice</title>
+  <link rel="stylesheet" href="../tokens.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-family);
+      font-size: var(--font-base);
+      color: var(--color-text);
+      background-color: var(--color-bg);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Topbar */
+    .top-header {
+      height: 56px;
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--space-4);
+      flex-shrink: 0;
+    }
+    .breadcrumb-title {
+      font-size: 15px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .breadcrumb-link {
+      color: var(--color-text-muted);
+      text-decoration: none;
+    }
+    .breadcrumb-link:hover { color: var(--color-primary); }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 500;
+      border-radius: var(--radius);
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text);
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .btn-primary {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: #fff;
+    }
+
+    /* Content Area */
+    .content-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--space-4);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .form-sheet {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-card);
+      width: 100%;
+      max-width: 950px;
+      padding: var(--space-5);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    .doc-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 1px solid var(--color-border);
+      padding-bottom: var(--space-3);
+    }
+    .doc-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--color-text);
+      margin-bottom: 4px;
+    }
+    .doc-meta {
+      font-size: 12px;
+      color: var(--color-text-muted);
+    }
+
+    /* Main Grid */
+    .payment-grid {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: var(--space-5);
+    }
+
+    .form-section {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .field-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-text);
+    }
+    .field-input, .field-select, .field-textarea {
+      padding: 8px 12px;
+      font-size: 13px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      background: var(--color-surface);
+      outline: none;
+      font-family: inherit;
+    }
+    .field-textarea {
+      resize: vertical;
+      min-height: 60px;
+    }
+
+    .partner-card {
+      background: #f8fafc;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+    }
+
+    /* QR Card */
+    .qr-card {
+      background: #f8fafc;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-4);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: var(--space-3);
+    }
+    .qr-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--color-text);
+    }
+    .qr-box {
+      width: 180px;
+      height: 180px;
+      background: #fff;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    .qr-amount-tag {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--color-success);
+    }
+    .qr-bank-details {
+      font-size: 12px;
+      color: var(--color-text-muted);
+      line-height: 1.5;
+    }
+
+    /* AI Box */
+    .ai-guard-box {
+      background: #dcfce7;
+      border: 1px solid #86efac;
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 13px;
+      color: #14532d;
+    }
+    .ai-guard-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 600;
+    }
+
+    /* Footer */
+    .footer-bar {
+      height: 60px;
+      background: var(--color-surface);
+      border-top: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--space-4);
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+  <!-- Topbar -->
+  <header class="top-header">
+    <div class="breadcrumb-title">
+      <a href="bo-chi-phi.html" class="breadcrumb-link">Sổ Thu Chi</a>
+      <span style="color: var(--color-text-muted);">/</span>
+      <span>Lập Phiếu Thu Tiền (#PT-202610-89)</span>
+    </div>
+    <div class="header-actions">
+      <a href="bo-chi-phi.html" class="btn">Đóng</a>
+    </div>
+  </header>
+
+  <main class="content-area">
+    <div class="form-sheet">
+      <!-- Doc Header -->
+      <div class="doc-header">
+        <div>
+          <div class="doc-title">PHIẾU THU TIỀN BÁN SỈ & ĐẠI LÝ (RECEIPT VOUCHER)</div>
+          <div class="doc-meta">
+            Mã phiếu: <strong>#PT-202610-89</strong> • Ngày lập: <strong>02/10/2026</strong> • Người lập: <strong>Trần Minh Khoa (Kế toán Trưởng)</strong>
+          </div>
+        </div>
+        <div style="padding: 4px 10px; background: #dcfce7; color: var(--color-success); font-size: 12px; font-weight: 600; border-radius: 4px;">
+          LẬP LỆNH THU B2B
+        </div>
+      </div>
+
+      <!-- Main Payment Grid -->
+      <div class="payment-grid">
+        <!-- Left: Form Input Fields -->
+        <div class="form-section">
+          <!-- 1. Revenue Source -->
+          <div class="field-group">
+            <span class="field-label">1. Phân loại luồng tiền vào / Nguồn thu</span>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn btn-primary" style="flex: 1; justify-content: center; font-size: 12px;">Đại lý / Bán sỉ B2B</button>
+              <button class="btn" style="flex: 1; justify-content: center; font-size: 12px;">Đối soát sàn TMĐT</button>
+              <button class="btn" style="flex: 1; justify-content: center; font-size: 12px;">Bán lẻ Showroom</button>
+              <button class="btn" style="flex: 1; justify-content: center; font-size: 12px;">Thu khác</button>
+            </div>
+          </div>
+
+          <!-- 2. Customer Partner -->
+          <div class="field-group">
+            <span class="field-label">2. Đối tác B2B & Đại lý phân phối</span>
+            <div class="partner-card">
+              <div>
+                <div style="font-weight: 600;">Chuỗi Mỹ Phẩm An Nhiên Beauty - CN Đà Nẵng</div>
+                <div style="font-size: 12px; color: var(--color-text-muted);">Đại diện: Hoàng Thúy Vy (0935 112 233) • Mã ĐL: DL-ANNHIEN-DN</div>
+              </div>
+              <button class="btn" style="padding: 2px 8px; font-size: 11px;">Thay đổi đối tác</button>
+            </div>
+          </div>
+
+          <!-- 3. Attached SO & Amount -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3);">
+            <div class="field-group">
+              <span class="field-label">3. Gắn kèm đơn xuất sỉ</span>
+              <select class="field-select">
+                <option selected>#SO-B2B-202610-042 (85.000.000 ₫)</option>
+                <option>#SO-B2B-202609-018 (Đã tất toán)</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <span class="field-label">Số tiền thu đợt này (₫)</span>
+              <input type="text" class="field-input" value="42.500.000 ₫" style="font-weight: 700; color: var(--color-success); font-size: 15px;">
+            </div>
+          </div>
+
+          <!-- 4. Payment Method -->
+          <div class="field-group">
+            <span class="field-label">4. Phương thức thu tiền & Nguồn nhận</span>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn btn-primary" style="flex: 1; justify-content: center; font-size: 12px;">VietQR Doanh Nghiệp (Tự động)</button>
+              <button class="btn" style="flex: 1; justify-content: center; font-size: 12px;">Chuyển khoản thường</button>
+              <button class="btn" style="flex: 1; justify-content: center; font-size: 12px;">Tiền mặt / Quầy</button>
+            </div>
+          </div>
+
+          <!-- 5. Notes -->
+          <div class="field-group">
+            <span class="field-label">5. Nội dung diễn giải thu tiền</span>
+            <textarea class="field-textarea">An Nhiên Beauty thanh toán đợt 1 (50%) đơn hàng xuất sỉ SO-B2B-202610-042</textarea>
+          </div>
+
+          <!-- Automation Options -->
+          <div style="display: flex; flex-direction: column; gap: 6px; padding-top: 6px; font-size: 13px;">
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" checked>
+              <span>Tự động giảm trừ công nợ đại lý An Nhiên Beauty trên sổ phụ</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" checked>
+              <span>Tự động gửi thông báo xác nhận và e-VAT qua Zalo OA</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" checked>
+              <span>Cập nhật tức thì vào Dòng tiền thuần (Net Cashflow) và số dư sổ quỹ</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Right: VietQR Code & AI Cashflow Info -->
+        <div style="display: flex; flex-direction: column; gap: var(--space-4);">
+          <!-- QR Card -->
+          <div class="qr-card">
+            <div class="qr-title">Mã QR Thu Tiền B2B Tự Động (VietQR)</div>
+            <div class="qr-box">
+              <svg width="150" height="150" viewBox="0 0 100 100" fill="none">
+                <rect x="0" y="0" width="100" height="100" fill="white"/>
+                <!-- Corner 1 -->
+                <rect x="5" y="5" width="26" height="26" fill="black"/>
+                <rect x="9" y="9" width="18" height="18" fill="white"/>
+                <rect x="13" y="13" width="10" height="10" fill="black"/>
+                <!-- Corner 2 -->
+                <rect x="69" y="5" width="26" height="26" fill="black"/>
+                <rect x="73" y="9" width="18" height="18" fill="white"/>
+                <rect x="77" y="13" width="10" height="10" fill="black"/>
+                <!-- Corner 3 -->
+                <rect x="5" y="69" width="26" height="26" fill="black"/>
+                <rect x="9" y="73" width="18" height="18" fill="white"/>
+                <rect x="13" y="77" width="10" height="10" fill="black"/>
+                <!-- Bits -->
+                <rect x="36" y="10" width="6" height="6" fill="black"/>
+                <rect x="46" y="16" width="6" height="6" fill="black"/>
+                <rect x="56" y="8" width="6" height="6" fill="black"/>
+                <rect x="36" y="24" width="6" height="6" fill="black"/>
+                <rect x="10" y="36" width="6" height="6" fill="black"/>
+                <rect x="20" y="44" width="6" height="6" fill="black"/>
+                <rect x="38" y="38" width="24" height="24" fill="#1f9d55" rx="4"/>
+                <text x="50" y="54" fill="white" font-size="10" font-weight="bold" text-anchor="middle">THU</text>
+                <rect x="68" y="36" width="6" height="6" fill="black"/>
+                <rect x="80" y="44" width="6" height="6" fill="black"/>
+                <rect x="36" y="68" width="6" height="6" fill="black"/>
+                <rect x="46" y="76" width="6" height="6" fill="black"/>
+                <rect x="56" y="68" width="6" height="6" fill="black"/>
+                <rect x="68" y="78" width="6" height="6" fill="black"/>
+                <rect x="78" y="68" width="6" height="6" fill="black"/>
+              </svg>
+            </div>
+            <div class="qr-amount-tag">42.500.000 ₫</div>
+            <div class="qr-bank-details">
+              <strong>Vietcombank - CN TP.HCM</strong><br>
+              STK: <code>0071001234567</code><br>
+              MAISON DE BLOOM FLAGSHIP<br>
+              Cú pháp: <code>MDB PT20261089</code>
+            </div>
+            <div style="display: flex; gap: 6px; width: 100%;">
+              <button class="btn" style="flex: 1; font-size: 11px; padding: 4px;">Gửi Zalo OA</button>
+              <button class="btn" style="flex: 1; font-size: 11px; padding: 4px;">Sao chép Link</button>
+            </div>
+          </div>
+
+          <!-- AI Box -->
+          <div class="ai-guard-box">
+            <div class="ai-guard-header">
+              <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><polyline points="6.5,10.2 9,12.8 13.8,7.5"/></svg>
+              <span>Cải thiện Thanh Khoản (+42.5M)</span>
+            </div>
+            <div>
+              Khoản thu giúp nâng số dư tài khoản lên <strong>139.285.000 ₫</strong>, tăng Runway tiền mặt thêm <strong>+9 ngày</strong> trước khi thanh toán đơn hàng Mega 11.11.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer-bar">
+    <a href="bo-chi-phi.html" class="btn">Hủy bỏ</a>
+    <div style="display: flex; gap: var(--space-2);">
+      <button class="btn">Lưu nháp phiếu thu</button>
+      <button class="btn">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2.5" width="10" height="5" rx="0.5"/><rect x="3" y="7.5" width="14" height="7" rx="1"/><rect x="6" y="12" width="8" height="5.5" rx="0.5"/></svg>
+        In phiếu thu (2 bản)
+      </button>
+      <a href="bo-chi-phi.html" class="btn btn-primary">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><polyline points="6.5,10.2 9,12.8 13.8,7.5"/></svg>
+        Xác Nhận & Hoàn Tất Thu Tiền
+      </a>
+    </div>
+  </footer>
+</body>
+</html>

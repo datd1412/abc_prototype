@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tạo Phiếu Nhập Kho & In Tem Mã Vạch Lô PO 3 - ABC Backoffice</title>
+  <link rel="stylesheet" href="../tokens.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-family);
+      font-size: var(--font-base);
+      color: var(--color-text);
+      background-color: var(--color-bg);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .top-header {
+      height: 56px;
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--space-4);
+      flex-shrink: 0;
+    }
+    .breadcrumb-title {
+      font-size: 15px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .breadcrumb-link {
+      color: var(--color-text-muted);
+      text-decoration: none;
+    }
+    .breadcrumb-link:hover { color: var(--color-primary); }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 500;
+      border-radius: var(--radius);
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text);
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .btn-primary {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: #fff;
+    }
+
+    .statusbar {
+      background: #fafbfc;
+      border-bottom: 1px solid var(--color-border);
+      padding: 8px var(--space-4);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .status-steps {
+      display: flex;
+      gap: 4px;
+    }
+    .status-step {
+      padding: 4px 12px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--color-text-muted);
+      border-radius: 4px;
+    }
+    .status-step.active {
+      background: #e0e7ff;
+      color: var(--color-primary);
+      font-weight: 600;
+    }
+
+    .content-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--space-4);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .form-sheet {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-card);
+      width: 100%;
+      max-width: 1060px;
+      padding: var(--space-5);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    .doc-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 1px solid var(--color-border);
+      padding-bottom: var(--space-4);
+    }
+    .doc-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--color-text);
+      margin-bottom: 4px;
+    }
+    .doc-meta {
+      font-size: 12px;
+      color: var(--color-text-muted);
+      line-height: 1.5;
+    }
+
+    .meta-bar {
+      display: grid;
+      grid-template-columns: 2fr 1.5fr 1fr 1.5fr;
+      gap: var(--space-3);
+      background: #f8fafc;
+      padding: var(--space-3);
+      border-radius: var(--radius);
+      border: 1px solid var(--color-border);
+      font-size: 13px;
+    }
+    .meta-item-label {
+      font-size: 11px;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+    .meta-item-val {
+      font-weight: 600;
+      color: var(--color-text);
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .data-table th {
+      background: #f8fafc;
+      padding: 10px 12px;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      border-bottom: 1px solid var(--color-border);
+      text-align: left;
+      font-size: 12px;
+    }
+    .data-table td {
+      padding: 12px;
+      border-bottom: 1px solid var(--color-border);
+      vertical-align: middle;
+    }
+
+    .batch-input {
+      padding: 4px 8px;
+      font-size: 12px;
+      border: 1px solid var(--color-border);
+      border-radius: 4px;
+      background: #fff;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .split-row {
+      background: #fbfcfe;
+    }
+    .split-tag {
+      display: inline-block;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      background: #e0e7ff;
+      color: var(--color-primary);
+      margin-right: 4px;
+    }
+
+    .barcode-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-family: monospace;
+      font-size: 12px;
+      background: #f1f5f9;
+      color: #334155;
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid #cbd5e1;
+    }
+
+    .total-summary-box {
+      align-self: flex-end;
+      width: 400px;
+      background: #fafbfc;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-3);
+      font-size: 13px;
+    }
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+    }
+    .total-row.grand {
+      border-top: 1px solid var(--color-border);
+      padding-top: 8px;
+      margin-top: 4px;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--color-primary);
+    }
+
+    .footer-bar {
+      height: 60px;
+      background: var(--color-surface);
+      border-top: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--space-4);
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+  <!-- Topbar -->
+  <header class="top-header">
+    <div class="breadcrumb-title">
+      <a href="bo-kho-ton-kho.html" class="breadcrumb-link">Kho Hàng</a>
+      <span style="color: var(--color-text-muted);">/</span>
+      <a href="se-nhap-kho.html" class="breadcrumb-link">Nhập Kho PO</a>
+      <span style="color: var(--color-text-muted);">/</span>
+      <span>Phiếu Nhập & In Tem Mã Vạch Lô #PO-202610-088</span>
+    </div>
+    <div class="header-actions">
+      <a href="bo-kho-ton-kho.html" class="btn">Đóng</a>
+    </div>
+  </header>
+
+  <!-- Statusbar -->
+  <div class="statusbar">
+    <div class="status-steps">
+      <div class="status-step">1. Bản nháp</div>
+      <div class="status-step">2. Kiểm tra hàng & Tách Đa Lô</div>
+      <div class="status-step active">3. Khởi tạo Mã vạch & In Tem Nhãn Lô</div>
+      <div class="status-step">4. Hoàn tất FEFO</div>
+    </div>
+    <div style="font-size: 12px; color: var(--color-text-muted);">
+      Chế độ: <strong>Khởi tạo mã vạch EAN/Code128 cho từng lô date tiếp nhận</strong>
+    </div>
+  </div>
+
+  <main class="content-area">
+    <div class="form-sheet">
+      <!-- Doc Header -->
+      <div class="doc-header">
+        <div>
+          <div class="doc-title">PHIẾU NHẬP KHO & IN TEM NHÃN MÃ VẠCH LÔ (PO-03)</div>
+          <div class="doc-meta">
+            Mã PO: <strong>#PO-202610-088</strong> • Nhà cung cấp: <strong>Klairs VN - NPP Quốc tế</strong><br>
+            Hệ thống đã tự động gán mã vạch quản lý nội bộ (Internal Batch Barcode) cho từng kiện lô date.
+          </div>
+        </div>
+        <div style="padding: 4px 10px; background: #e0f2fe; color: #0284c7; font-size: 12px; font-weight: 600; border-radius: 4px;">
+          ĐÃ CẤP MÃ VẠCH LÔ
+        </div>
+      </div>
+
+      <!-- Metadata -->
+      <div class="meta-bar">
+        <div>
+          <div class="meta-item-label">Nhà cung cấp</div>
+          <div class="meta-item-val">Klairs VN - NPP Quốc tế</div>
+          <div style="font-size: 11px; color: var(--color-text-muted);">NCC-KLAIRS-01</div>
+        </div>
+        <div>
+          <div class="meta-item-label">Kho tiếp nhận</div>
+          <div class="meta-item-val">Kho Tổng Tân Bình</div>
+          <div style="font-size: 11px; color: var(--color-text-muted);">Khu A1 - Kệ mỹ phẩm</div>
+        </div>
+        <div>
+          <div class="meta-item-label">Ngày kiểm tra</div>
+          <div class="meta-item-val">25/10/2026</div>
+          <div style="font-size: 11px; color: var(--color-success);">Hoàn tất kiểm đếm</div>
+        </div>
+        <div>
+          <div class="meta-item-label">Máy in tem kết nối</div>
+          <div class="meta-item-val" style="color: var(--color-primary);">Zebra ZD220 (Kho A1)</div>
+          <div style="font-size: 11px; color: var(--color-text-muted);">Khổ tem: 50x30mm</div>
+        </div>
+      </div>
+
+      <!-- Batches Table with Barcode Information -->
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Mặt hàng & Phân bổ lô</th>
+            <th>Mã Lô (Batch Code)</th>
+            <th>Mã Vạch Lô (Barcode)</th>
+            <th>HSD (FEFO)</th>
+            <th style="text-align: center;">SL Nhập</th>
+            <th style="text-align: right;">Đơn giá</th>
+            <th style="text-align: right;">Thành tiền (₫)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- SKU 1 Header / Parent Row -->
+          <tr style="background: #f8fafc;">
+            <td colspan="4" style="font-weight: 700; color: var(--color-text);">
+              Serum Klairs Midnight Blue Calming 30ml (Tổng PO: 120 chai)
+            </td>
+            <td style="text-align: center; font-weight: 700;">120 chai</td>
+            <td style="text-align: right; color: var(--color-text-muted);">210.000 ₫</td>
+            <td style="text-align: right; font-weight: 700;">25.200.000 ₫</td>
+          </tr>
+
+          <!-- SKU 1 - Sub lot A -->
+          <tr class="split-row">
+            <td style="padding-left: 28px;">
+              <span class="split-tag">Lô 1A</span>
+              <span style="font-weight: 500;">Thùng 01-04</span>
+            </td>
+            <td><input type="text" class="batch-input" value="LOT-KLAIRS-202610-A" style="width: 140px;"></td>
+            <td>
+              <span class="barcode-badge">893850129011</span>
+            </td>
+            <td>
+              <span>15/09/2029</span>
+              <span style="font-size: 10px; color: var(--color-success); display: block;">Còn 1.075 ngày</span>
+            </td>
+            <td style="text-align: center; font-weight: 700;">80</td>
+            <td style="text-align: right;">210.000 ₫</td>
+            <td style="text-align: right; font-weight: 600;">16.800.000 ₫</td>
+          </tr>
+
+          <!-- SKU 1 - Sub lot B -->
+          <tr class="split-row">
+            <td style="padding-left: 28px;">
+              <span class="split-tag">Lô 1B</span>
+              <span style="font-weight: 500;">Thùng 05-06</span>
+            </td>
+            <td><input type="text" class="batch-input" value="LOT-KLAIRS-202610-B" style="width: 140px;"></td>
+            <td>
+              <span class="barcode-badge">893850129012</span>
+            </td>
+            <td>
+              <span>20/10/2029</span>
+              <span style="font-size: 10px; color: var(--color-success); display: block;">Còn 1.110 ngày</span>
+            </td>
+            <td style="text-align: center; font-weight: 700;">40</td>
+            <td style="text-align: right;">210.000 ₫</td>
+            <td style="text-align: right; font-weight: 600;">8.400.000 ₫</td>
+          </tr>
+
+          <!-- SKU 2: Kem Dưỡng Phyto -->
+          <tr>
+            <td>
+              <div style="font-weight: 600;">Kem Dưỡng Phyto Calming Cream 50ml</div>
+              <div style="font-size: 11px; color: var(--color-text-muted);">SKU: PHYTO-CLM-50 • 1 Lô đồng nhất</div>
+            </td>
+            <td><input type="text" class="batch-input" value="LOT-PHYTO-202610" style="width: 140px;"></td>
+            <td>
+              <span class="barcode-badge">893850129020</span>
+            </td>
+            <td>
+              <span>01/10/2029</span>
+              <span style="font-size: 10px; color: var(--color-success); display: block;">Còn 1.095 ngày</span>
+            </td>
+            <td style="text-align: center; font-weight: 700;">80</td>
+            <td style="text-align: right;">195.000 ₫</td>
+            <td style="text-align: right; font-weight: 600;">15.600.000 ₫</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Printing options strip -->
+      <div style="display: flex; justify-content: space-between; align-items: center; background: #f8fafc; padding: 12px; border-radius: var(--radius); border: 1px dashed var(--color-border);">
+        <div style="display: flex; gap: var(--space-4); align-items: center; font-size: 13px;">
+          <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+            <input type="checkbox" checked> In kèm mã vạch thùng / kiện lớn
+          </label>
+          <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+            <input type="checkbox" checked> In nhãn dán đơn vị sản phẩm (200 tem)
+          </label>
+        </div>
+        <button class="btn" style="font-weight: 600; color: var(--color-primary); border-color: var(--color-primary);">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2.5" width="10" height="5" rx="0.5"/><rect x="3" y="7.5" width="14" height="7" rx="1"/><rect x="6" y="12" width="8" height="5.5" rx="0.5"/></svg>
+          In 200 Tem Mã Vạch Lô
+        </button>
+      </div>
+
+      <!-- Total Box -->
+      <div class="total-summary-box">
+        <div class="total-row"><span>Tổng số lượng kiểm đếm:</span><strong style="color: var(--color-primary);">200 sản phẩm (3 Lô Date)</strong></div>
+        <div class="total-row"><span>Số tem nhãn cần in:</span><strong style="color: var(--color-text);">200 tem SP + 6 tem thùng</strong></div>
+        <div class="total-row"><span>Trạng thái mã vạch:</span><span style="color: var(--color-success); font-weight: 600;">Đã cấp 3 barcode nội bộ</span></div>
+        <div class="total-row grand"><span>TỔNG TIỀN NHẬP KHO:</span><span>40.800.000 ₫</span></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer-bar">
+    <a href="bo-kho-ton-kho.html" class="btn">Hủy</a>
+    <div style="display: flex; gap: var(--space-2);">
+      <button class="btn">Lưu bản nháp</button>
+      <button class="btn">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2.5" width="10" height="5" rx="0.5"/><rect x="3" y="7.5" width="14" height="7" rx="1"/><rect x="6" y="12" width="8" height="5.5" rx="0.5"/></svg>
+        In Phiếu & Mã Vạch
+      </button>
+      <a href="se-nhap-kho.html" class="btn btn-primary">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><polyline points="6.5,10.2 9,12.8 13.8,7.5"/></svg>
+        Xác nhận Nhập kho & Khởi tạo Lô (FEFO)
+      </a>
+    </div>
+  </footer>
+</body>
+</html>

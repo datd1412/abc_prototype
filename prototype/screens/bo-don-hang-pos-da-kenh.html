@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hub Đơn Hàng & POS Bán Lẻ Đa Kênh - ABC Backoffice</title>
+  <link rel="stylesheet" href="../tokens.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-family);
+      font-size: var(--font-base);
+      color: var(--color-text);
+      background-color: var(--color-bg);
+      line-height: 1.5;
+    }
+
+    .page-container {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: var(--space-4);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    /* Page Header */
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-3) var(--space-4);
+      box-shadow: var(--shadow-card);
+      flex-wrap: wrap;
+      gap: var(--space-3);
+    }
+    .header-title-box h1 {
+      font-size: var(--font-title);
+      font-weight: 700;
+      color: var(--color-text);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      margin-bottom: 2px;
+    }
+    .header-desc {
+      font-size: 13px;
+      color: var(--color-text-muted);
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      border-radius: var(--radius);
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text);
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.15s;
+    }
+    .btn:hover { background: #f8fafc; }
+    .btn-primary {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: #fff;
+    }
+    .btn-primary:hover { background: #1e429f; }
+
+    /* KPI Grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-3);
+    }
+    .kpi-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-3) var(--space-4);
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: var(--space-2);
+    }
+    .kpi-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .kpi-value {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--color-text);
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-2);
+    }
+    .kpi-sub {
+      font-size: 12px;
+      color: var(--color-text-muted);
+    }
+    .badge-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    /* AI Insight Strip */
+    .ai-insight-strip {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-3);
+      font-size: 13px;
+      color: #166534;
+    }
+    .ai-insight-content {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    .ai-insight-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-weight: 600;
+      color: var(--color-primary);
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    /* Channel Tabs */
+    .channel-tabs {
+      display: flex;
+      gap: 4px;
+      border-bottom: 1px solid var(--color-border);
+      background: var(--color-surface);
+      border-radius: var(--radius) var(--radius) 0 0;
+      padding: var(--space-2) var(--space-3) 0;
+    }
+    .tab-btn {
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .tab-btn.active {
+      color: var(--color-primary);
+      border-bottom-color: var(--color-primary);
+    }
+    .tab-count {
+      background: #f1f5f9;
+      color: var(--color-text-muted);
+      padding: 1px 6px;
+      border-radius: 10px;
+      font-size: 11px;
+    }
+    .tab-btn.active .tab-count {
+      background: #e0e7ff;
+      color: var(--color-primary);
+    }
+
+    /* Filter Bar */
+    .filter-bar {
+      background: var(--color-surface);
+      border-left: 1px solid var(--color-border);
+      border-right: 1px solid var(--color-border);
+      padding: var(--space-2) var(--space-3);
+      display: flex;
+      gap: var(--space-3);
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .filter-input {
+      height: 34px;
+      padding: 0 10px;
+      font-size: 13px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      outline: none;
+      background: #fff;
+      font-family: inherit;
+    }
+
+    /* Table Container */
+    .table-container {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 0 0 var(--radius) var(--radius);
+      box-shadow: var(--shadow-card);
+      overflow-x: auto;
+    }
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      text-align: left;
+    }
+    .data-table th {
+      background: #f8fafc;
+      padding: 10px 14px;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      border-bottom: 1px solid var(--color-border);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .data-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--color-border);
+      vertical-align: middle;
+    }
+    .data-table tr:hover { background: #fafbfc; }
+
+    /* Badges */
+    .badge-channel {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .badge-pos { background: #eff6ff; color: #1d4ed8; }
+    .badge-shopee { background: #fff7ed; color: #c2410c; }
+    .badge-tiktok { background: #f1f5f9; color: #0f172a; }
+    .badge-b2b { background: #faf5ff; color: #7e22ce; }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .badge-success { background: #dcfce7; color: var(--color-success); }
+    .badge-warning { background: #fef9c3; color: var(--color-warning); }
+    .badge-danger { background: #fee2e2; color: var(--color-danger); }
+
+    /* Bottom Analytics */
+    .analytics-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: var(--space-4);
+    }
+    .analytics-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-4);
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: var(--space-3);
+    }
+    .card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--color-text);
+    }
+
+    /* Velocity Chart SVG */
+    .chart-box {
+      width: 100%;
+      height: 120px;
+    }
+
+    /* Payment Split bars */
+    .pay-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: var(--space-2);
+    }
+    .pay-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+    }
+    .pay-bar-bg {
+      height: 6px;
+      background: #f1f5f9;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .pay-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+    }
+
+    /* Pagination */
+    .pagination-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      font-size: 12px;
+      color: var(--color-text-muted);
+      border-top: 1px solid var(--color-border);
+    }
+  </style>
+</head>
+<body data-screen="bo-don-hang-pos-da-kenh">
+  <!-- Shared Top Navigation Header -->
+  <header id="app-topnav"></header>
+
+  <div class="page-container">
+    <!-- Header -->
+    <div class="page-header">
+      <div class="header-title-box">
+        <h1>
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2.5" width="12" height="15" rx="1.5"/><line x1="7" y1="6.5" x2="13" y2="6.5"/><line x1="7" y1="9.5" x2="13" y2="9.5"/><line x1="7" y1="12.5" x2="10.5" y2="12.5"/></svg>
+          Hub Đơn Hàng & POS Bán Lẻ Đa Kênh
+        </h1>
+        <div class="header-desc">
+          Giám sát tập trung toàn bộ đơn hàng POS tại quầy, sàn TMĐT Shopee/TikTok và kênh bán sỉ B2B.
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="btn">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="10" y1="3" x2="10" y2="12.5"/><polyline points="6,9 10,13 14,9"/><line x1="4" y1="16.5" x2="16" y2="16.5"/></svg>
+          Xuất Excel (.xlsx)
+        </button>
+        <button class="btn">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10a6 6 0 0 1 10.3-4.2"/><polyline points="14,2.5 14.3,6 10.8,5.7"/><path d="M16 10a6 6 0 0 1-10.3 4.2"/><polyline points="6,17.5 5.7,14 9.2,14.3"/></svg>
+          Đồng bộ sàn (API)
+        </button>
+        <a href="se-ban-hang.html" class="btn btn-primary">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="10" y1="4" x2="10" y2="16"/><line x1="4" y1="10" x2="16" y2="10"/></svg>
+          + Mở Quầy POS Nhanh
+        </a>
+      </div>
+    </div>
+
+    <!-- 4 KPI Cards -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Tổng đơn hôm nay</div>
+        <div class="kpi-value">
+          248
+          <span class="badge-indicator" style="color: var(--color-success); font-size: 13px;">+18.5%</span>
+        </div>
+        <div class="kpi-sub">
+          GMV: <strong style="color: var(--color-primary);">62.450.000 ₫</strong> • POS: 72 | Shopee: 94 | TikTok: 68
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-label">Chờ đóng gói & Bàn giao</div>
+        <div class="kpi-value" style="color: var(--color-warning);">
+          42
+          <span class="badge-indicator" style="color: var(--color-danger); font-size: 12px;">8 đơn gấp</span>
+        </div>
+        <div class="kpi-sub" style="color: var(--color-danger);">
+          Cần bàn giao trước 16:00 (Shopee: 26 • TikTok: 16)
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-label">Tỷ lệ Hủy & Hoàn trả</div>
+        <div class="kpi-value" style="color: var(--color-success);">
+          2.1%
+          <span class="status-badge badge-success">An toàn</span>
+        </div>
+        <div class="kpi-sub">
+          Dưới mức trung bình ngành (4.8%) • 5 kiện chờ kiểm tra
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-label">Giá trị TB đơn (AOV)</div>
+        <div class="kpi-value">
+          251.800 ₫
+          <span class="badge-indicator" style="color: var(--color-success); font-size: 13px;">+12.4%</span>
+        </div>
+        <div class="kpi-sub">
+          Tăng trưởng nhờ Combo AI gợi ý bán kèm tại quầy
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Insight Strip -->
+    <div class="ai-insight-strip">
+      <div class="ai-insight-content">
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="6" width="12" height="9" rx="2"/><line x1="10" y1="6" x2="10" y2="3"/><circle cx="10" cy="2.3" r="0.8" fill="currentColor" stroke="none"/><circle cx="7.3" cy="10.5" r="1" fill="currentColor" stroke="none"/><circle cx="12.7" cy="10.5" r="1" fill="currentColor" stroke="none"/></svg>
+        <span>
+          <strong>AI Order Intelligence:</strong> TikTok Shop phát sinh 18 đơn Serum Klairs trong 45 phút. Đề xuất điều phối 40 chai từ Showroom sang kho Fulfillment TMĐT để tránh trễ hạn SLA bàn giao.
+        </span>
+      </div>
+      <a href="bo-ai-phan-tich.html" class="ai-insight-link">
+        Xem phân tích đầy đủ
+        <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="10" x2="15" y2="10"/><polyline points="11,6 15,10 11,14"/></svg>
+      </a>
+    </div>
+
+    <!-- Main Table Section with Tabs -->
+    <div>
+      <div class="channel-tabs">
+        <button class="tab-btn active">Tất cả kênh <span class="tab-count">248</span></button>
+        <button class="tab-btn">POS Showroom <span class="tab-count">72</span></button>
+        <button class="tab-btn">Shopee Mall <span class="tab-count">94</span></button>
+        <button class="tab-btn">TikTok Shop <span class="tab-count">68</span></button>
+        <button class="tab-btn">B2B Đại lý <span class="tab-count">14</span></button>
+      </div>
+
+      <div class="filter-bar">
+        <div style="position: relative; flex: 1; max-width: 320px;">
+          <input type="text" class="filter-input" placeholder="Tìm theo mã đơn, khách hàng, SĐT..." style="width: 100%; padding-left: 28px;">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" style="position: absolute; left: 8px; top: 9px; color: var(--color-text-muted);"><circle cx="8.5" cy="8.5" r="5"/><line x1="12.3" y1="12.3" x2="17" y2="17"/></svg>
+        </div>
+        <select class="filter-input">
+          <option selected>Tất cả trạng thái</option>
+          <option>Đang đóng gói</option>
+          <option>Đang vận chuyển</option>
+          <option>Hoàn thành</option>
+          <option>Đã hủy</option>
+        </select>
+        <select class="filter-input">
+          <option selected>Hôm nay (25/10/2026)</option>
+          <option>Hôm qua</option>
+          <option>7 ngày qua</option>
+          <option>Tháng này</option>
+        </select>
+      </div>
+
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Mã đơn & Thời gian</th>
+              <th>Kênh bán</th>
+              <th>Khách hàng & Liên hệ</th>
+              <th>Sản phẩm & Chi tiết</th>
+              <th style="text-align: right;">Tổng tiền</th>
+              <th>Thanh toán</th>
+              <th>Vận chuyển / Trạng thái</th>
+              <th style="text-align: right;">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Row 1: POS -->
+            <tr>
+              <td>
+                <strong style="color: var(--color-primary);">#POS-202410-142</strong>
+                <div style="font-size: 11px; color: var(--color-text-muted);">14:15 • Hôm nay</div>
+              </td>
+              <td><span class="badge-channel badge-pos">POS Showroom</span></td>
+              <td>
+                <div>Khách lẻ tại quầy</div>
+                <div style="font-size: 11px; color: var(--color-text-muted);">Mua trực tiếp</div>
+              </td>
+              <td>
+                <strong>Đầm Dạ Hội Lụa Satin Bloom</strong>
+                <div style="font-size: 11px; color: var(--color-text-muted);">Size M • Đỏ Ruby • SL: 1</div>
+              </td>
+              <td style="text-align: right; font-weight: 700;">1.250.000 ₫</td>
+              <td>
+                <span class="status-badge badge-success">Đã TT</span>
+                <div style="font-size: 11px; color: var(--color-text-muted);">VietQR (MB Bank)</div>
+              </td>
+              <td>
+                <span class="status-badge badge-success">Hoàn thành tại quầy</span>
+              </td>
+              <td style="text-align: right;">
+                <button class="btn" style="padding: 4px 8px; font-size: 11px;">In hóa đơn</button>
+              </td>
+            </tr>
+
+            <!-- Row 2: Shopee Urgent -->
+            <tr style="background: #fffdfc;">
+              <td>
+                <div style="display: flex; align-items: center; gap: 4px;">
+                  <strong style="color: #ea580c;">#SP-89210492</strong>
+                  <span style="background: #fee2e2; color: var(--color-danger); padding: 1px 4px; border-radius: 2px; font-size: 9px; font-weight: 700;">GẤP</span>
+                </div>
+                <div style="font-size: 11px; color: var(--color-danger); font-weight: 600;">13:58 • Giao trước 16:00</div>
+              </td>
+              <td><span class="badge-channel badge-shopee">Shopee Mall</span></td>
+              <td>
+                <div>Nguyễn Hoài Thương</div>
+                <div style="font-size: 11px; color: var(--color-text-muted);">0905***331 • Đà Nẵng</div>
+              </td>
+              <td>
+                <strong>Serum Klairs Midnight Blue 30ml</strong>
+                <div style="font-size: 11px; color: var(--color-text-muted);">Lô EXP: 11/2029 • SL: 2</div>
+              </td>
+              <td style="text-align: right; font-weight: 700;">780.000 ₫</td>
+              <td>
+                <span class="status-badge badge-success">Đã TT</span>
+                <div style="font-size: 11px; color: var(--color-text-muted);">ShopeePay</div>
+              </td>
+              <td>
+                <span class="status-badge badge-warning">Đang đóng gói</span>
+                <div style="font-size: 11px; color: var(--color-text-muted);">Shopee Xpress</div>
+              </td>
+              <td style="text-align: right;">
+                <button class="btn" style="padding: 4px 8px; font-size: 11px; color: var(--color-primary); font-weight: 600;">In nhãn sàn</button>
+              </td>
+            </tr>
+
+            <!-- Row 3: TikTok -->
+            <tr>
+              <td>
+                <strong style="color: #0f172a;">#TT-59021481</strong>
+                <div style="font-size: 11px; color: var(--color-text-muted);">13:12 • Live Flash 12h</div>
+              </td>
+              <td><span class="badge-channel badge-tiktok">TikTok Shop</span></td>
+              <td>
+                <div>Trần Minh Hoàng</div>
+                <div style="font-size: 11px; color: var(--color-text-muted);">0978***112 • Bình Thạnh</div>
+              </td>
+              <td>
+                <strong>Combo Son Kem + Phấn Phủ</strong>
+                <div style="font-size: 11px; color: var(--color-text-muted);">Tone 02 Peach • SL: 1</div>
+              </td>
+              <td style="text-align: right; font-weight: 700;">520.000 ₫</td>
+              <td>
+                <span class="status-badge badge-warning">Chưa TT</span>
+                <div style="font-size: 11px; color: var(--color-text-muted);">COD</div>
+              </td>
+              <td>
+                <span class="status-badge badge-warning">Chờ lấy hàng</span>
+                <div style="font-size: 11px; color: var(--color-text-muted);">J&T Express</div>
+              </td>
+              <td style="text-align: right;">
+                <button class="btn" style="padding: 4px 8px; font-size: 11px;">In vận đơn</button>
+              </td>
+            </tr>
+
+            <!-- Row 4: B2B -->
+            <tr>
+              <td>
+                <strong style="color: #7e22ce;">#B2B-202410-08</strong>
+                <div style="font-size: 11px; color: var(--color-text-muted);">11:30 • Đại lý sỉ</div>
+              </td>
+              <td><span class="badge-channel badge-b2b">B2B Đại lý</span></td>
+              <td>
+                <div>Đại lý An Nhiên Beauty</div>
+                <div style="font-size: 11px; color: var(--color-text-muted);">Hà Nội • Hợp đồng sỉ</div>
+              </td>
+              <td>
+                <strong>50 Hộp Kem Chống Nắng Phyto</strong>
+                <div style="font-size: 11px; color: var(--color-text-muted);">Chiết khấu 35% • Đơn sỉ</div>
+              </td>
+              <td style="text-align: right; font-weight: 700; color: var(--color-primary);">18.500.000 ₫</td>
+              <td>
+                <span class="status-badge badge-warning">Công nợ</span>
+                <div style="font-size: 11px; color: var(--color-text-muted);">Hạn Net 15</div>
+              </td>
+              <td>
+                <span class="status-badge badge-warning">Chờ duyệt hạn mức</span>
+              </td>
+              <td style="text-align: right;">
+                <button class="btn" style="padding: 4px 8px; font-size: 11px;">Xem công nợ</button>
+              </td>
+            </tr>
+
+            <!-- Row 5: POS VIP -->
+            <tr>
+              <td>
+                <strong style="color: var(--color-primary);">#POS-202410-141</strong>
+                <div style="font-size: 11px; color: var(--color-text-muted);">11:05 • VIP Diamond</div>
+              </td>
+              <td><span class="badge-channel badge-pos">POS Showroom</span></td>
+              <td>
+                <div>Chị Mai Lan</div>
+                <div style="font-size: 11px; color: var(--color-text-muted);">0918***789 • Q.3</div>
+              </td>
+              <td>
+                <strong>Combo Skincare Bloom Trẻ Hóa</strong>
+                <div style="font-size: 11px; color: var(--color-text-muted);">Trọn bộ 4 món cao cấp</div>
+              </td>
+              <td style="text-align: right; font-weight: 700;">2.890.000 ₫</td>
+              <td>
+                <span class="status-badge badge-success">Đã TT</span>
+                <div style="font-size: 11px; color: var(--color-text-muted);">Tiền mặt tại quầy</div>
+              </td>
+              <td>
+                <span class="status-badge badge-success">Hoàn thành tại quầy</span>
+              </td>
+              <td style="text-align: right;">
+                <button class="btn" style="padding: 4px 8px; font-size: 11px;">In hóa đơn</button>
+              </td>
+            </tr>
+
+            <!-- Row 6: Shopee In Transit -->
+            <tr>
+              <td>
+                <strong style="color: #ea580c;">#SP-89194012</strong>
+                <div style="font-size: 11px; color: var(--color-text-muted);">09:40 • Sáng nay</div>
+              </td>
+              <td><span class="badge-channel badge-shopee">Shopee Mall</span></td>
+              <td>
+                <div>Lê Quốc Anh</div>
+                <div style="font-size: 11px; color: var(--color-text-muted);">0982***456 • Hà Nội</div>
+              </td>
+              <td>
+                <strong>Nước Tẩy Trang Centella 500ml</strong>
+                <div style="font-size: 11px; color: var(--color-text-muted);">SL: 1 chai</div>
+              </td>
+              <td style="text-align: right; font-weight: 700;">340.000 ₫</td>
+              <td>
+                <span class="status-badge badge-success">Đã TT</span>
+                <div style="font-size: 11px; color: var(--color-text-muted);">ShopeePay</div>
+              </td>
+              <td>
+                <span class="status-badge badge-success">Đang vận chuyển</span>
+                <div style="font-size: 11px; color: var(--color-text-muted);">SPX Express</div>
+              </td>
+              <td style="text-align: right;">
+                <button class="btn" style="padding: 4px 8px; font-size: 11px;">Tra cứu hành trình</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <div class="pagination-bar">
+          <div>Hiển thị 6 / 248 đơn hàng</div>
+          <div style="display: flex; gap: 4px;">
+            <button class="btn" style="padding: 2px 8px; font-size: 11px;" disabled>‹ Trước</button>
+            <button class="btn btn-primary" style="padding: 2px 8px; font-size: 11px;">1</button>
+            <button class="btn" style="padding: 2px 8px; font-size: 11px;">2</button>
+            <button class="btn" style="padding: 2px 8px; font-size: 11px;">3</button>
+            <button class="btn" style="padding: 2px 8px; font-size: 11px;">Sau ›</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Analytics: Sales Velocity & Payment Breakdown -->
+    <div class="analytics-grid">
+      <!-- Velocity Chart -->
+      <div class="analytics-card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Nhịp độ Đơn hàng theo Giờ (Sales Velocity)</div>
+            <div style="font-size: 12px; color: var(--color-text-muted);">
+              Đỉnh lưu lượng: Livestream trưa (11h - 13h) và Khách ghé quầy tối (18h - 20h)
+            </div>
+          </div>
+          <span style="font-size: 12px; font-weight: 600; color: var(--color-primary); background: #e0e7ff; padding: 2px 8px; border-radius: 4px;">
+            18.2 đơn/giờ
+          </span>
+        </div>
+
+        <div class="chart-box">
+          <svg width="100%" height="100%" viewBox="0 0 600 100" preserveAspectRatio="none">
+            <!-- Grid lines -->
+            <line x1="0" y1="25" x2="600" y2="25" stroke="#e2e8f0" stroke-dasharray="2 2"/>
+            <line x1="0" y1="50" x2="600" y2="50" stroke="#e2e8f0" stroke-dasharray="2 2"/>
+            <line x1="0" y1="75" x2="600" y2="75" stroke="#e2e8f0" stroke-dasharray="2 2"/>
+            <line x1="0" y1="95" x2="600" y2="95" stroke="#cbd5e1"/>
+
+            <!-- Bars -->
+            <rect x="20" y="70" width="22" height="25" fill="#2b59c3" rx="2"/>
+            <rect x="70" y="55" width="22" height="40" fill="#2b59c3" rx="2"/>
+            <rect x="120" y="45" width="22" height="50" fill="#2b59c3" rx="2"/>
+            <!-- Peak TikTok Flash -->
+            <rect x="170" y="10" width="22" height="85" fill="#ea580c" rx="2"/>
+            <rect x="220" y="15" width="22" height="80" fill="#ea580c" rx="2"/>
+            <rect x="270" y="35" width="22" height="60" fill="#2b59c3" rx="2"/>
+            <rect x="320" y="45" width="22" height="50" fill="#2b59c3" rx="2"/>
+            <!-- Projected Peak evening -->
+            <rect x="370" y="55" width="22" height="40" fill="#94a3b8" rx="2"/>
+            <rect x="420" y="40" width="22" height="55" fill="#94a3b8" rx="2"/>
+            <rect x="470" y="15" width="22" height="80" fill="#94a3b8" rx="2"/>
+            <rect x="520" y="25" width="22" height="70" fill="#94a3b8" rx="2"/>
+            <rect x="570" y="60" width="22" height="35" fill="#94a3b8" rx="2"/>
+          </svg>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--color-text-muted);">
+          <span>08:00</span>
+          <span>10:00</span>
+          <span style="color: #ea580c; font-weight: 700;">11:00 (TikTok Peak)</span>
+          <span>13:00</span>
+          <span style="color: var(--color-primary); font-weight: 700;">14:00 (Hiện tại)</span>
+          <span style="font-weight: 600;">18:00 (Dự báo POS)</span>
+          <span>21:00</span>
+        </div>
+      </div>
+
+      <!-- Payment Breakdown -->
+      <div class="analytics-card">
+        <div class="card-head">
+          <div class="card-title">Phương Thức Thanh Toán</div>
+          <span style="font-size: 11px; color: var(--color-success); font-weight: 600;">86% Không tiền mặt</span>
+        </div>
+
+        <div>
+          <!-- Item 1 -->
+          <div class="pay-item">
+            <div class="pay-row">
+              <span style="font-weight: 600; color: var(--color-text);">VietQR Chuyển khoản (MB Bank)</span>
+              <strong style="color: var(--color-primary);">52% (32.4M ₫)</strong>
+            </div>
+            <div class="pay-bar-bg">
+              <div class="pay-bar-fill" style="width: 52%; background: var(--color-primary);"></div>
+            </div>
+          </div>
+
+          <!-- Item 2 -->
+          <div class="pay-item">
+            <div class="pay-row">
+              <span style="font-weight: 600; color: var(--color-text);">Ví Sàn (ShopeePay / TikTok)</span>
+              <strong style="color: #ea580c;">34% (21.2M ₫)</strong>
+            </div>
+            <div class="pay-bar-bg">
+              <div class="pay-bar-fill" style="width: 34%; background: #ea580c;"></div>
+            </div>
+          </div>
+
+          <!-- Item 3 -->
+          <div class="pay-item">
+            <div class="pay-row">
+              <span style="font-weight: 600; color: var(--color-text);">Tiền mặt tại quầy POS</span>
+              <strong style="color: var(--color-success);">14% (8.85M ₫)</strong>
+            </div>
+            <div class="pay-bar-bg">
+              <div class="pay-bar-fill" style="width: 14%; background: var(--color-success);"></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="font-size: 11px; color: var(--color-text-muted); background: #f8fafc; padding: 6px 10px; border-radius: var(--radius); border: 1px solid var(--color-border);">
+          Toàn bộ giao dịch ví sàn và VietQR được đối soát tự động theo ca làm việc.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shared Top Navigation Script -->
+  <script src="../_shared/nav-owner.js"></script>
+</body>
+</html>

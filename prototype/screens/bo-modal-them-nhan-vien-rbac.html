@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thêm Nhân Viên Mới & Phân Quyền RBAC - ABC Backoffice</title>
+  <link rel="stylesheet" href="../tokens.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-family);
+      font-size: var(--font-base);
+      color: var(--color-text);
+      background-color: var(--color-bg);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .top-header {
+      height: 56px;
+      background: var(--color-surface);
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--space-4);
+      flex-shrink: 0;
+    }
+    .breadcrumb-title {
+      font-size: 15px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .breadcrumb-link {
+      color: var(--color-text-muted);
+      text-decoration: none;
+    }
+    .breadcrumb-link:hover { color: var(--color-primary); }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      border-radius: var(--radius);
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text);
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .btn-primary {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: #fff;
+    }
+
+    .content-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: var(--space-4);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .form-sheet {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-card);
+      width: 100%;
+      max-width: 960px;
+      padding: var(--space-5);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-5);
+    }
+
+    .doc-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 1px solid var(--color-border);
+      padding-bottom: var(--space-4);
+    }
+    .doc-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--color-text);
+      margin-bottom: 4px;
+    }
+    .doc-meta {
+      font-size: 12px;
+      color: var(--color-text-muted);
+      line-height: 1.5;
+    }
+
+    .section-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--color-text);
+      margin-bottom: var(--space-3);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    .step-badge {
+      width: 22px;
+      height: 22px;
+      background: #e0e7ff;
+      color: var(--color-primary);
+      border-radius: 50%;
+      font-size: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+
+    .grid-fields {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-3);
+    }
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .field-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--color-text);
+      display: flex;
+      justify-content: space-between;
+    }
+    .field-input {
+      height: 38px;
+      padding: 0 12px;
+      font-size: 13px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      outline: none;
+      background: #fff;
+      font-family: inherit;
+      color: var(--color-text);
+    }
+    .field-input:focus {
+      border-color: var(--color-primary);
+    }
+    .field-hint {
+      font-size: 11px;
+      color: var(--color-text-muted);
+    }
+
+    /* Role selection cards */
+    .role-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-3);
+    }
+    .role-card {
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-3);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: var(--space-2);
+      background: #fff;
+      transition: all 0.15s ease;
+    }
+    .role-card:hover {
+      border-color: var(--color-primary);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .role-card.active {
+      border-color: var(--color-primary);
+      background: #f8fafc;
+      box-shadow: 0 0 0 2px rgba(43, 89, 195, 0.2);
+    }
+    .role-title {
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--color-text);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .role-desc {
+      font-size: 12px;
+      color: var(--color-text-muted);
+      line-height: 1.4;
+    }
+    .role-meta {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--color-primary);
+      background: #eef2ff;
+      padding: 2px 8px;
+      border-radius: 4px;
+      align-self: flex-start;
+    }
+
+    /* Permission controls */
+    .perm-list {
+      background: #f8fafc;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: var(--space-3);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+    .perm-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: var(--space-3);
+      border-bottom: 1px solid #eef2f6;
+    }
+    .perm-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+    .perm-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .perm-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-text);
+    }
+    .perm-sub {
+      font-size: 11px;
+      color: var(--color-text-muted);
+    }
+
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 22px;
+      flex-shrink: 0;
+    }
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #cbd5e1;
+      transition: .2s;
+      border-radius: 22px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .2s;
+      border-radius: 50%;
+    }
+    input:checked + .slider {
+      background-color: var(--color-primary);
+    }
+    input:checked + .slider:before {
+      transform: translateX(18px);
+    }
+
+    .footer-bar {
+      height: 60px;
+      background: var(--color-surface);
+      border-top: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--space-4);
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+  <!-- Topbar -->
+  <header class="top-header">
+    <div class="breadcrumb-title">
+      <a href="bo-quan-ly-nhan-vien.html" class="breadcrumb-link">Quản Lý Nhân Viên</a>
+      <span style="color: var(--color-text-muted);">/</span>
+      <span>Thêm Nhân Viên & Thiết Lập Quyền Hạn</span>
+    </div>
+    <div class="header-actions">
+      <a href="bo-quan-ly-nhan-vien.html" class="btn">Đóng</a>
+    </div>
+  </header>
+
+  <main class="content-area">
+    <div class="form-sheet">
+      <!-- Doc Header -->
+      <div class="doc-header">
+        <div>
+          <div class="doc-title">THÊM NHÂN VIÊN MỚI & THIẾT LẬP PHÂN QUYỀN RBAC</div>
+          <div class="doc-meta">
+            Khởi tạo hồ sơ tài khoản thành viên doanh nghiệp và cấp quyền truy cập theo vai trò hệ thống.
+          </div>
+        </div>
+        <div style="padding: 4px 10px; background: #eef2ff; color: var(--color-primary); font-size: 12px; font-weight: 600; border-radius: 4px;">
+          RBAC v2.4
+        </div>
+      </div>
+
+      <!-- Section 1: Thông tin cá nhân -->
+      <div>
+        <div class="section-title">
+          <span class="step-badge">1</span>
+          Thông tin cá nhân & Tài khoản công vụ
+        </div>
+        <div class="grid-fields">
+          <div class="field-group">
+            <label class="field-label">
+              <span>Họ và tên nhân viên <span style="color: var(--color-danger);">*</span></span>
+              <span style="color: var(--color-success); font-size: 11px;">Hợp lệ</span>
+            </label>
+            <input type="text" class="field-input" value="Nguyễn Hoàng Long" placeholder="Nhập đầy đủ họ tên...">
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">
+              <span>Mã nhân viên</span>
+              <span style="color: var(--color-text-muted); font-size: 11px;">Tự động tạo</span>
+            </label>
+            <input type="text" class="field-input" value="NV-024" readonly style="background: #f8fafc; font-weight: 600; color: var(--color-primary);">
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">
+              <span>Email đăng nhập công vụ <span style="color: var(--color-danger);">*</span></span>
+            </label>
+            <input type="email" class="field-input" value="long.nguyen@maisondebloom.vn" placeholder="email@congty.vn">
+            <span class="field-hint">Định dạng email tổ chức Google Workspace / Microsoft 365</span>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">
+              <span>Số điện thoại (Nhận OTP SMS / Zalo) <span style="color: var(--color-danger);">*</span></span>
+            </label>
+            <input type="tel" class="field-input" value="0987 654 321" placeholder="090x xxx xxx">
+            <span class="field-hint">Dùng kích hoạt thiết bị POS & xác thực hai lớp 2FA</span>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">Ngày bắt đầu công tác</label>
+            <input type="text" class="field-input" value="01/11/2026">
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">Trạng thái kích hoạt</label>
+            <select class="field-input">
+              <option selected>Hoạt động (Active)</option>
+              <option>Chờ xác nhận email (Pending)</option>
+              <option>Tạm khóa (Suspended)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Chọn vai trò định danh -->
+      <div>
+        <div class="section-title">
+          <span class="step-badge">2</span>
+          Chọn vai trò định danh (System Role)
+        </div>
+        <div class="role-grid">
+          <!-- Card 1: POS Active -->
+          <div class="role-card active">
+            <div>
+              <div class="role-title">
+                Thu ngân & Bán hàng POS
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><polyline points="6.5,10.2 9,12.8 13.8,7.5"/></svg>
+              </div>
+              <p class="role-desc" style="margin-top: 6px;">
+                Tạo đơn quầy, quét mã VietQR động, áp voucher bán lẻ và kiểm tra tồn kho tức thì.
+              </p>
+            </div>
+            <span class="role-meta">14 chức năng quầy • Phổ biến</span>
+          </div>
+
+          <!-- Card 2: Kho -->
+          <div class="role-card">
+            <div>
+              <div class="role-title">Quản lý Kho & Nhập xuất</div>
+              <p class="role-desc" style="margin-top: 6px;">
+                Tạo PO nhập hàng, quản lý date lô mỹ phẩm FEFO, kiểm kê hao hụt và luân chuyển kho.
+              </p>
+            </div>
+            <span class="role-meta" style="color: #64748b; background: #f1f5f9;">22 chức năng kho</span>
+          </div>
+
+          <!-- Card 3: Kế toán -->
+          <div class="role-card">
+            <div>
+              <div class="role-title">Kế toán & Dòng tiền</div>
+              <p class="role-desc" style="margin-top: 6px;">
+                Sổ quỹ thu chi, đối soát công nợ nhà cung cấp mỹ phẩm và hạch toán dòng tiền.
+              </p>
+            </div>
+            <span class="role-meta" style="color: #64748b; background: #f1f5f9;">30 chức năng tài chính</span>
+          </div>
+
+          <!-- Card 4: TMDT -->
+          <div class="role-card">
+            <div>
+              <div class="role-title">Vận hành TMĐT Omnichannel</div>
+              <p class="role-desc" style="margin-top: 6px;">
+                Đồng bộ sàn Shopee, TikTok Shop, in vận đơn hàng loạt và xử lý đổi trả COD.
+              </p>
+            </div>
+            <span class="role-meta" style="color: #64748b; background: #f1f5f9;">18 chức năng sàn</span>
+          </div>
+
+          <!-- Card 5: Custom -->
+          <div class="role-card" style="grid-column: span 2;">
+            <div>
+              <div class="role-title">Quyền hạn Tùy Chỉnh (Custom RBAC)</div>
+              <p class="role-desc" style="margin-top: 6px;">
+                Thiết lập phân quyền dạng granular từng module. Có thể kế thừa quyền POS và mở rộng quyền duyệt chiết khấu hoặc xem báo cáo doanh số nhanh.
+              </p>
+            </div>
+            <span class="role-meta" style="color: #64748b; background: #f1f5f9;">Trưởng ca / Quản trị viên phân quyền</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Cấu hình an ninh dữ liệu & Quyền hạn nhạy cảm -->
+      <div>
+        <div class="section-title">
+          <span class="step-badge">3</span>
+          Cấu hình an ninh dữ liệu cho: 'Thu ngân & Bán hàng POS'
+        </div>
+        <div class="perm-list">
+          <div class="perm-item">
+            <div class="perm-info">
+              <div class="perm-name">Mặt nạ dữ liệu khách hàng (Masking VIP)</div>
+              <div class="perm-sub">Ẩn 4 số giữa SĐT (098****321) & địa chỉ cá nhân của khách hàng VIP/Gold</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="perm-item">
+            <div class="perm-info">
+              <div class="perm-name">Ẩn Giá Vốn Hàng Bán (COGS & Import Price)</div>
+              <div class="perm-sub">Thu ngân chỉ xem được giá bán lẻ niêm yết, không nhìn thấy giá nhập từ nhà phân phối</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="perm-item">
+            <div class="perm-info">
+              <div class="perm-name">Truy cập Báo cáo Lãi/Lỗ Tổng hợp (P&L)</div>
+              <div class="perm-sub">Khóa hoàn toàn với cấp bậc thu ngân cửa hàng (Chỉ Quản lý & Chủ shop)</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" disabled>
+              <span class="slider" style="opacity: 0.5;"></span>
+            </label>
+          </div>
+
+          <div class="perm-item">
+            <div class="perm-info">
+              <div class="perm-name">Chiết khấu tối đa khi thanh toán đơn lẻ</div>
+              <div class="perm-sub">Vượt mức quy định cần Quản lý xác nhận phê duyệt</div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <input type="text" class="field-input" value="10%" style="width: 70px; text-align: center; font-weight: 700;">
+              <span style="font-size: 11px; color: var(--color-text-muted);">Tối đa / đơn</span>
+            </div>
+          </div>
+
+          <div class="perm-item">
+            <div class="perm-info">
+              <div class="perm-name">Bắt buộc xác thực hai bước (2FA) khi đăng nhập</div>
+              <div class="perm-sub">Gửi mã OTP xác nhận bảo mật khi đăng nhập trên thiết bị mới</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer Actions -->
+  <footer class="footer-bar">
+    <a href="bo-quan-ly-nhan-vien.html" class="btn">Hủy bỏ</a>
+    <div style="display: flex; gap: var(--space-2);">
+      <button class="btn">Lưu bản nháp</button>
+      <a href="bo-quan-ly-nhan-vien.html" class="btn btn-primary">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.5"/><polyline points="6.5,10.2 9,12.8 13.8,7.5"/></svg>
+        Tạo Tài Khoản & Gửi Thư Mời
+      </a>
+    </div>
+  </footer>
+</body>
+</html>
